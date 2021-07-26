@@ -1,2 +1,4 @@
 #+author: Juan E. Gómez-Morantes, PhD.
 #+title: Repositorio de configuración personal
+
+Configuraciones adaptadas a preferencias personales. No prentenden ser de uso general. 

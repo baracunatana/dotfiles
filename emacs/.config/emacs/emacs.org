@@ -1,0 +1,833 @@
+#+title: Configuración literaria de Emacs
+#+author: Juan E. Gómez-Morantes, PhD.
+
+#+PROPERTY: header-args:emacs-lisp :tangle ./init.el
+
+* Introducción
+Este archivo presenta una configuración literaria de emacs. En muchas partes se usa la funcionalidad =noweb= de =org= para tener una mejor trazabilidad y documentación de configuraciones complejas. En https://www.hhyu.org/posts/literate_config/ se puede encontrar más información al respecto.
+  
+* Manejador de paquetes
+Esta configuración está basada en =straight= y =use-package=. En esta sección se =straight= siguiendo las instrucciones encontradas en https://github.com/raxod502/straight.el, y se hace la configuración inicial para la instalación de =use-package= y su integración con =straight=.
+
+#+begin_src emacs-lisp
+  (setq package-enable-at-startup nil)
+
+  (defvar bootstrap-version)
+  (let ((bootstrap-file
+         (expand-file-name "straight/repos/straight.el/bootstrap.el" user-emacs-directory))
+        (bootstrap-version 5))
+    (unless (file-exists-p bootstrap-file)
+      (with-current-buffer
+          (url-retrieve-synchronously "https://raw.githubusercontent.com/raxod502/straight.el/develop/install.el"
+                                      'silent 'inhibit-cookies)
+        (goto-char (point-max))
+        (eval-print-last-sexp)))
+    (load bootstrap-file nil 'nomessage))
+
+  (straight-use-package 'use-package)
+  (setq straight-use-package-by-default t)
+#+end_src 
+  
+* Interfaz
+** Configuración básica
+#+begin_src emacs-lisp
+  (scroll-bar-mode -1)        ; Desabilitar el scroll bar
+  (tool-bar-mode -1)          ; Desabilitar la barra de herramientas
+  (tooltip-mode -1)           ; Desabilitar tool tips
+  (set-fringe-mode 10)        ; Dar algo de espacio entre ventanas
+  (menu-bar-mode -1)          ; Desabilitar barra de menú
+  (global-visual-line-mode)   ; Word wrapping por defecto en todos los modos
+  (global-auto-revert-mode t) ; Activar global auto-revert 
+#+end_src
+** Fuentes
+La lista de fuentes disponibles para emacs se puede consultar ejecutando el siguiente bloque de código:
+
+#+begin_src emacs-lisp :tangle no
+(font-family-list)
+#+end_src
+
+Para poder usar inconsolata, es imporante verificar que esté disponible en esa lista.
+
+#+begin_src emacs-lisp 
+  (set-face-attribute 'fixed-pitch nil :font "Inconsolata Nerd Font 11")
+  (set-frame-font "Inconsolata Nerd Font 11" nil t)
+#+end_src
+
+#+RESULTS:
+
+** =evil=
+=evil= permite edición modal y uso de acordes estilo vim en Emacs. Esta sección se limita a instalación y configuración básica de =evil= y =general= (para la definición de acordes locales). Luego, en las secciones correspondientes a cada paquete, se hace la configuración de los acordes locales.
+*** Configuración de =evil=
+#+begin_src emacs-lisp
+  (use-package evil
+    :custom
+    ;; Inicia en modo NORMAL por defecto en todos los modos
+    (evil-default-state 'normal)
+    ;; Para evitar conflictos con TAB en org-mode
+    (evil-want-C-i-jump nil)
+    :config
+    ;; Arracnar evil-mode por defecto
+    (evil-mode))
+#+end_src
+    
+*** Configuración de =general=
+=general= es un paquete que ayuda a definir teclas líderes para diferentes conceptos, y es integrable con =use-package= usando la opción =:general=. En esta sección se define una tecla lider general (SPC) para arcordes globales y una tecla lider local (SPC m) para acordes relativos al modo actual.
+
+#+begin_src emacs-lisp
+  (use-package general
+    :after evil
+    :config
+    ;; defniciión de tecla lider global para modo normal.
+    (general-create-definer j/lider
+      :states '(normal insert emacs)
+      :keymaps 'override
+      :prefix "SPC"
+      :non-normal-prefix "M-SPC")
+
+    ;; definición de tecla lider local (relativo al major mode) para modo normal.
+    (general-create-definer j/lider-local
+      :states '(normal insert emacs)
+      :prefix "SPC m"
+      :non-normal-prefix "M-SPC m"))
+#+end_src
+
+** =ivy= et. al.
+Esta configuración hace uso extensivo de =ivy= y =cousel= para terminación. En esta sección se hacen todas las configuraciones relevantes al sistema de terminación.
+  
+*** TODO Configuración inicial de =ivy=
+(ver cómo se pueden configurar =C-j= y =C-k= en =ivy-minibuffer-map= usando general)
+
+#+begin_src emacs-lisp :noweb no-export
+  (use-package ivy
+    :diminish ivy-mode
+    :bind (:map ivy-minibuffer-map
+         ("C-j" . ivy-next-line)
+         ("C-k" . ivy-previous-line))
+    :config
+    (ivy-mode 1))
+#+end_src
+
+*** Configuración de =counsel=
+Activo counsel y enlazo =M-x= a =counsel-M-x=. Con esto se logra ver los binds actuales de los comandos. También se usa =counsel= en otros puntos de esta configuración como por ejemplo en los acordes de apertura de archivo.
+    
+#+begin_src emacs-lisp
+  (use-package counsel
+    :after ivy
+    :config
+    (global-set-key (kbd "M-x") 'counsel-M-x))
+#+end_src
+
+*** =ivy-rich= y =all-the-icons-ivy-rich=
+Estos dos paquetes se usan para agregar íconos a ivy. Por ejemplo, agrega íconos a la selección de buffers o de apertura de archivos.
+    
+#+begin_src emacs-lisp
+  (use-package ivy-rich
+    :after (ivy counsel)
+    :init
+    (ivy-rich-mode 1))
+
+  (use-package all-the-icons-ivy-rich
+    :after ivy-rich
+    :init (all-the-icons-ivy-rich-mode 1))
+#+end_src
+
+*** =prescient=
+=presciente= le ayuda a =ivy= a mostrar opciones recientes y frecuentes en el tope de las listas mostradas para terminación.
+  
+#+begin_src emacs-lisp
+  (use-package prescient
+    :after ivy
+    :config
+    (use-package ivy-prescient
+      :after counsel
+      :config
+      (ivy-prescient-mode)
+      (prescient-persist-mode)))
+#+end_src
+
+** =all-the-icons=
+Este paquete instala fuentes con íconos que son usadas por muchos otros paquetes (e.g. [[Doom modeline]], Dired, [[ivy]], entre otros). Si luego de esta configuración no se logran visualizar los íconos, es porque falta ejecutar =(all-the-icons-install-fonts)=.
+
+#+begin_src emacs-lisp
+  (use-package all-the-icons)
+#+end_src
+
+** =doom-modeline=
+#+begin_src emacs-lisp
+  (use-package doom-modeline
+    :after 
+    all-the-icons
+    :init 
+    ;; Activar doom-modeline en todos los modos
+    (doom-modeline-mode 1))
+#+End_src
+
+** =which-key=
+=which-key= es un paquete que muestra los acordes disponibles luego de iniciar un acorde normal o tipo vim. Lo que hace es mostrar un diálogo que muestra las opciones disponibles luego de iniciar un comando. Por ejemplo, si se presiona =C-c=, =which-key= muestra un diálogo con todos los comandos que se pueden ejecutar luego de =C-c= y la descripción de la función a ejecutar. También muestra comandos que abren más opciones (e.g. =C-c C-x=). 
+
+#+begin_src emacs-lisp
+  (use-package which-key
+    :config
+    (which-key-mode))
+#+end_src
+
+** Tema gráfico
+Uso el tema gráfico =modus-vivendi= de Protesilaos (https://gitlab.com/protesilaos/modus-themes).
+
+#+begin_src emacs-lisp
+  (use-package modus-themes
+    :config
+    ;; Cargar los temas
+    (modus-themes-load-themes)
+    ;; Cargar modus-vivendi
+    (modus-themes-load-vivendi))
+#+end_src
+
+** =helpful=
+=helpful= es un paquete que mejora sustancialmente los /buffers/ de ayuda estándares de Emacs. Se carga después de general para integrarlo con ese paquete.
+
+#+begin_src emacs-lisp
+  (use-package helpful
+    :after
+    counsel
+    :custom
+    (counsel-describe-function-function #'helpful-callable)
+    (counsel-describe-variable-function #'helpful-variable))
+#+end_src
+
+** =rainbow delimiters=
+Este paquete agrega color a los paréntesis para tener una referencia gráfica de parejas de paréntesis.
+   
+#+begin_src emacs-lisp
+  (use-package rainbow-delimiters
+    :hook (org-mode . rainbow-delimiters-mode))
+#+end_src
+
+** Acordes generales
+*** Operaciones sobre modos de edición
+#+begin_src emacs-lisp
+  (j/lider
+   "SPC" '(evil-normal-state :which-key "volver a modo normal"))
+#+end_src
+
+*** Acordes de archivos
+#+begin_src emacs-lisp
+  (j/lider
+    :infix "a"
+    "" '(:ignore t :which-key "archivo")
+    "a" '(counsel-find-file :which-key "abrir archivo")
+    "A" '(counsel-recentf :which-key "abrir reciente")
+    "g" '(save-buffer :which-key "guardar")
+    "e" '(j/delete-file-and-buffer :which-key "cerrar y eliminar")
+    "G" '(write-file :which-key "guardar como"))
+#+end_src
+
+Algunas opciones de menú de archivo requieren funciones auxiliares:
+#+begin_src emacs-lisp
+  (defun j/delete-file-and-buffer ()
+    "Eliminar el archivo actual del disco duro y cierra su buffer"
+    (interactive)
+    (let ((filename (buffer-file-name)))
+      (if filename
+          (if (y-or-n-p (concat "De verdad quiere eliminar " filename " ?"))
+              (progn
+                (delete-file filename)
+                (message "%s eliminado." filename)
+                (kill-buffer)))
+        (message "Este buffer no representaba un archivo"))))
+#+end_src
+
+*** Operaciones sobre ventanas
+#+begin_src emacs-lisp
+  (j/lider
+    :infix "v"
+    "" '(:ignore t :which-key "window")
+    "e" '(evil-window-delete :which-key "cerrar ventaan")
+    "d" '(evil-window-split :which-key "dividir horizontalmente")
+    "<" '(evil-window-decrease-width :which-key "reducir ancho")
+    ">" '(evil-window-increase-width :which-key "aumentar ancho")
+    "j" '(evil-window-down :which-key "ir abajo")
+    "q" '(evil-quit-all :which-key "salir de emacs")
+    "k" '(evil-window-up :which-key "ir arriba")
+    "h" '(evil-window-left :which-key "ir a izquierda")
+    "l" '(evil-window-right :which-key "ir a derecha")
+    "o" '(delete-other-windows :which-key "cerrar otras ventanas")
+    "TAB" '(evil-window-next :which-key "siguiente ventana")
+    "v" '(evil-window-vsplit :which-key "dividir verticalmente"))
+#+end_src
+
+*** Operaciones sobre buffers
+#+begin_src emacs-lisp
+  (j/lider
+    :infix "b"
+    "" '(:ignore t :which-key "buffer")
+    "e" '(kill-this-buffer :which-key "cerrar buffer")
+    "k" '(previous-buffer :which-key "buffer previo")
+    "-" '(text-scale-adjust :which-key "reducir fuente")
+    "+" '(text-scale-adjust :which-key "aumentar fuente")
+    "r" '(revert-buffer :which-key "revert-buffer")
+    "v" '(visual-line-mode :which-key "visual-line-mode")
+    "b" '(counsel-switch-buffer :which-key "buscar buffer")
+    "u" '(evil-switch-to-windows-last-buffer :which-key "último buffer")
+    "j" '(next-buffer :which-key "siguiente buffer"))
+#+end_src
+
+*** Menú de ayuda
+#+begin_src emacs-lisp
+  (j/lider
+   :infix "h"
+   "" '(:ignore t :which-key "Ayud")
+   "m" '(describe-mode :which-key "describir modo")
+   "f" '(counsel-describe-function :which-key "describir función")
+   "v" '(counsel-describe-variable :which-key "describir variable")
+   "K" '(describe-key-briefly :which-key "describe-key-briefly")
+   "w" '(where-is :which-key "where-is")
+   "F" '(counsel-describe-face :which-key "describir face")
+   "t" '(helpful-key :which-key "describir tecla"))
+#+end_src
+
+*** Menú de accesos directos
+#+BEGIN_SRC emacs-lisp
+  (j/lider
+    :infix "o"
+    "" '(:ignore t :which-key "open")
+    "a" '(org-agenda :which-key "agenda")
+    "g" '(j/gtd :which-key "archivo gtd")
+    "d" '(dired :which-key "dired")
+    "s" '(eshell :which-key "eshell")
+    "t" '(org-todo-list :which-key "lista completa TO-DO"))
+
+  (defun j/gtd ()
+    "Abre archivo ~/personal/orgmode/gtd.org"
+    (interactive)
+    (find-file "~/personal/orgmode/gtd.org"))
+#+END_SRC
+
+*** Movimiento
+Mapa de movimiento general (cualquier modo)
+
+#+begin_src emacs-lisp
+  (general-define-key
+   :states '(normal)
+   "j" '(evil-next-visual-line :which-key "siguiente linea visual")
+   "k" '(evil-previous-visual-line :which-key "linea visual previa"))
+   
+  (general-define-key
+   :states '(normal)
+   :infix "g"
+   "h" '(evil-beginning-of-line :which-key "evil-beginning-of-line")
+   "G" '(end-of-buffer :which-key "end-of-buffer")
+   "j" '(evil-next-line :which-key "evil-next-linex")
+   "k" '(evil-previous-line :which-key "evil-previous-line")
+   "l" '(evil-end-of-line :which-key "evil-end-of-line"))
+#+end_src
+
+* =org=
+#+begin_src emacs-lisp :noweb no-export
+  (use-package org
+    :hook
+    (<<org-hook>>)
+    :custom
+    <<org-custom>>
+    :config
+    <<org-config>>)
+#+end_src
+
+** Configuración básica
+#+begin_src emacs-lisp :tangle no :noweb-ref org-custom
+  (org-startup-folded t)          ; Colapsar contenido al abrir un archivo
+  (org-startup-align-all-table t) ; Empezar con las tablas colapsadas
+  (org-startup-indented t)        ; Activar org-indent-mode por defecto 
+  (org-tags-column 0)             ; Quitar espacio entre título y etiquetas
+  (org-list-allow-alphabetical t) ; Permitir listas con letras
+  (org-table-header-line-p t)     ; Congelar primera fila de tablas largas
+#+end_src
+
+** Configuración de estados y etiquetas de tareas
+#+begin_src emacs-lisp :tangle no :noweb-ref org-custom
+  (org-todo-keywords '((sequence "TODO(t)"
+                                 "ESPE(e)"
+                                 "EMPE(m)"
+                                 "PROY(p)"
+                                 "FUTU(f)"
+                                 "|" "DONE(d)"
+                                 "CANC(c)")))
+  
+  (org-todo-keyword-faces '(("PROY" . (:foreground "#d33682" :weight bold))
+                            ("ESPE" . (:foreground "#b58900" :weight bold))
+                            ("EMPE" . (:foreground "#b58900" :weight bold))
+                            ("DONE" . (:foreground "#859900" :weight bold))
+                            ("CANC" . (:foreground "#859900" :weight bold))
+                            ("FUTU" . (:foreground "#2aa198" :weight bold))
+                            ("TODO" . (:foreground "#6c71c4" :weight bold))))
+  
+  (org-tag-persistent-alist '(("@Casa" . ?c)
+                              ("@Oficina" . ?o)
+                              ("@PC" . ?p)
+                              ("@Internet" . ?i)
+                              ("@Lectura" . ?l)
+                              ("@Calle" . ?k)
+                              ("#Docencia" . ?d)
+                              ("#Carrera" . ?u)
+                              ("#DevP" . ?v)
+                              ("#ProyPer" . ?y)
+                              ("#IngresoAdicional" . ?s)
+                              ("#Puntos" . ?n)
+                              ("Urgente" . ?g)
+                              ("Corta" . ?r)
+                              ("PasarBalon" . ?b)))
+ #+end_src
+
+** Bitácora de tareas repetidas
+Cada vez que marco como completada (o cancelada) una tarea con repetición, se guarda una línea de cambio de estado en el cuerpo de la tarea. Para que estas líneas de cambio de estado se guarden dentro de un /drawer/ (logrando tareas más limpias), se modifica el valor de la variable =org-log-into-drawer=. Esta variable acepta como parámetro el nombre del cajón en donde se quiere guardar las líneas de cambio de estado. También acepta =t=, usando LOGBOOK como nombre por defecto del cajón.
+
+#+begin_src emacs-lisp :tangle no :noweb-ref org-custom
+  (org-log-into-drawer "BITÁCORA")
+#+end_src
+
+** Seguir enlaces en la misma ventana
+#+begin_src emacs-lisp :tangle no :noweb-ref org-config
+  (setf (alist-get 'file org-link-frame-setup) #'find-file)
+#+end_src
+
+** Desactivar =electric-indent-mode= en =org=
+#+begin_src emacs-lisp :tangle no :noweb-ref org-hook
+  (org-mode . (lambda () (electric-indent-local-mode -1)))
+#+end_src
+   
+** dwim
+La siguiente función dwim (do what I mean) se toma del [[https://github.com/hlissner/doom-emacs/blob/develop/modules/lang/org/autoload/org.el#L147][código de Doom]]. Se le modifica el nombre para conservar convención de nombramiento de funciones propias.
+
+#+begin_src emacs-lisp :tangle no :noweb-ref org-config
+  (defun j/dwim-at-point (&optional arg)
+    "Do-what-I-mean at point.
+  If on a:
+  - checkbox list item or todo heading: toggle it.
+  - clock: update its time.
+  - headline: cycle ARCHIVE subtrees, toggle latex fragments and inline images in
+    subtree; update statistics cookies/checkboxes and ToCs.
+  - footnote reference: jump to the footnote's definition
+  - footnote definition: jump to the first reference of this footnote
+  - table-row or a TBLFM: recalculate the table's formulas
+  - table-cell: clear it and go into insert mode. If this is a formula cell,
+    recaluclate it instead.
+  - babel-call: execute the source block
+  - statistics-cookie: update it.
+  - latex fragment: toggle it.
+  - link: follow it
+  - otherwise, refresh all inline images in current tree."
+    (interactive "P")
+    (let* ((context (org-element-context))
+           (type (org-element-type context)))
+      ;; skip over unimportant contexts
+      (while (and context (memq type '(verbatim code bold italic underline strike-through subscript superscript)))
+        (setq context (org-element-property :parent context)
+              type (org-element-type context)))
+      (pcase type
+        (`headline
+         (cond ((memq (bound-and-true-p org-goto-map)
+                      (current-active-maps))
+                (org-goto-ret))
+               ((and (fboundp 'toc-org-insert-toc)
+                     (member "TOC" (org-get-tags)))
+                (toc-org-insert-toc)
+                (message "Updating table of contents"))
+               ((string= "ARCHIVE" (car-safe (org-get-tags)))
+                (org-force-cycle-archived))
+               ((or (org-element-property :todo-type context)
+                    (org-element-property :scheduled context))
+                (org-todo
+                 (if (eq (org-element-property :todo-type context) 'done)
+                     (or (car (+org-get-todo-keywords-for (org-element-property :todo-keyword context)))
+                         'todo)
+                   'done))))
+         ;; Update any metadata or inline previews in this subtree
+         (org-update-checkbox-count)
+         (org-update-parent-todo-statistics)
+         (when (and (fboundp 'toc-org-insert-toc)
+                    (member "TOC" (org-get-tags)))
+           (toc-org-insert-toc)
+           (message "Updating table of contents"))
+         (let* ((beg (if (org-before-first-heading-p)
+                         (line-beginning-position)
+                       (save-excursion (org-back-to-heading) (point))))
+                (end (if (org-before-first-heading-p)
+                         (line-end-position)
+                       (save-excursion (org-end-of-subtree) (point))))
+                (overlays (ignore-errors (overlays-in beg end)))
+                (latex-overlays
+                 (cl-find-if (lambda (o) (eq (overlay-get o 'org-overlay-type) 'org-latex-overlay))
+                             overlays))
+                (image-overlays
+                 (cl-find-if (lambda (o) (overlay-get o 'org-image-overlay))
+                             overlays)))
+           (+org--toggle-inline-images-in-subtree beg end)
+           (if (or image-overlays latex-overlays)
+               (org-clear-latex-preview beg end)
+             (org--latex-preview-region beg end))))
+
+        (`clock (org-clock-update-time-maybe))
+
+        (`footnote-reference
+         (org-footnote-goto-definition (org-element-property :label context)))
+
+        (`footnote-definition
+         (org-footnote-goto-previous-reference (org-element-property :label context)))
+
+        ((or `planning `timestamp)
+         (org-follow-timestamp-link))
+
+        ((or `table `table-row)
+         (if (org-at-TBLFM-p)
+             (org-table-calc-current-TBLFM)
+           (ignore-errors
+             (save-excursion
+               (goto-char (org-element-property :contents-begin context))
+               (org-call-with-arg 'org-table-recalculate (or arg t))))))
+
+        (`table-cell
+         (org-table-blank-field)
+         (org-table-recalculate arg)
+         (when (and (string-empty-p (string-trim (org-table-get-field)))
+                    (bound-and-true-p evil-local-mode))
+           (evil-change-state 'insert)))
+
+        (`babel-call
+         (org-babel-lob-execute-maybe))
+
+        (`statistics-cookie
+         (save-excursion (org-update-statistics-cookies arg)))
+
+        ((or `src-block `inline-src-block)
+         (org-babel-execute-src-block arg))
+
+        ((or `latex-fragment `latex-environment)
+         (org-latex-preview arg))
+
+        (`link
+         (let* ((lineage (org-element-lineage context '(link) t))
+                (path (org-element-property :path lineage)))
+           (if (or (equal (org-element-property :type lineage) "img")
+                   (and path (image-type-from-file-name path)))
+               (+org--toggle-inline-images-in-subtree
+                (org-element-property :begin lineage)
+                (org-element-property :end lineage))
+             (org-open-at-point arg))))
+
+        ((guard (org-element-property :checkbox (org-element-lineage context '(item) t)))
+         (let ((match (and (org-at-item-checkbox-p) (match-string 1))))
+           (org-toggle-checkbox (if (equal match "[ ]") '(16)))))
+
+        (_
+         (if (or (org-in-regexp org-ts-regexp-both nil t)
+                 (org-in-regexp org-tsr-regexp-both nil  t)
+                 (org-in-regexp org-link-any-re nil t))
+             (call-interactively #'org-open-at-point)
+           (+org--toggle-inline-images-in-subtree
+            (org-element-property :begin context)
+            (org-element-property :end context)))))))
+
+  (defun +org--toggle-inline-images-in-subtree (&optional beg end refresh)
+    "Refresh inline image previews in the current heading/tree."
+    (let ((beg (or beg
+                   (if (org-before-first-heading-p)
+                       (line-beginning-position)
+                     (save-excursion (org-back-to-heading) (point)))))
+          (end (or end
+                   (if (org-before-first-heading-p)
+                       (line-end-position)
+                     (save-excursion (org-end-of-subtree) (point)))))
+          (overlays (cl-remove-if-not (lambda (ov) (overlay-get ov 'org-image-overlay))
+                                      (ignore-errors (overlays-in beg end)))))
+      (dolist (ov overlays nil)
+        (delete-overlay ov)
+        (setq org-inline-image-overlays (delete ov org-inline-image-overlays)))
+      (when (or refresh (not overlays))
+        (org-display-inline-images t t beg end)
+        t)))
+
+  (defun +org-get-todo-keywords-for (&optional keyword)
+    "Returns the list of todo keywords that KEYWORD belongs to."
+    (when keyword
+      (cl-loop for (type . keyword-spec)
+               in (cl-remove-if-not #'listp org-todo-keywords)
+               for keywords =
+               (mapcar (lambda (x) (if (string-match "^\\([^(]+\\)(" x)
+                                       (match-string 1 x)
+                                     x))
+                       keyword-spec)
+               if (eq type 'sequence)
+               if (member keyword keywords)
+               return keywords)))
+#+end_src
+   
+** Actualización automática de tareas FUTU
+Esta sección define una serie de funciones para usar tareas con estado =FUTU=. Estas son tareas que no aparecen como accionables, pero que se vuelven accionables en una fecha específica. Se usan para tareas que se quieren registrar con anticipación, pero que sólo se puede empezar luego de una fecha específica. 
+
+La función =j/org-set-futu= se usa para asignar el estado =FUTU= a una tarea, preguntando antes cuál es la fecha en la que se convierte en accionable. La función =j/org-verify-actionable-tasks= revisa todas las tareas de archivos registrados como en =org-agenda-files= y, si encuentra tareas con estado =FUTU= y una fecha igual o menor a la actual en la propiedad =ACTIONABLE=, las pasa a estado =TODO= y les quita la propiedad =ACTIONABLE=.
+   
+#+begin_src emacs-lisp :tangle no :noweb-ref org-config
+  (defun j/org-evaluate-if-actionable ()
+    "Returns t if the task at point is actionable or nil if it isn't"
+    (and (org-entry-get (point) "ACTIONABLE")
+         (string< (org-read-date nil nil (org-entry-get (point) "ACTIONABLE"))
+                  (org-read-date nil nil "+1"))))
+
+  (defun j/org-process-task ()
+    "Vefifies if a task is actionable. If it is, set it as actionable"
+    (when (j/org-evaluate-if-actionable)
+      (org-todo "TODO")
+      (org-delete-property "ACTIONABLE")))
+
+  (defun j/org-verify-actionable-tasks ()
+    "Goes through al agenda files checking if FUTU tasks are actionable"
+    (org-map-entries
+     '(j/org-process-task)
+     "/+FUTU" 'agenda))
+
+  ;; Ejecutar j/org-verify-actionable-tasks cada vez que se corra la agenda. Lo hace antes de que se calcula le agenda.
+  (add-hook 'org-agenda-mode-hook #'j/org-actionable)
+  (defun j/org-actionable ()
+    (j/org-verify-actionable-tasks))
+
+  (defun j/org-set-futu ()
+    "Cambiar el estado de una tarea a FUTU y definir la fecha en que se convierte en accionable"
+    (interactive)
+    (org-set-property "ACTIONABLE" (concat "[" (org-read-date nil nil nil "ACTIONABLE: ") "]"))
+    (org-todo "FUTU"))
+   #+end_src
+
+** =org-superstar-mode=
+=org-superstar= es un paquete que mejora el aspecto visual de archivos =org=.  
+
+#+begin_src emacs-lisp
+  (use-package org-superstar
+    :hook (org-mode . org-superstar-mode))
+#+end_src
+
+** Exportación a latex
+Uso tectonic como distribución de latex en (ambientes linux).
+
+#+begin_src emacs-lisp :tangle no :noweb-ref org-custom
+(org-latex-pdf-process '("tectonic %f"))
+#+end_src
+
+** Configuración de agenda
+*** Definición de archivos de agenda
+#+begin_src emacs-lisp :tangle no :noweb-ref org-custom
+(org-agenda-files '("~/personal/orgmode/gtd.org"))
+#+end_src
+*** Mostrar la agenda en la ventana actual
+#+begin_src emacs-lisp :tangle no :noweb-ref org-custom
+(org-agenda-window-setup 'current-window)
+#+end_src
+
+** Acordes locales
+*** De movimiento
+#+begin_src emacs-lisp :tangle no :noweb-ref org-config
+  (general-define-key
+   :states '(normal)
+   :keymaps '(org-mode-map)
+   "K"   '(org-previous-visible-heading :which-key "Encabezado previo")
+   "J"   '(org-next-visible-heading :which-key "Encabezado siguiente")
+   "H"   '(outline-up-heading :which-key "Encabezado siguiente"))
+#+end_src
+
+*** De interacción con archivo
+#+begin_src emacs-lisp :tangle no :noweb-ref org-config
+  (general-define-key
+   :states '(normal)
+   :keymaps '(org-mode-map)
+   "RET" '(j/dwim-at-point :which-key "dwim"))
+  
+  (j/lider-local
+    :states '(normal insert emacs)
+    :keymaps '(org-mode-map)
+    "T"    '(org-babel-tangle :which-key "tangle"))
+#+end_src
+
+*** De operación sobre tareas o exportación
+#+begin_src emacs-lisp :tangle no :noweb-ref org-config
+  (j/lider-local
+    :states '(normal insert emacs)
+    :keymaps '(org-mode-map)
+    "a"   '(org-archive-subtree-default :which-key "archivar")
+    "p"   '(org-priority :which-key "prioridad")
+    "q"   '(org-set-tags-command :which-key "etiquetas")
+    "o"   '(org-set-property :which-key "propiedades")
+    "t"   '(org-todo :which-key "propiedades")
+    "r"   '(org-refile :which-key "refile")
+    "e"   '(org-export-dispatch :which-key "exportar"))
+#+end_src
+
+*** De reloj 
+#+begin_src emacs-lisp :tangle no :noweb-ref org-config
+  (j/lider-local
+    :infix "j"
+    :keymaps '(org-mode-map)
+    "" '(:ignore t :which-key "reloj")
+    "e" '(org-set-effort :which-key "definir esfuerzo")
+    "E" '(org-inc-effort :which-key "aumentar esfuerzo")
+    "i" '(org-clock-in :which-key "iniciar reloj")
+    "I" '(org-clock-in-last :which-key "continuar reloj")
+    "g" '(org-clock-goto :which-key "ir a actual")
+    "c" '(org-clock-cancel :which-key "cancelar reloj")
+    "o" '(org-clock-out :which-key "cerrar y eliminar"))
+  
+  ;; Manipulación del reloj desde menú de accesos directos 
+  (j/lider
+    :infix "o j"
+    "" '(:ignore t :which-key "reloj")
+    "I" '(org-clock-in-last :which-key "continuar reloj")
+    "c" '(org-clock-cancel :which-key "cancelar reloj")
+    "o" '(org-clock-out :which-key "cerrar y eliminar"))
+#+end_src
+
+*** De calendario
+#+begin_src emacs-lisp :tangle no :noweb-ref org-config
+  (j/lider-local
+    :infix "c"
+    :keymaps '(org-mode-map)
+    "" '(:ignore t :which-key "Calendario")
+    "d" '(org-deadline :which-key "definir deadline")
+    "f" '(j/org-set-futu :which-key "A futuro")
+    "c" '(org-schedule :which-key "agendar"))
+#+end_src
+
+*** De agenda
+Lo primero que se tiene que hacer con la agenda es indicar que debe iniciar en modo NORMAL de =evil= para tener acceso a todos los acordes globales.
+
+#+begin_src emacs-lisp :tangle no :noweb-ref org-config
+  (add-to-list 'evil-normal-state-modes 'org-agenda-mode)
+#+end_src
+
+Ya con esto, se tienen que definir los acrodes locales para agenda.
+#+begin_src emacs-lisp :tangle no :noweb-ref org-config
+  (general-define-key
+   :states '(normal)
+   :keymaps '(org-agenda-mode-map)
+   "q" '(org-agenda-quit :which-key "salir")
+   "RET" '(org-agenda-switch-to :which-key "visitar"))
+#+end_src
+
+* =yasnippet=
+Yasnippet es un paquete que permite la definición de /snippets/ (o plantillas) y su utilización en diferentes modos. Por defecto, no trae plantillas definidas; si se quieren plantillas, se debe agregar el paquete =yasnippet-snippets= que trae una colección de plantillas predefinidas para modos populares.
+
+#+begin_src emacs-lisp :noweb no-export
+  (use-package yasnippet
+    :after (evil general)
+    :diminish yas-minor-mode
+    :config
+    <<yasnippet-config>>)
+  
+  (use-package yasnippet-snippets
+    :after yasnippet
+    :config (yasnippet-snippets-initialize)) 
+#+end_src
+
+La definición de plantillas se hace a partir de un archivo de texto plano que se guarda en =.emacs.d/snippets/<mode>/=. 
+
+** Inicializar yasnippet para todos los modos
+#+begin_src emacs-lisp :tangle no :noweb-ref yasnippet-config
+  (yas-global-mode)
+  (yas-reload-all)
+#+end_src
+
+** Acordes relevantes
+#+begin_src emacs-lisp :tangle no :noweb-ref yasnippet-config
+  (j/lider
+    "y" '(yas-insert-snippet :which-key "insertar plantilla"))
+#+end_src
+
+* =dired=
+Esta sección contiene la configuración de Dired. Al ser un paquete incluido en emacs, es necesario incluir la línea =:straight (:type built-in)= para que =use-package= lo pueda encontrar (esto es necesario por la integración de =use-package= con =straight=)
+   
+#+begin_src emacs-lisp :noweb no-export
+  (use-package dired
+    :straight (:type built-in)
+    :commands (dired dired-jump)
+    :custom
+    <<dired-custom>>
+    :config
+    <<dired-config>>)
+#+end_src
+
+** Evitar apertura de múltiples /buffers/ con RET
+Por defecto, =dired= crea un nuevo /buffer/ cada vez que se da =RET= en una carpeta. Si no se quiere abrir tantos /buffers/, una opción es usar =dired-find-alternate-file= (mapeado por defecto a =a=) en lugar de =dired-find-file= (mapeado por defecto a =RET=). Sin embargo, esta función está deshabilitada porque los usuarios la encontraban confusa. Para habilitarla por defecto y evitar el diálogo de confirmación se debe ejecutar:
+
+#+begin_src emacs-lisp :tangle no :noweb-ref dired-config
+  (put 'dired-find-alternate-file 'disabled nil)
+#+end_src
+  
+** all-the-icons-dired
+Este paquete agrega íconos a los archivos mostrados en =dired=
+
+#+begin_src emacs-lisp
+  (use-package all-the-icons-dired
+    :after dired
+    :hook (dired-mode . all-the-icons-dired-mode))
+#+end_src
+
+** No pedir confirmación en operaciones recursivas
+#+begin_src emacs-lisp :tangle no :noweb-ref dired-custom
+  (dired-recursive-copies 'always)
+  (dired-recursive-deletes 'always)
+#+end_src
+
+** Acordes
+#+begin_src emacs-lisp :tangle no :noweb-ref dired-config
+  (j/lider-local
+    :states '(normal insert emacs)
+    :keymaps '(dired-mode-map)
+    "w" '(wdired-change-to-wdired-mode :which-key "wdired-change-to-wdired-mode"))
+  
+  (j/lider-local
+    :states '(normal insert emacs)
+    :keymaps '(wdired-mode-map)
+    "w" '(wdired-exit :which-key "wdired-exit"))
+#+end_src
+
+* =magit=
+Magit es el mejor cliente git no solo para emacs sino en general. Funciona desde emacs apoyado en el cliente git estándar para el sistema operativo en donde se esté corriendo emacs.
+  
+#+begin_src emacs-lisp
+  (use-package magit
+    :commands magit-status)
+#+end_src
+
+* =projectile=
+=projectile= es una librería de interacción con proyectos para Emacs. Lo uso para tener acceso rápido a archivos de proyectos y para facilitar tareas sobre proyectos como exportaciones, ejecuciones, etc.
+
+#+begin_src emacs-lisp
+  (use-package projectile
+    :custom
+    (projectile-enable-caching t)                   ; Para acelerar 
+    (projectile-globally-ignored-files '("*.org~"))
+    (projectile-completion-system 'ivy) 
+  
+    :config
+    (projectile-mode)
+    (setq projectile-enable-caching t))
+  
+  (use-package counsel-projectile
+    :after projectile
+    :config
+    (counsel-projectile-mode))
+#+end_src
+
+** Acordes
+#+begin_src emacs-lisp
+  (j/lider
+    "p" '(:keymap projectile-command-map :which-key "projectile"))
+#+end_src
+
+* =pdf-tools=
+=pdf-tools= es un paquete para visualización y manipulación de archivos pdfs directamente en emacs.
+
+#+begin_src emacs-lisp :tangle no 
+  (use-package pdf-tools
+    :config
+    (pdf-tools-install))
+#+end_src
+
+#+RESULTS:

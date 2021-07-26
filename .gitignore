@@ -1,0 +1,9 @@
+/emacs/.config/emacs/straight*
+emacs/.config/emacs/auto-save-list*
+/emacs/.config/emacs/.org-id-locations
+/emacs/.config/emacs/bookmarks
+/emacs/.config/emacs/emacs.org~
+/emacs/.config/emacs/projectile-bookmarks.eld
+/emacs/.config/emacs/projectile.cache
+/emacs/.config/emacs/transient/
+/emacs/.config/emacs/var/
