@@ -622,6 +622,41 @@ Uso tectonic como distribución de latex en (ambientes linux).
 (org-agenda-window-setup 'current-window)
 #+end_src
 
+** =org-ref=
+=org-ref= permite usar referencias bibliográficas en formato bibtex desde =org=.
+
+#+begin_src emacs-lisp :noweb no-export
+  (use-package org-ref
+    :after org
+    :custom
+    <<org-ref-custom>>
+    :config
+    <<org-ref-config>>)
+#+end_src
+
+*** Configuración básica
+#+begin_src emacs-lisp :tangle no :noweb-ref org-ref-custom
+  (org-ref-default-citation-link "citep")
+  (reftex-default-bibliography '("~/biblioteca/main.bib"))
+  (org-ref-default-bibliography '("~/biblioteca/main.bib"))
+  (org-ref-pdf-directory "~/biblioteca/")
+  (bibtex-dialect 'biblatex)
+#+end_src
+
+*** Integrar con =ivy= por defecto
+#+begin_src emacs-lisp :tangle no :noweb-ref org-ref-config
+    (org-ref-ivy-cite-completion)
+#+end_src
+
+*** Acordes relevantes
+#+begin_src emacs-lisp :tangle no :noweb-ref org-ref-config
+  (j/lider-local
+    :states '(normal insert emacs)
+    :keymaps 'org-mode-map
+    "}" '(org-ref-ivy-insert-ref-link :which-key "insertar referencia")
+    "]" '(org-ref-ivy-insert-cite-link :which-key "insertar cita"))
+#+end_src
+
 ** Acordes locales
 *** De movimiento
 #+begin_src emacs-lisp :tangle no :noweb-ref org-config
