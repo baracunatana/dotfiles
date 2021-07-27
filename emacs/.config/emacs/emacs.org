@@ -96,8 +96,9 @@ Para poder usar inconsolata, es imporante verificar que esté disponible en esa 
 
 #+begin_src emacs-lisp
   (use-package evil-collection
-  :config
-  (with-eval-after-load 'pdf-tools (evil-collection-pdf-setup)))
+    :config
+    (with-eval-after-load 'pdf-tools (evil-collection-pdf-setup))
+    (with-eval-after-load 'magit (evil-collection-magit-setup)))
 #+end_src
 
 ** =ivy= et. al.

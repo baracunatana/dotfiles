@@ -52,6 +52,11 @@
     :prefix "SPC m"
     :non-normal-prefix "M-SPC m"))
 
+(use-package evil-collection
+  :config
+  (with-eval-after-load 'pdf-tools (evil-collection-pdf-setup))
+  (with-eval-after-load 'magit (evil-collection-magit-setup)))
+
 (use-package ivy
   :diminish ivy-mode
   :bind (:map ivy-minibuffer-map
