@@ -657,6 +657,16 @@ Uso tectonic como distribución de latex en (ambientes linux).
     "]" '(org-ref-ivy-insert-cite-link :which-key "insertar cita"))
 #+end_src
 
+** =org-refile=
+   Configuración necesaria para que org-refile tome en cuenta elementos hasta de nivel 4 en el archivo actual. 
+   #+begin_src emacs-lisp :tangle no :noweb-ref org-custom
+     ;; Destinos hasta de nivel 3
+     (org-refile-targets '((org-agenda-files :maxlevel . 3)))
+     ;; Construcción del destino paso a paso
+     (org-refile-use-outline-path 'file)
+     (org-outline-path-complete-in-steps nil)
+   #+end_src
+   
 ** Acordes locales
 *** De movimiento
 #+begin_src emacs-lisp :tangle no :noweb-ref org-config
