@@ -343,7 +343,7 @@ Mapa de movimiento general (cualquier modo)
   (org-table-header-line-p t)     ; Congelar primera fila de tablas largas
 #+end_src
 
-** Configuración de estados y etiquetas de tareas
+** Configuración de estados, prioridades y etiquetas de tareas
 #+begin_src emacs-lisp :tangle no :noweb-ref org-custom
   (org-todo-keywords '((sequence "TODO(t)"
                                  "ESPE(e)"
@@ -352,7 +352,6 @@ Mapa de movimiento general (cualquier modo)
                                  "FUTU(f)"
                                  "|" "DONE(d)"
                                  "CANC(c)")))
-  
   (org-todo-keyword-faces '(("PROY" . (:foreground "#d33682" :weight bold))
                             ("ESPE" . (:foreground "#b58900" :weight bold))
                             ("EMPE" . (:foreground "#b58900" :weight bold))
@@ -360,6 +359,15 @@ Mapa de movimiento general (cualquier modo)
                             ("CANC" . (:foreground "#859900" :weight bold))
                             ("FUTU" . (:foreground "#2aa198" :weight bold))
                             ("TODO" . (:foreground "#6c71c4" :weight bold))))
+  
+  (org-highest-priority ?A)
+  (org-default-priority ?D)
+  (org-lowest-priority ?D)
+  (org-priority-faces '((?A . (:foreground "#dc322f" :weight bold))
+                        (?B . (:foreground "#b58900" :weight bold))
+                        (?C . (:foreground "#2aa198"))
+                        (?D . (:foreground "#859900"))))
+  
   
   (org-tag-persistent-alist '(("@Casa" . ?c)
                               ("@Oficina" . ?o)
