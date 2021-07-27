@@ -276,7 +276,7 @@ Algunas opciones de menú de archivo requieren funciones auxiliares:
 #+begin_src emacs-lisp
   (j/lider
    :infix "h"
-   "" '(:ignore t :which-key "Ayud")
+   "" '(:ignore t :which-key "ayuda")
    "m" '(describe-mode :which-key "describir modo")
    "f" '(counsel-describe-function :which-key "describir función")
    "v" '(counsel-describe-variable :which-key "describir variable")
@@ -934,4 +934,16 @@ Magit es el mejor cliente git no solo para emacs sino en general. Funciona desde
   (use-package pdf-tools
     :config
     (pdf-tools-install))
+#+end_src
+
+* =kmacro=
+=kmacro= ya viene de base en emacs. Lo único que hay que configurar son los acordes.
+
+#+begin_src emacs-lisp
+  (j/lider
+   :infix "k"
+   "" '(:ignore t :which-key "macros")
+   "k" '(kmacro-end-or-call-macro-repeat :which-key "ejecutar macro")
+   "d" '(kmacro-end-macro :which-key "detener grabación")
+   "g" '(kmacro-start-macro :which-key "grabar macro"))
 #+end_src

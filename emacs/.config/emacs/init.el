@@ -168,7 +168,7 @@
 
 (j/lider
  :infix "h"
- "" '(:ignore t :which-key "Ayud")
+ "" '(:ignore t :which-key "ayuda")
  "m" '(describe-mode :which-key "describir modo")
  "f" '(counsel-describe-function :which-key "describir función")
  "v" '(counsel-describe-variable :which-key "describir variable")
@@ -619,3 +619,10 @@
 (use-package pdf-tools
   :config
   (pdf-tools-install))
+
+(j/lider
+ :infix "k"
+ "" '(:ignore t :which-key "macros")
+ "k" '(kmacro-end-or-call-macro-repeat :which-key "ejecutar macro")
+ "d" '(kmacro-end-macro :which-key "detener grabación")
+ "g" '(kmacro-start-macro :which-key "grabar macro"))
