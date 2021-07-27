@@ -290,7 +290,7 @@ Algunas opciones de menú de archivo requieren funciones auxiliares:
 #+BEGIN_SRC emacs-lisp
   (j/lider
     :infix "o"
-    "" '(:ignore t :which-key "open")
+    "" '(:ignore t :which-key "ir a")
     "a" '(org-agenda :which-key "agenda")
     "g" '(j/gtd :which-key "archivo gtd")
     "d" '(dired :which-key "dired")
@@ -836,9 +836,18 @@ Este paquete agrega íconos a los archivos mostrados en =dired=
 * =magit=
 Magit es el mejor cliente git no solo para emacs sino en general. Funciona desde emacs apoyado en el cliente git estándar para el sistema operativo en donde se esté corriendo emacs.
   
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :noweb no-export
   (use-package magit
-    :commands magit-status)
+    :commands (magit-status magit-init magit-clone)
+    :config
+    <<magit-config>>) 
+#+end_src
+
+** Comando de acceso directo 
+#+begin_src emacs-lisp :tangle no :noweb-ref magit-config
+(j/lider
+    :infix "o"
+    "m" '(magit-status :which-key "magit"))
 #+end_src
 
 * =projectile=
