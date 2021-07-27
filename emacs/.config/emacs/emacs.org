@@ -713,6 +713,12 @@ Esto acceso directo funciona desde cualquier modo
     "c" '(org-capture :which-key "org-capture"))
 #+end_src
 
+** Hábitos
+Para hacer definición y rastreo de hábitos uso un módulo de =org-mode= llamado =org-habit=. Se usa =ol-habit= en lugar de =org-habit= porque desde la versión 9.3 de =org= se cambió el nombre de los paquetes.
+#+begin_src emacs-lisp :tangle no :noweb-ref org-config
+  (add-to-list 'org-modules 'org-habit)
+#+end_src
+
 ** Acordes locales
 *** De movimiento
 #+begin_src emacs-lisp :tangle no :noweb-ref org-config
