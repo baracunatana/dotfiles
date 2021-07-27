@@ -91,6 +91,15 @@ Para poder usar inconsolata, es imporante verificar que esté disponible en esa 
       :non-normal-prefix "M-SPC m"))
 #+end_src
 
+*** Configuración de =evil-collection=
+=evil-collection= trae acorder por defecto para muchos modos.
+
+#+begin_src emacs-lisp
+  (use-package evil-collection
+  :config
+  (with-eval-after-load 'pdf-tools (evil-collection-pdf-setup)))
+#+end_src
+
 ** =ivy= et. al.
 Esta configuración hace uso extensivo de =ivy= y =cousel= para terminación. En esta sección se hacen todas las configuraciones relevantes al sistema de terminación.
   
@@ -935,6 +944,7 @@ Magit es el mejor cliente git no solo para emacs sino en general. Funciona desde
     :config
     (pdf-tools-install))
 #+end_src
+
 
 * =kmacro=
 =kmacro= ya viene de base en emacs. Lo único que hay que configurar son los acordes.
