@@ -890,12 +890,12 @@ Magit es el mejor cliente git no solo para emacs sino en general. Funciona desde
 #+begin_src emacs-lisp :noweb no-export
   (use-package magit
     :commands (magit-status magit-init magit-clone)
-    :config
+    :init
     <<magit-config>>) 
 #+end_src
 
 ** Comando de acceso directo 
-#+begin_src emacs-lisp :tangle no :noweb-ref magit-config
+#+begin_src emacs-lisp :tangle no :noweb-ref magit-init
 (j/lider
     :infix "o"
     "m" '(magit-status :which-key "magit"))
