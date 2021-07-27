@@ -496,6 +496,7 @@
    :states '(normal)
    :keymaps '(org-agenda-mode-map)
    "q" '(org-agenda-quit :which-key "salir")
+   "r" '(org-agenda-redo :which-key "refrescar")
    "RET" '(org-agenda-switch-to :which-key "visitar")))
 
 (use-package org-superstar
@@ -556,3 +557,7 @@
 
 (j/lider
   "p" '(:keymap projectile-command-map :which-key "projectile"))
+
+(use-package pdf-tools
+  :config
+  (pdf-tools-install))

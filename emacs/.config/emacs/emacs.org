@@ -707,6 +707,7 @@ Ya con esto, se tienen que definir los acrodes locales para agenda.
    :states '(normal)
    :keymaps '(org-agenda-mode-map)
    "q" '(org-agenda-quit :which-key "salir")
+   "r" '(org-agenda-redo :which-key "refrescar")
    "RET" '(org-agenda-switch-to :which-key "visitar"))
 #+end_src
 
@@ -824,10 +825,8 @@ Magit es el mejor cliente git no solo para emacs sino en general. Funciona desde
 * =pdf-tools=
 =pdf-tools= es un paquete para visualización y manipulación de archivos pdfs directamente en emacs.
 
-#+begin_src emacs-lisp :tangle no 
+#+begin_src emacs-lisp 
   (use-package pdf-tools
     :config
     (pdf-tools-install))
 #+end_src
-
-#+RESULTS:
