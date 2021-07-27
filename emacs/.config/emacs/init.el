@@ -179,7 +179,7 @@
 
 (j/lider
   :infix "o"
-  "" '(:ignore t :which-key "open")
+  "" '(:ignore t :which-key "ir a")
   "a" '(org-agenda :which-key "agenda")
   "g" '(j/gtd :which-key "archivo gtd")
   "d" '(dired :which-key "dired")
@@ -222,7 +222,6 @@
                                  "FUTU(f)"
                                  "|" "DONE(d)"
                                  "CANC(c)")))
-  
   (org-todo-keyword-faces '(("PROY" . (:foreground "#d33682" :weight bold))
                             ("ESPE" . (:foreground "#b58900" :weight bold))
                             ("EMPE" . (:foreground "#b58900" :weight bold))
@@ -230,6 +229,15 @@
                             ("CANC" . (:foreground "#859900" :weight bold))
                             ("FUTU" . (:foreground "#2aa198" :weight bold))
                             ("TODO" . (:foreground "#6c71c4" :weight bold))))
+  
+  (org-highest-priority ?A)
+  (org-default-priority ?D)
+  (org-lowest-priority ?D)
+  (org-priority-faces '((?A . (:foreground "#dc322f" :weight bold))
+                        (?B . (:foreground "#b58900" :weight bold))
+                        (?C . (:foreground "#2aa198"))
+                        (?D . (:foreground "#859900"))))
+  
   
   (org-tag-persistent-alist '(("@Casa" . ?c)
                               ("@Oficina" . ?o)
@@ -250,6 +258,11 @@
   (org-latex-pdf-process '("tectonic %f"))
   (org-agenda-files '("~/personal/orgmode/gtd.org"))
   (org-agenda-window-setup 'current-window)
+  ;; Destinos hasta de nivel 3
+  (org-refile-targets '((org-agenda-files :maxlevel . 3)))
+  ;; Construcción del destino paso a paso
+  (org-refile-use-outline-path 'file)
+  (org-outline-path-complete-in-steps nil)
   :config
   (setf (alist-get 'file org-link-frame-setup) #'find-file)
   (defun j/dwim-at-point (&optional arg)
@@ -440,6 +453,33 @@
     (interactive)
     (org-set-property "ACTIONABLE" (concat "[" (org-read-date nil nil nil "ACTIONABLE: ") "]"))
     (org-todo "FUTU"))
+  ;; Definir la lista DESPUÉS de cargar org-capture. Esto es necesario porque de no tenerlo la lista de plantillas se reiniciaba
+  
+  (with-eval-after-load 'org-capture       
+    (add-to-list 'org-capture-templates
+                 '("l" "Tarea enlazada" ; l para una terea que incluya enlace a documento o correo
+                   entry
+                   (file+headline
+                    "~/personal/orgmode/gtd.org" ; Guardar en gtd.org
+                    "Inbox") ; Guarda por defecto en el headline Inbox
+                   "* TODO [#D] %?\nOrigen o referencia: %a\n"))
+    (add-to-list 'org-capture-templates
+                 '("c" "Tarea de clipboard" ; c para una tarea que referencia información contenida en clipboard
+                   entry
+                   (file+headline
+                    "~/personal/orgmode/gtd.org" ; Guardar en gtd.org
+                    "Inbox") ; Guarda por defecto en el headline Inbox
+                   "* TODO [#D] %? \n %x"))
+    (add-to-list 'org-capture-templates
+                 '("t" "Tarea simple" ; l para una terea que incluya enlace a documento o correo
+                   entry
+                   (file+headline
+                    "~/personal/orgmode/gtd.org" ; Guardar en gtd.org
+                    "Inbox") ; Guarda por defecto en el headline Inbox
+                   "* TODO [#D] %? \n")))
+  (j/lider
+    "c" '(org-capture :which-key "org-capture"))
+  (add-to-list 'org-modules 'org-habit)
   (general-define-key
    :states '(normal)
    :keymaps '(org-mode-map)
@@ -502,6 +542,22 @@
 (use-package org-superstar
   :hook (org-mode . org-superstar-mode))
 
+(use-package org-ref
+  :after org
+  :custom
+  (org-ref-default-citation-link "citep")
+  (reftex-default-bibliography '("~/biblioteca/main.bib"))
+  (org-ref-default-bibliography '("~/biblioteca/main.bib"))
+  (org-ref-pdf-directory "~/biblioteca/")
+  (bibtex-dialect 'biblatex)
+  :config
+  (org-ref-ivy-cite-completion)
+  (j/lider-local
+    :states '(normal insert emacs)
+    :keymaps 'org-mode-map
+    "}" '(org-ref-ivy-insert-ref-link :which-key "insertar referencia")
+    "]" '(org-ref-ivy-insert-cite-link :which-key "insertar cita")))
+
 (use-package yasnippet
   :after (evil general)
   :diminish yas-minor-mode
@@ -538,7 +594,9 @@
   :hook (dired-mode . all-the-icons-dired-mode))
 
 (use-package magit
-  :commands magit-status)
+  :commands (magit-status magit-init magit-clone)
+  :init
+  )
 
 (use-package projectile
   :custom
