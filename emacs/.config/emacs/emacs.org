@@ -667,6 +667,44 @@ Uso tectonic como distribución de latex en (ambientes linux).
      (org-outline-path-complete-in-steps nil)
    #+end_src
    
+** =org-capture=
+Uso =org-capture= para captura de tareas, ideas, y notas. Lo hago definiendo plantillas para diferentes elementos que quiero captura y ejecutándolos cuando sea necesario.
+ 
+*** Plantillas
+#+begin_src emacs-lisp :tangle no :noweb-ref org-config
+  ;; Definir la lista DESPUÉS de cargar org-capture. Esto es necesario porque de no tenerlo la lista de plantillas se reiniciaba
+  
+  (with-eval-after-load 'org-capture       
+    (add-to-list 'org-capture-templates
+                 '("l" "Tarea enlazada" ; l para una terea que incluya enlace a documento o correo
+                   entry
+                   (file+headline
+                    "~/personal/orgmode/gtd.org" ; Guardar en gtd.org
+                    "Inbox") ; Guarda por defecto en el headline Inbox
+                   "* TODO [#D] %?\nOrigen o referencia: %a\n"))
+    (add-to-list 'org-capture-templates
+                 '("c" "Tarea de clipboard" ; c para una tarea que referencia información contenida en clipboard
+                   entry
+                   (file+headline
+                    "~/personal/orgmode/gtd.org" ; Guardar en gtd.org
+                    "Inbox") ; Guarda por defecto en el headline Inbox
+                   "* TODO [#D] %? \n %x"))
+    (add-to-list 'org-capture-templates
+                 '("t" "Tarea simple" ; l para una terea que incluya enlace a documento o correo
+                   entry
+                   (file+headline
+                    "~/personal/orgmode/gtd.org" ; Guardar en gtd.org
+                    "Inbox") ; Guarda por defecto en el headline Inbox
+                   "* TODO [#D] %? \n")))
+  #+end_src
+
+*** Acorde de acceso directo  
+Esto acceso directo funciona desde cualquier modo
+#+begin_src emacs-lisp :tangle no :noweb-ref org-config
+  (j/lider
+    "c" '(org-capture :which-key "org-capture"))
+#+end_src
+
 ** Acordes locales
 *** De movimiento
 #+begin_src emacs-lisp :tangle no :noweb-ref org-config
