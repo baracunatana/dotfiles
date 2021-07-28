@@ -32,6 +32,8 @@
   (evil-default-state 'normal)
   ;; Para evitar conflictos con TAB en org-mode
   (evil-want-C-i-jump nil)
+  ;; evitar conflictos con evil-collection
+  (evil-want-keybinding nil)
   :config
   ;; Arracnar evil-mode por defecto
   (evil-mode))

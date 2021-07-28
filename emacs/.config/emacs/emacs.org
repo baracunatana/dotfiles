@@ -65,6 +65,8 @@ Para poder usar inconsolata, es imporante verificar que esté disponible en esa 
     (evil-default-state 'normal)
     ;; Para evitar conflictos con TAB en org-mode
     (evil-want-C-i-jump nil)
+    ;; evitar conflictos con evil-collection
+    (evil-want-keybinding nil)
     :config
     ;; Arracnar evil-mode por defecto
     (evil-mode))
@@ -98,6 +100,7 @@ Para poder usar inconsolata, es imporante verificar que esté disponible en esa 
   (use-package evil-collection
     :config
     (with-eval-after-load 'pdf-tools (evil-collection-pdf-setup))
+    (with-eval-after-load 'dired (evil-collection-dired-setup))
     (with-eval-after-load 'magit (evil-collection-magit-setup)))
 #+end_src
 
