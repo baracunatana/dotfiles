@@ -548,6 +548,13 @@
    :keymaps '(org-agenda-mode-map)
    "q" '(org-agenda-quit :which-key "salir")
    "r" '(org-agenda-redo :which-key "refrescar")
+   "t" '(org-agenda-todo :which-key "cambiar estado")
+   "c" '(org-agenda-schedule :which-key "agendar")
+   "d" '(org-agenda-deadline :which-key "fecha límite")
+   "p" '(org-agenda-priority :which-key "cambiar prioridad")
+   "i" '(org-agenda-clock-in :which-key "iniciar reloj")
+   "o" '(org-agenda-clock-out :which-key "cerrar reloj")
+   "G" '(org-save-all-org-buffers :which-key "guardar archivos org")
    "RET" '(org-agenda-switch-to :which-key "visitar")))
 
 (use-package org-superstar
