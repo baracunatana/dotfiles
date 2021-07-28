@@ -32,7 +32,7 @@
   (evil-default-state 'normal)
   ;; Para evitar conflictos con TAB en org-mode
   (evil-want-C-i-jump nil)
-  ;; evitar conflictos con evil-collection
+  ;; Evitar conflictos con evil-collecction
   (evil-want-keybinding nil)
   :config
   ;; Arracnar evil-mode por defecto
@@ -56,9 +56,7 @@
 
 (use-package evil-collection
   :config
-  (with-eval-after-load 'pdf-tools (evil-collection-pdf-setup))
-  (with-eval-after-load 'dired (evil-collection-dired-setup))
-  (with-eval-after-load 'magit (evil-collection-magit-setup)))
+  (evil-collection-init))
 
 (use-package ivy
   :diminish ivy-mode
@@ -591,16 +589,7 @@
   (dired-recursive-copies 'always)
   (dired-recursive-deletes 'always)
   :config
-  (put 'dired-find-alternate-file 'disabled nil)
-  (j/lider-local
-    :states '(normal insert emacs)
-    :keymaps '(dired-mode-map)
-    "w" '(wdired-change-to-wdired-mode :which-key "wdired-change-to-wdired-mode"))
-  
-  (j/lider-local
-    :states '(normal insert emacs)
-    :keymaps '(wdired-mode-map)
-    "w" '(wdired-exit :which-key "wdired-exit")))
+  (put 'dired-find-alternate-file 'disabled nil))
 
 (use-package all-the-icons-dired
   :after dired

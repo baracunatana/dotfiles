@@ -65,7 +65,7 @@ Para poder usar inconsolata, es imporante verificar que esté disponible en esa 
     (evil-default-state 'normal)
     ;; Para evitar conflictos con TAB en org-mode
     (evil-want-C-i-jump nil)
-    ;; evitar conflictos con evil-collection
+    ;; Evitar conflictos con evil-collecction
     (evil-want-keybinding nil)
     :config
     ;; Arracnar evil-mode por defecto
@@ -99,9 +99,7 @@ Para poder usar inconsolata, es imporante verificar que esté disponible en esa 
 #+begin_src emacs-lisp
   (use-package evil-collection
     :config
-    (with-eval-after-load 'pdf-tools (evil-collection-pdf-setup))
-    (with-eval-after-load 'dired (evil-collection-dired-setup))
-    (with-eval-after-load 'magit (evil-collection-magit-setup)))
+    (evil-collection-init))
 #+end_src
 
 ** =ivy= et. al.
@@ -891,19 +889,6 @@ Este paquete agrega íconos a los archivos mostrados en =dired=
 #+begin_src emacs-lisp :tangle no :noweb-ref dired-custom
   (dired-recursive-copies 'always)
   (dired-recursive-deletes 'always)
-#+end_src
-
-** Acordes
-#+begin_src emacs-lisp :tangle no :noweb-ref dired-config
-  (j/lider-local
-    :states '(normal insert emacs)
-    :keymaps '(dired-mode-map)
-    "w" '(wdired-change-to-wdired-mode :which-key "wdired-change-to-wdired-mode"))
-  
-  (j/lider-local
-    :states '(normal insert emacs)
-    :keymaps '(wdired-mode-map)
-    "w" '(wdired-exit :which-key "wdired-exit"))
 #+end_src
 
 * =magit=
