@@ -57,6 +57,7 @@
 (use-package evil-collection
   :config
   (with-eval-after-load 'pdf-tools (evil-collection-pdf-setup))
+  (with-eval-after-load 'dired (evil-collection-dired-setup))
   (with-eval-after-load 'magit (evil-collection-magit-setup)))
 
 (use-package ivy
@@ -608,7 +609,9 @@
 (use-package magit
   :commands (magit-status magit-init magit-clone)
   :init
-  )
+  (j/lider
+      :infix "o"
+      "m" '(magit-status :which-key "magit")))
 
 (use-package projectile
   :custom

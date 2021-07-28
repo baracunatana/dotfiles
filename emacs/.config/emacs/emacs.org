@@ -913,7 +913,7 @@ Magit es el mejor cliente git no solo para emacs sino en general. Funciona desde
   (use-package magit
     :commands (magit-status magit-init magit-clone)
     :init
-    <<magit-config>>) 
+    <<magit-init>>) 
 #+end_src
 
 ** Comando de acceso directo 
