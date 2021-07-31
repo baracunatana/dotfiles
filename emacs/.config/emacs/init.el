@@ -550,12 +550,18 @@
    "r" '(org-agenda-redo :which-key "refrescar")
    "t" '(org-agenda-todo :which-key "cambiar estado")
    "c" '(org-agenda-schedule :which-key "agendar")
+   "a" '(org-agenda-archive :which-key "archivar")
    "d" '(org-agenda-deadline :which-key "fecha límite")
    "p" '(org-agenda-priority :which-key "cambiar prioridad")
    "i" '(org-agenda-clock-in :which-key "iniciar reloj")
    "o" '(org-agenda-clock-out :which-key "cerrar reloj")
    "G" '(org-save-all-org-buffers :which-key "guardar archivos org")
-   "RET" '(org-agenda-switch-to :which-key "visitar")))
+   "RET" '(org-agenda-switch-to :which-key "visitar"))
+  (defun my-beamer-bold (contents backend info)
+    (when (eq backend 'beamer) ;;
+      (replace-regexp-in-string "\\`\\\\[A-Za-z0-9]+" "\\\\textbf" contents)))
+  ;;(add-to-list 'org-export-filter-bold-functions 'my-beamer-bold)
+  (org-beamer-mode))
 
 (use-package org-superstar
   :hook (org-mode . org-superstar-mode))

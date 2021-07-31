@@ -826,6 +826,7 @@ Ya con esto, se tienen que definir los acrodes locales para agenda.
    "r" '(org-agenda-redo :which-key "refrescar")
    "t" '(org-agenda-todo :which-key "cambiar estado")
    "c" '(org-agenda-schedule :which-key "agendar")
+   "a" '(org-agenda-archive :which-key "archivar")
    "d" '(org-agenda-deadline :which-key "fecha límite")
    "p" '(org-agenda-priority :which-key "cambiar prioridad")
    "i" '(org-agenda-clock-in :which-key "iniciar reloj")
@@ -833,6 +834,8 @@ Ya con esto, se tienen que definir los acrodes locales para agenda.
    "G" '(org-save-all-org-buffers :which-key "guardar archivos org")
    "RET" '(org-agenda-switch-to :which-key "visitar"))
 #+end_src
+
+#+RESULTS:
 
 ** Exportación a latex
 *** Beamer
