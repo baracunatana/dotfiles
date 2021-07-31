@@ -387,8 +387,9 @@ Nótece que hay que tener los diccionarios instalados. De lo contrario, la inici
 * =org=
 #+begin_src emacs-lisp :noweb no-export
   (use-package org
+    :commands (org-capture org-agenda)
     :hook
-    (<<org-hook>>)
+    <<org-hook>>
     :custom
     <<org-custom>>
     :config
@@ -656,8 +657,6 @@ La función =j/org-set-futu= se usa para asignar el estado =FUTU= a una tarea, p
      '(j/org-process-task)
      "/+FUTU" 'agenda))
 
-  ;; Ejecutar j/org-verify-actionable-tasks cada vez que se corra la agenda. Lo hace antes de que se calcula le agenda.
-  (add-hook 'org-agenda-mode-hook #'j/org-actionable)
   (defun j/org-actionable ()
     (j/org-verify-actionable-tasks))
 
@@ -667,6 +666,11 @@ La función =j/org-set-futu= se usa para asignar el estado =FUTU= a una tarea, p
     (org-set-property "ACTIONABLE" (concat "[" (org-read-date nil nil nil "ACTIONABLE: ") "]"))
     (org-todo "FUTU"))
    #+end_src
+
+Ahora se agrega un hook para ejecutar =j/org-actionable= antes de cada ejecución de la agenda:
+#+begin_src emacs-lisp :noweb-ref org-mode-hooks :tangle no
+  (org-agenda-mode . j/org-actionable)
+#+end_src
 
 ** =org-superstar-mode=
 =org-superstar= es un paquete que mejora el aspecto visual de archivos =org=.  
