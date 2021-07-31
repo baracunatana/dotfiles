@@ -40,6 +40,8 @@ Esta configuración está basada en =straight= y =use-package=. En esta sección
   (global-auto-revert-mode t) ; Activar global auto-revert 
 #+end_src
 ** Fuentes
+Uso [[https://github.com/DeLaGuardo/Inconsolata-LGC][Inconsolata-LGC]] (la inconsolata normal no tiene cursiva) como fuente global de emacs. Algunos modos cambian la fuente.
+
 La lista de fuentes disponibles para emacs se puede consultar ejecutando el siguiente bloque de código:
 
 #+begin_src emacs-lisp :tangle no
@@ -52,6 +54,8 @@ Para poder usar inconsolata, es imporante verificar que esté disponible en esa 
   (set-face-attribute 'fixed-pitch nil :font "Inconsolata LGC")
   (set-frame-font "Inconsolata LGC" nil t)
 #+end_src
+
+Para esto, la fuente debe estar instalada correctamente en el sistema. Si se usa desde wsl, se debe agregar la fuente a Ubuntu, no a Vcxsrv o al servidor de X11 que se esté usando. Esto se hace copiando la fuente a la carpeta apropiada dentro de =/usr/share/fonts= y actualizando el caché de fuentes de ubuntu con =sudo fc-cache -vr=. Luego de esto se puede verificar que la fuente quedó instalada ejecuntado =(font-family-list)= en emacs. Para este último paso lo más fácil es hacerlo dentro de un archivo de org tal y como se está realizando esta configuración y ejecutando el bloque de código respectivo.
 
 ** =evil=
 =evil= permite edición modal y uso de acordes estilo vim en Emacs. Esta sección se limita a instalación y configuración básica de =evil= y =general= (para la definición de acordes locales). Luego, en las secciones correspondientes a cada paquete, se hace la configuración de los acordes locales.
