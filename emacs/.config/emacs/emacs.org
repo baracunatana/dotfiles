@@ -687,7 +687,7 @@ Configuración necesaria para que org-refile tome en cuenta elementos hasta de n
   (org-outline-path-complete-in-steps nil)
 #+end_src
  
-*** Comando  
+*** Acordes  
 #+begin_src emacs-lisp :tangle no :noweb-ref org-custom
   (j/lider-local
     :states '(normal insert emacs)
@@ -832,6 +832,21 @@ Ya con esto, se tienen que definir los acrodes locales para agenda.
    "o" '(org-agenda-clock-out :which-key "cerrar reloj")
    "G" '(org-save-all-org-buffers :which-key "guardar archivos org")
    "RET" '(org-agenda-switch-to :which-key "visitar"))
+#+end_src
+
+** Exportación a latex
+*** Beamer
+Por defecto, =ox-latex= exporta =*asdf*= a texto de alerta en beamer. Para que se exporte como texto en negrilla se debe agregar un filtro de exportación a org-export.
+#+begin_src emacs-lisp :tangle no :noweb-ref org-config
+  (defun my-beamer-bold (contents backend info)
+    (when (eq backend 'beamer) ;;
+      (replace-regexp-in-string "\\`\\\\[A-Za-z0-9]+" "\\\\textbf" contents)))
+  ;;(add-to-list 'org-export-filter-bold-functions 'my-beamer-bold)
+#+end_src
+
+Activar =org-beamer-mode= por defecto para que esté disponible en el /dispacher/ de /org export/:
+#+begin_src emacs-lisp :tangle no :noweb-ref org-config
+  (org-beamer-mode)
 #+end_src
 
 * =yasnippet=
