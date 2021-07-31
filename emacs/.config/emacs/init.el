@@ -643,9 +643,14 @@
   :config
   (pdf-tools-install))
 
-(j/lider
- :infix "k"
- "" '(:ignore t :which-key "macros")
- "k" '(kmacro-end-or-call-macro-repeat :which-key "ejecutar macro")
- "d" '(kmacro-end-macro :which-key "detener grabación")
- "g" '(kmacro-start-macro :which-key "grabar macro"))
+(use-package kmacro 
+  :general
+  (j/lider
+    :infix "k"
+    "" '(:ignore t :which-key "kmacro")
+    "g" '(kmacro-start-macro :which-key "grabar")
+    "d" '(kmacro-end-macro :which-key "detener grabación")
+    "c" '(kmacro-insert-counter :which-key "insertar contador")
+    "e" '(kmacro-set-counter :which-key "establecer contador")
+    "s" '(kmacro-add-counter :which-key "adicionar a contador")
+    "k" '(kmacro-call-macro :which-key "ejecutar macro")))
