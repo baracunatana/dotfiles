@@ -333,7 +333,18 @@ Mapa de movimiento general (cualquier modo)
    "l" '(evil-end-of-line :which-key "evil-end-of-line"))
 #+end_src
 
-** Revisión ortográfica
+** Olivetti
+[[https://github.com/rnkn/olivetti][=olivetti=]] es un /minor mode/ que ofrece una mejor experiencia de edición y lectura de texto al reducir el ancho del texto y centrarlo en la ventana. En esta sección se hace la instalación y configuración por defecto del paquete, pero en otros paquetes (e.g. [[Elfeed]]) se puede activar por defecto (en ciertos modos) o se agregan configuraciones locales.
+
+#+begin_src emacs-lisp 
+  (use-package olivetti
+    :custom
+    (olivetti-body-width 80 "Tamaño (en número de carateres) del texto")
+    :commands 
+    (olivetti-mode))
+#+end_src
+
+* Revisión ortográfica
 Emacs permite hace revisión ortográfica desde cualquier modo. Esto resulta indispensable para escribir documentos, correos electrónicos, o archivos orgmode exportables.
 
 Existen dos modos para esto; ispell y flyspell. Ispell permite revisión ortográfica por demanda, mientras que flyspell permite revisión ortográfica a medida que se teclea[fn:1]. Por obvias razones, la mejor opción es flyspell.
