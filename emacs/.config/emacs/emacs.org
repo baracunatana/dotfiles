@@ -49,11 +49,9 @@ La lista de fuentes disponibles para emacs se puede consultar ejecutando el sigu
 Para poder usar inconsolata, es imporante verificar que esté disponible en esa lista.
 
 #+begin_src emacs-lisp 
-  (set-face-attribute 'fixed-pitch nil :font "Inconsolata Nerd Font 11")
-  (set-frame-font "Inconsolata Nerd Font 11" nil t)
+  (set-face-attribute 'fixed-pitch nil :font "Inconsolata LGC")
+  (set-frame-font "Inconsolata LGC" nil t)
 #+end_src
-
-#+RESULTS:
 
 ** =evil=
 =evil= permite edición modal y uso de acordes estilo vim en Emacs. Esta sección se limita a instalación y configuración básica de =evil= y =general= (para la definición de acordes locales). Luego, en las secciones correspondientes a cada paquete, se hace la configuración de los acordes locales.

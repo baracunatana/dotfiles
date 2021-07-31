@@ -23,8 +23,8 @@
 (global-visual-line-mode)   ; Word wrapping por defecto en todos los modos
 (global-auto-revert-mode t) ; Activar global auto-revert
 
-(set-face-attribute 'fixed-pitch nil :font "Inconsolata Nerd Font 11")
-(set-frame-font "Inconsolata Nerd Font 11" nil t)
+(set-face-attribute 'fixed-pitch nil :font "Inconsolata LGC")
+(set-frame-font "Inconsolata LGC" nil t)
 
 (use-package evil
   :custom
