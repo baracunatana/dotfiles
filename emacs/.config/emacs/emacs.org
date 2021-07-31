@@ -333,6 +333,44 @@ Mapa de movimiento general (cualquier modo)
    "l" '(evil-end-of-line :which-key "evil-end-of-line"))
 #+end_src
 
+** Revisión ortográfica
+Emacs permite hace revisión ortográfica desde cualquier modo. Esto resulta indispensable para escribir documentos, correos electrónicos, o archivos orgmode exportables.
+
+Existen dos modos para esto; ispell y flyspell. Ispell permite revisión ortográfica por demanda, mientras que flyspell permite revisión ortográfica a medida que se teclea[fn:1]. Por obvias razones, la mejor opción es flyspell.
+
+Los motores normales para hacer la revisión son aspell y hunspell. Hunspell es el más popular[fn:2], pero aspell tiene mejor desempeño (por lo menos con diccionarios en inglés)[fn:3]. Una de las razones para que hunspell sea más popular es que aspell no tenía mantenimiento desde 2011, pero el desarrollo continuó en 2019 y ahora está en versión 60.8[fn:4]. Por estas razones, se decide usar aspell en linux o wsl. Hunspell debe usarse en windows (nativo) porque aspell revienta a emacs en documentos latex.
+
+*** Configuración de emacs
+**** Para aspell
+#+begin_src emacs-lisp 
+  (use-package ispell
+    :custom 
+    (ispell-dictionary "es" "Diccionario en español por defecto")
+    :hook
+    (text-mode . flyspell-mode))
+#+end_src
+
+**** Para hunspell
+Se debe agregar lo siguiente en .emacs
+
+#+begin_src :tangle no
+(setq ispell-program-name "c:/msys64/mingw64/bin/hunspell.exe")
+#+end_src
+
+Nótece que la ruta a aspell debe ser consistente con el resultado de =which hunspell= en MSys2 luego de la instalación.
+
+Para agregar diccionarios y definir español como diccionario por defecto, se agrega lo siguiente en .emacs:
+
+#+begin_src :tangle no
+(setq ispell-local-dictionary-alist
+'(("en_US" "[[:alpha:]]" "[^[:alpha:]]" "[']" nil ("-d" "en_US") nil utf-8)
+("en_GB" "[[:alpha:]]" "[^[:alpha:]]" "[']" nil ("-d" "en_GB") nil utf-8)
+("es_CO" "[[:alpha:]]" "[^[:alpha:]]" "[']" nil ("-d" "es_CO") nil utf-8)))
+(setq ispell-dictionary "es_CO")
+#+end_src 
+
+Nótece que hay que tener los diccionarios instalados. De lo contrario, la inicialización falla.
+
 * =org=
 #+begin_src emacs-lisp :noweb no-export
   (use-package org
@@ -968,7 +1006,6 @@ Magit es el mejor cliente git no solo para emacs sino en general. Funciona desde
     (pdf-tools-install))
 #+end_src
 
-
 * =kmacro=
 =kmacro= ya viene de base en emacs. Lo único que hay que configurar son los acordes.
 
@@ -980,3 +1017,13 @@ Magit es el mejor cliente git no solo para emacs sino en general. Funciona desde
    "d" '(kmacro-end-macro :which-key "detener grabación")
    "g" '(kmacro-start-macro :which-key "grabar macro"))
 #+end_src
+
+* Footnotes
+
+[fn:1] [[https://www.gnu.org/software/emacs/manual/html_node/efaq-w32/Spell-check.html]]
+
+[fn:2] [[https://battlepenguin.com/tech/aspell-and-hunspell-a-tale-of-two-spell-checkers/]]
+
+[fn:3] [[http://aspell.net/test/cur/]]
+
+[fn:4] Publicada en octubre 2019

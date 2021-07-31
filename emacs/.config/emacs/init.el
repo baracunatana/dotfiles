@@ -211,6 +211,12 @@
  "k" '(evil-previous-line :which-key "evil-previous-line")
  "l" '(evil-end-of-line :which-key "evil-end-of-line"))
 
+(use-package ispell
+  :custom 
+  (ispell-dictionary "es" "Diccionario en español por defecto")
+  :hook
+  (text-mode . flyspell-mode))
+
 (use-package org
   :hook
   ((org-mode . (lambda () (electric-indent-local-mode -1))))
