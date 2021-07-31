@@ -213,7 +213,9 @@ Este paquete agrega color a los paréntesis para tener una referencia gráfica d
    
 #+begin_src emacs-lisp
   (use-package rainbow-delimiters
-    :hook (org-mode . rainbow-delimiters-mode))
+    :hook 
+    (org-mode . rainbow-delimiters-mode)
+    (prog-mode . rainbow-delimiters-mode))
 #+end_src
 
 ** Acordes generales

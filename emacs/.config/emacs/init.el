@@ -117,7 +117,9 @@
   (counsel-describe-variable-function #'helpful-variable))
 
 (use-package rainbow-delimiters
-  :hook (org-mode . rainbow-delimiters-mode))
+  :hook 
+  (org-mode . rainbow-delimiters-mode)
+  (prog-mode . rainbow-delimiters-mode))
 
 (j/lider
  "SPC" '(evil-normal-state :which-key "volver a modo normal"))
@@ -224,8 +226,9 @@
   (text-mode . flyspell-mode))
 
 (use-package org
+  :commands (org-capture org-agenda)
   :hook
-  ((org-mode . (lambda () (electric-indent-local-mode -1))))
+  (org-mode . (lambda () (electric-indent-local-mode -1)))
   :custom
   (org-startup-folded t)          ; Colapsar contenido al abrir un archivo
   (org-startup-align-all-table t) ; Empezar con las tablas colapsadas
@@ -466,8 +469,6 @@
      '(j/org-process-task)
      "/+FUTU" 'agenda))
   
-  ;; Ejecutar j/org-verify-actionable-tasks cada vez que se corra la agenda. Lo hace antes de que se calcula le agenda.
-  (add-hook 'org-agenda-mode-hook #'j/org-actionable)
   (defun j/org-actionable ()
     (j/org-verify-actionable-tasks))
   
