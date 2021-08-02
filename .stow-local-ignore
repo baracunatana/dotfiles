@@ -1,0 +1,6 @@
+# No incluir README
+\README.org
+
+# No incluir archivos relacionados con git
+\.git
+\.gitignore

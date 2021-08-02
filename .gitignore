@@ -13,3 +13,5 @@ emacs/.config/emacs/auto-save-list*
 /emacs/.config/emacs/session.10b56c722228372c6b162742623635016500000012660102
 /emacs/.config/emacs/url/
 /emacs/.config/emacs/#init.el#
+/.stow-local-ignore~
+/emacs/.config/emacs/eshell/
