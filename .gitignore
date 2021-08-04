@@ -15,3 +15,6 @@ emacs/.config/emacs/auto-save-list*
 /emacs/.config/emacs/#init.el#
 /.stow-local-ignore~
 /emacs/.config/emacs/eshell/
+/emacs/.config/emacs/.mbsyncpass-jee.gpg
+/emacs/.config/emacs/.mbsyncpass-jee.gpg-w
+/emacs/.config/emacs/.mbsyncpass-puj.gpg

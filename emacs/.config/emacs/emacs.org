@@ -96,13 +96,18 @@ Para esto, la fuente debe estar instalada correctamente en el sistema. Si se usa
 #+end_src
 
 *** Configuración de =evil-collection=
-=evil-collection= trae acorder por defecto para muchos modos.
-
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :noweb no-export
   (use-package evil-collection
-    :config
-    (evil-collection-init))
+    :after evil
+    :config 
+    <<evil-collection-config>>)
 #+end_src
+
+**** Activar para =magit=
+#+begin_src emacs-lisp :noweb-ref evil-collection-config :tangle no
+  (with-eval-after-load 'magit (evil-collection-magit-setup))
+#+end_src
+=evil-collection= trae acorder por defecto para muchos modos.
 
 ** =ivy= et. al.
 Esta configuración hace uso extensivo de =ivy= y =cousel= para terminación. En esta sección se hacen todas las configuraciones relevantes al sistema de terminación.
@@ -114,8 +119,8 @@ Esta configuración hace uso extensivo de =ivy= y =cousel= para terminación. En
   (use-package ivy
     :diminish ivy-mode
     :bind (:map ivy-minibuffer-map
-         ("C-j" . ivy-next-line)
-         ("C-k" . ivy-previous-line))
+                ("C-j" . ivy-next-line)
+                ("C-k" . ivy-previous-line))
     :config
     (ivy-mode 1))
 #+end_src
@@ -138,7 +143,7 @@ Estos dos paquetes se usan para agregar íconos a ivy. Por ejemplo, agrega ícon
     :after (ivy counsel)
     :init
     (ivy-rich-mode 1))
-
+  
   (use-package all-the-icons-ivy-rich
     :after ivy-rich
     :init (all-the-icons-ivy-rich-mode 1))
@@ -222,7 +227,7 @@ Este paquete agrega color a los paréntesis para tener una referencia gráfica d
 *** Operaciones sobre modos de edición
 #+begin_src emacs-lisp
   (j/lider
-   "SPC" '(evil-normal-state :which-key "volver a modo normal"))
+    "SPC" '(evil-normal-state :which-key "volver a modo normal"))
 #+end_src
 
 *** Acordes de archivos
@@ -290,15 +295,15 @@ Algunas opciones de menú de archivo requieren funciones auxiliares:
 *** Menú de ayuda
 #+begin_src emacs-lisp
   (j/lider
-   :infix "h"
-   "" '(:ignore t :which-key "ayuda")
-   "m" '(describe-mode :which-key "describir modo")
-   "f" '(counsel-describe-function :which-key "describir función")
-   "v" '(counsel-describe-variable :which-key "describir variable")
-   "K" '(describe-key-briefly :which-key "describe-key-briefly")
-   "w" '(where-is :which-key "where-is")
-   "F" '(counsel-describe-face :which-key "describir face")
-   "t" '(helpful-key :which-key "describir tecla"))
+    :infix "h"
+    "" '(:ignore t :which-key "ayuda")
+    "m" '(describe-mode :which-key "describir modo")
+    "f" '(counsel-describe-function :which-key "describir función")
+    "v" '(counsel-describe-variable :which-key "describir variable")
+    "K" '(describe-key-briefly :which-key "describe-key-briefly")
+    "w" '(where-is :which-key "where-is")
+    "F" '(counsel-describe-face :which-key "describir face")
+    "t" '(helpful-key :which-key "describir tecla"))
 #+end_src
 
 *** Menú de accesos directos
@@ -311,7 +316,7 @@ Algunas opciones de menú de archivo requieren funciones auxiliares:
     "d" '(dired :which-key "dired")
     "s" '(eshell :which-key "eshell")
     "t" '(org-todo-list :which-key "lista completa TO-DO"))
-
+  
   (defun j/gtd ()
     "Abre archivo ~/personal/orgmode/gtd.org"
     (interactive)
@@ -326,7 +331,7 @@ Mapa de movimiento general (cualquier modo)
    :states '(normal)
    "j" '(evil-next-visual-line :which-key "siguiente linea visual")
    "k" '(evil-previous-visual-line :which-key "linea visual previa"))
-   
+  
   (general-define-key
    :states '(normal)
    :infix "g"
@@ -450,7 +455,7 @@ Nótece que hay que tener los diccionarios instalados. De lo contrario, la inici
                               ("Urgente" . ?g)
                               ("Corta" . ?r)
                               ("PasarBalon" . ?b)))
- #+end_src
+#+end_src
 
 ** Bitácora de tareas repetidas
 Cada vez que marco como completada (o cancelada) una tarea con repetición, se guarda una línea de cambio de estado en el cuerpo de la tarea. Para que estas líneas de cambio de estado se guarden dentro de un /drawer/ (logrando tareas más limpias), se modifica el valor de la variable =org-log-into-drawer=. Esta variable acepta como parámetro el nombre del cajón en donde se quiere guardar las líneas de cambio de estado. También acepta =t=, usando LOGBOOK como nombre por defecto del cajón.
@@ -539,18 +544,18 @@ La siguiente función dwim (do what I mean) se toma del [[https://github.com/hli
            (if (or image-overlays latex-overlays)
                (org-clear-latex-preview beg end)
              (org--latex-preview-region beg end))))
-
+  
         (`clock (org-clock-update-time-maybe))
-
+  
         (`footnote-reference
          (org-footnote-goto-definition (org-element-property :label context)))
-
+  
         (`footnote-definition
          (org-footnote-goto-previous-reference (org-element-property :label context)))
-
+  
         ((or `planning `timestamp)
          (org-follow-timestamp-link))
-
+  
         ((or `table `table-row)
          (if (org-at-TBLFM-p)
              (org-table-calc-current-TBLFM)
@@ -558,26 +563,26 @@ La siguiente función dwim (do what I mean) se toma del [[https://github.com/hli
              (save-excursion
                (goto-char (org-element-property :contents-begin context))
                (org-call-with-arg 'org-table-recalculate (or arg t))))))
-
+  
         (`table-cell
          (org-table-blank-field)
          (org-table-recalculate arg)
          (when (and (string-empty-p (string-trim (org-table-get-field)))
                     (bound-and-true-p evil-local-mode))
            (evil-change-state 'insert)))
-
+  
         (`babel-call
          (org-babel-lob-execute-maybe))
-
+  
         (`statistics-cookie
          (save-excursion (org-update-statistics-cookies arg)))
-
+  
         ((or `src-block `inline-src-block)
          (org-babel-execute-src-block arg))
-
+  
         ((or `latex-fragment `latex-environment)
          (org-latex-preview arg))
-
+  
         (`link
          (let* ((lineage (org-element-lineage context '(link) t))
                 (path (org-element-property :path lineage)))
@@ -587,11 +592,11 @@ La siguiente función dwim (do what I mean) se toma del [[https://github.com/hli
                 (org-element-property :begin lineage)
                 (org-element-property :end lineage))
              (org-open-at-point arg))))
-
+  
         ((guard (org-element-property :checkbox (org-element-lineage context '(item) t)))
          (let ((match (and (org-at-item-checkbox-p) (match-string 1))))
            (org-toggle-checkbox (if (equal match "[ ]") '(16)))))
-
+  
         (_
          (if (or (org-in-regexp org-ts-regexp-both nil t)
                  (org-in-regexp org-tsr-regexp-both nil  t)
@@ -600,7 +605,7 @@ La siguiente función dwim (do what I mean) se toma del [[https://github.com/hli
            (+org--toggle-inline-images-in-subtree
             (org-element-property :begin context)
             (org-element-property :end context)))))))
-
+  
   (defun +org--toggle-inline-images-in-subtree (&optional beg end refresh)
     "Refresh inline image previews in the current heading/tree."
     (let ((beg (or beg
@@ -619,7 +624,7 @@ La siguiente función dwim (do what I mean) se toma del [[https://github.com/hli
       (when (or refresh (not overlays))
         (org-display-inline-images t t beg end)
         t)))
-
+  
   (defun +org-get-todo-keywords-for (&optional keyword)
     "Returns the list of todo keywords that KEYWORD belongs to."
     (when keyword
@@ -646,28 +651,28 @@ La función =j/org-set-futu= se usa para asignar el estado =FUTU= a una tarea, p
     (and (org-entry-get (point) "ACTIONABLE")
          (string< (org-read-date nil nil (org-entry-get (point) "ACTIONABLE"))
                   (org-read-date nil nil "+1"))))
-
+  
   (defun j/org-process-task ()
     "Vefifies if a task is actionable. If it is, set it as actionable"
     (when (j/org-evaluate-if-actionable)
       (org-todo "TODO")
       (org-delete-property "ACTIONABLE")))
-
+  
   (defun j/org-verify-actionable-tasks ()
     "Goes through al agenda files checking if FUTU tasks are actionable"
     (org-map-entries
      '(j/org-process-task)
      "/+FUTU" 'agenda))
-
+  
   (defun j/org-actionable ()
     (j/org-verify-actionable-tasks))
-
+  
   (defun j/org-set-futu ()
     "Cambiar el estado de una tarea a FUTU y definir la fecha en que se convierte en accionable"
     (interactive)
     (org-set-property "ACTIONABLE" (concat "[" (org-read-date nil nil nil "ACTIONABLE: ") "]"))
     (org-todo "FUTU"))
-   #+end_src
+#+end_src
 
 Ahora se agrega un hook para ejecutar =j/org-actionable= antes de cada ejecución de la agenda:
 #+begin_src emacs-lisp :noweb-ref org-mode-hooks :tangle no
@@ -686,17 +691,17 @@ Ahora se agrega un hook para ejecutar =j/org-actionable= antes de cada ejecució
 Uso tectonic como distribución de latex en (ambientes linux).
 
 #+begin_src emacs-lisp :tangle no :noweb-ref org-custom
-(org-latex-pdf-process '("tectonic %f"))
+  (org-latex-pdf-process '("tectonic %f"))
 #+end_src
 
 ** Configuración de agenda
 *** Definición de archivos de agenda
 #+begin_src emacs-lisp :tangle no :noweb-ref org-custom
-(org-agenda-files '("~/personal/orgmode/gtd.org"))
+  (org-agenda-files '("~/personal/orgmode/gtd.org"))
 #+end_src
 *** Mostrar la agenda en la ventana actual
 #+begin_src emacs-lisp :tangle no :noweb-ref org-custom
-(org-agenda-window-setup 'current-window)
+  (org-agenda-window-setup 'current-window)
 #+end_src
 
 ** =org-ref=
@@ -722,7 +727,7 @@ Uso tectonic como distribución de latex en (ambientes linux).
 
 *** Integrar con =ivy= por defecto
 #+begin_src emacs-lisp :tangle no :noweb-ref org-ref-config
-    (org-ref-ivy-cite-completion)
+  (org-ref-ivy-cite-completion)
 #+end_src
 
 *** Acordes relevantes
@@ -781,7 +786,7 @@ Uso =org-capture= para captura de tareas, ideas, y notas. Lo hago definiendo pla
                     "~/personal/orgmode/gtd.org" ; Guardar en gtd.org
                     "Inbox") ; Guarda por defecto en el headline Inbox
                    "* TODO [#D] %? \n")))
-  #+end_src
+#+end_src
 
 *** Acorde de acceso directo  
 Esto acceso directo funciona desde cualquier modo
@@ -985,7 +990,7 @@ Magit es el mejor cliente git no solo para emacs sino en general. Funciona desde
 
 ** Comando de acceso directo 
 #+begin_src emacs-lisp :tangle no :noweb-ref magit-init
-(j/lider
+  (j/lider
     :infix "o"
     "m" '(magit-status :which-key "magit"))
 #+end_src
@@ -1040,6 +1045,603 @@ Magit es el mejor cliente git no solo para emacs sino en general. Funciona desde
       "e" '(kmacro-set-counter :which-key "establecer contador")
       "s" '(kmacro-add-counter :which-key "adicionar a contador")
       "k" '(kmacro-call-macro :which-key "ejecutar macro")))
+#+end_src
+
+* TODO Correo electrónico
+(Falta un mantenimiento general a esta configuración) 
+
+** Introducción
+Para correo electrónico uso mu4e. Este paquete hace cosas no-estandar y por eso no se pude usar straight ni use-package para su instalación. Toca a la antigüita.
+
+** Instalación
+*** Linux
+La instalación requiere un =sudo apt-get install mu4e= en ubuntu 20.04.
+
+En NixOS toca instalar los paquetes =mu= y =isync=.
+
+*** TODO Configuración de mbsync
+=mbsync= es la aplicación que descarga el correo, y =mu= es la aplicación que lo indexa. 
+
+** Configuración 
+Lo primero es agregar mu4e al load-path de emacs. Dado que esto se hace distinto de acuerdo a la distribución que estemos usando, se hace de acuerdo al nombre del host.
+
+#+begin_src emacs-lisp :noweb no-export :tangle no
+  ;;(when (eq window-system 'x)
+  ;;  (add-to-list 'load-path 
+  ;;               "/usr/local/share/emacs/site-lisp/mu4e"))
+#+end_src
+
+Ahora sí se puede cargar =mu4e=. Sin embargo, este no se puede cargar con =use-package= porque no expone metadata que =use-package= pueda usar para la carga. 
+ 
+#+begin_src emacs-lisp :noweb no-export
+  (use-package mu4e
+    :straight (:local-repo 
+               "/run/current-system/sw/share/emacs/site-lisp/mu4e"
+               :pre-build ())
+    :init
+    <<mu4e-init>>
+    :commands mu4e
+    :custom
+    <<mu4e-custom>> 
+    :hook
+    <<mu4e-hook>>
+    :config 
+    <<mu4e-config>>
+    :general 
+    <<mu4e-general>>)
+#+end_src
+
+*** Configuración básica
+**** Configuración de calendario
+Para aceptar invitaciones de calendario ics, se necesita usar la vista de mensaje de gnus (activada por defecto en, por lo menos, versiones 1.5.11+) y la siguiente configuración
+
+#+begin_src emacs-lisp noweb-ref mu4e-config
+(require 'mu4e-icalendar)
+(mu4e-icalendar-setup)
+#+end_src
+
+**** Comando para halar correo
+#+begin_src emacs-lisp :noweb-ref mu4e-custom :tangle no
+  (mu4e-get-mail-command "mbsync -c ~/.mbsyncrc -a")
+#+end_src
+
+**** Ruta a carpeta de correo y base de datos
+En sistemas linux, =mu4e= se encarga de encontrar la carpeta en donde están guardados los correos sin problema. Sin embargo, en MSys2 (windows), esto es problemático porque las funciones =mu4e-root-maildir= y =mu4e-database-path= responden algo del estilo "/c/Users/...". Para resolver esto, se define el siguiente consejo para esas funciones.
+#+begin_src emacs-lisp :noweb-ref mu4e-config-no :tangle no
+  (when (eq window-system 'w32)
+    (defun j/mu4e-maildir-hack (maildir-path)
+      (replace-regexp-in-string "/c/" "c:/" maildir-path))
+    (advice-add 'mu4e-root-maildir 
+                :filter-return #'j/mu4e-maildir-hack)
+    (advice-add 'mu4e-database-path 
+                :filter-return #'j/mu4e-maildir-hack))
+#+end_src
+
+#+begin_src emacs-lisp :noweb-ref mu4e-config-no :tangle no
+  (when (eq window-system 'w32)
+    (setq mu4e-mu-binary "c:/msys64/usr/bin/mu.exe")
+    (setq mu4e-debug t)
+
+    ;; Unfortunately MSYS2 ignores the environment variables
+    (setenv "TEMPDIR" (getenv "TEMP"))
+
+    (defun jjgr-msys-to-windows-path (path)
+      (replace-regexp-in-string
+       "^/" "c:/msys64/"
+       (replace-regexp-in-string "^/\\([c-e]\\)/" "\\1:/" path)))
+
+    (defun jjgr-windows-to-msys-path (path)
+      (replace-regexp-in-string "^\\([c-z]\\):[/\\]" "/\\1/" path))
+
+    (defun jjgr-mu4e-change-plist (mu4e-options path-translator)
+      (let (value)
+        (when (setq value (plist-get mu4e-options :props))
+          (jjgr-mu4e-change-plist value path-translator))
+        (dolist (key '(:path :root-maildir :database-path :temp))
+          (when (stringp (setq value (plist-get mu4e-options key)))
+            (setq value (funcall path-translator value)
+                  mu4e-options (plist-put mu4e-options key value)))))
+      mu4e-options)
+
+    (defun jjgr-mu4e~call-mu-filter (args)
+      (let* ((mu4e-args (car args))
+             (mu4e-options (cdr mu4e-args)))
+        (jjgr-mu4e-change-plist mu4e-options
+                                'jjgr-windows-to-msys-path))
+      args)
+
+    (defun jjgr-mu4e-log-filter (args)
+      ;; Destructively modify server's messages, modifying
+      ;; output paths
+      (when (and (= (length args) 3)
+                 (eq (car args) 'from-server)
+                 (listp (third args)))
+        (jjgr-mu4e-change-plist (third args) 'jjgr-msys-to-windows-path))
+      args)
+
+    (advice-add 'mu4e~call-mu :filter-args 'jjgr-mu4e~call-mu-filter)
+    (advice-add 'mu4e-log :filter-args 'jjgr-mu4e-log-filter))
+
+  (defun mu4e~draft-message-filename-construct (&optional flagstr)
+    "Construct a randomized name for a message file with flags FLAGSTR.
+  It looks something like
+    <time>-<random>.<hostname>:2,
+  You can append flags."
+    (let* ((sysname (if (fboundp 'system-name)
+                        (system-name)
+                      (with-no-warnings system-name)))
+           (sysname (if (string= sysname "") "localhost" sysname))
+           (hostname (downcase
+                      (save-match-data
+                        (substring sysname
+                                   (string-match "^[^.]+" sysname)
+                                   (match-end 0))))))
+      (format "%s.%04x%04x%04x%04x.%s%s2,%s"
+              (format-time-string "%s" (current-time))
+              (random 65535) (random 65535) (random 65535) (random 65535)
+              hostname mu4e-maildir-info-delimiter (or flagstr ""))))
+#+end_src
+
+**** Ruta para descarga de adjuntos
+#+begin_src emacs-lisp :noweb-ref mu4e-custom :tangle no
+  (mu4e-attachment-dir  "~/Downloads")
+#+end_src
+
+**** Renombrar archivos al moverlos
+Se necesita para que mbsync funcione correctamente
+#+begin_src emacs-lisp :noweb-ref mu4e-custom :tangle no
+  (mu4e-change-filenames-when-moving t)
+#+end_src
+
+**** Tiempo de actualización (en segundos)
+#+begin_src emacs-lisp :noweb-ref mu4e-custom :tangle no
+  (mu4e-update-interval (* 60 60))
+#+end_src
+
+*** Configuración de interfaz
+**** Tamaño de columnas en vista de /headers/
+#+begin_src emacs-lisp :noweb-ref mu4e-custom :tangle no
+  (mu4e-headers-fields `((:human-date . 12)
+                         (:flags . 4)
+                         (:from-or-to . 15)
+                         (:subject)))
+#+end_src
+**** Actualizar /headers/ si llega más correo
+#+begin_src emacs-lisp :noweb-ref mu4e-custom :tangle no
+  (mu4e-headers-auto-update t)
+#+end_src
+
+**** HTML por defecto
+#+begin_src emacs-lisp :noweb-ref mu4e-custom :tangle no
+  (mu4e-view-prefer-html t)
+#+end_src
+**** No pedir confirmación para salir
+#+begin_src emacs-lisp :noweb-ref mu4e-custom :tangle no
+  (mu4e-confirm-quit nil)
+#+end_src
+**** Mostrar imágenes en vista de mensaje
+#+begin_src emacs-lisp :noweb-ref mu4e-custom :tangle no
+  (mu4e-view-show-images t)
+#+end_src
+**** Mostrar direcciones completas en lugar de sólo nombres
+#+begin_src emacs-lisp :noweb-ref mu4e-custom :tangle no
+  (mu4e-view-show-addresses 't)
+#+end_src
+**** Usar imagemagick de estar disponible
+#+begin_src emacs-lisp :noweb-ref mu4e-config :tangle no
+  (when (fboundp 'imagemagick-register-types)
+    (imagemagick-register-types))
+#+end_src
+**** Tamaño de encabezado
+#+begin_src emacs-lisp :noweb-ref mu4e-custom :tangle no
+  (mu4e-headers-visible-lines 16)
+#+end_src
+**** Usar =ivy= para selección de carpetas
+#+begin_src emacs-lisp :noweb-ref mu4e-custom :tangle no
+  (mu4e-completing-read-function 'ivy-completing-read)
+#+end_src
+
+**** No incluir firma por defecto
+#+begin_src emacs-lisp :noweb-ref mu4e-custom :tangle no
+  (mu4e-compose-signature-auto-include nil)
+#+end_src
+
+**** Correcciones a libreta de direcciones
+# +begin_src emacs-lisp :noweb-ref mu4e-init :tangle no
+  (defun j/corregir-contactos (contact)
+    (cond
+     ((string-match "pomares@javeriana.edu.co" contact)
+      (replace-regexp-in-string "pomares@javeriana.edu.co" "Alexandra Pomares <pomares@javeriana.edu.co>" contact))
+     ((string-match "ragonzalez@javeriana.edu.co" contact)
+      (replace-regexp-in-string "ragonzalez@javeriana.edu.co" "Rafael González <ragonzalez@javeriana.edu.co>" contact))
+     (t contact)))
+# +end_src
+
+# +begin_src emacs-lisp :noweb-ref mu4e-custom :tangle no
+  (mu4e-contact-process-function 'j/corregir-contactos)
+# +end_src
+
+**** /Bookmarks/
+La definición de /bookmarks/ en =mu4e= se hace a través de la variable =mu4e-bookmarks=. Si bien se le podría agregar /bookmarks/ a esa lista, ninguna de las opciones por defecto me sirve, así que la redefino por completo.
+#+begin_src emacs-lisp :noweb-ref mu4e-custom :tangle no
+  (mu4e-bookmarks `(( :name "PUJ último mes"
+                            :query "maildir:/puj/INBOX date:4w.."
+                            :key ?j)))
+#+end_src
+
+**** Acciones sobre mensajes
+***** Agregar acción para ver mensaje en navegador web
+#+begin_src emacs-lisp :noweb-ref mu4e-config :tangle no
+  (add-to-list 'mu4e-view-actions
+               '("hver en html" . mu4e-action-view-in-browser) t)
+#+end_src
+
+*** Envío de correo
+La configuración de envió de correos está basada en [[https://www.reddit.com/r/emacs/comments/bfsck6/mu4e_for_dummies/]].
+**** Paquetes adicionales
+#+begin_src emacs-lisp 
+  (use-package org-mime
+    :after mu4e)
+  (use-package smtpmail
+    :after mu4e)
+#+end_src
+**** Configuraciones específicas para envío de correo
+***** Usar nuevo /frame/ para escritura de mensajes
+#+begin_src emacs-lisp :noweb-ref mu4e-custom :tangle no
+  (mu4e-compose-in-new-frame t)
+#+end_src
+***** No mover mensajes a carpeta Sent. Dejar que el servidor se encargue de eso
+#+begin_src emacs-lisp :noweb-ref mu4e-custom :tangle no
+  (mu4e-sent-messages-behavior 'sent)
+#+end_src
+**** Contexto
+Para tener envío desde 2 o más cuentas, se tienen que definir contextos.
+
+#+begin_src emacs-lisp :noweb-ref mu4e-custom :tangle no
+  (mu4e-context-policy 'pick-first)
+  (mu4e-compose-context-policy 'always-ask)
+#+end_src
+
+***** Contexto PUJ
+#+begin_src emacs-lisp :noweb-ref mu4e-config :tangle no
+  (add-to-list 
+   'mu4e-contexts 
+   (make-mu4e-context 
+    :name "trabajo"
+    :match-func
+    (lambda (msg)
+      (when msg
+        (string-prefix-p "/puj" (mu4e-message-field msg :maildir))))
+    :vars '((user-mail-address . "je.gomezm@javeriana.edu.co")
+            (user-full-name . "Juan E. Gómez-Morantes")
+            (mu4e-sent-folder . "/puj/Sent Items")
+            (mu4e-drafts-folder . "/puj/Drafts")
+            (mu4e-trash-folder . "/puj/Trash")
+            (mu4e-refile-folder . "/puj/Archive")
+            (smtpmail-queue-dir . "~/mbsync/puj/queue/cur")
+            (message-send-mail-function . smtpmail-send-it)
+            (smtpmail-smtp-user . "je.gomezm@javeriana.edu.co")
+            (smtpmail-starttls-credentials . (("smtp.office365.com" 587 nil nil)))
+            (smtpmail-auth-credentials . (expand-file-name "~/.authinfo.gpg"))
+            (smtpmail-default-smtp-server . "smtp.office365.com")
+            (smtpmail-smtp-server . "smtp.office365.com")
+            (smtpmail-smtp-service . 587)
+            (smtpmail-debug-info . t)
+            (smtpmail-debug-verbose . t))))
+#+end_src
+
+***** Contexto Gmail
+#+begin_src emacs-lisp :noweb-ref mu4e-config :tangle no
+  (add-to-list 
+   'mu4e-contexts 
+   (make-mu4e-context   
+    :name "gmail-jee" 
+    :match-func
+    (lambda (msg)
+      (when msg
+        (string-prefix-p "/gmail-jee" (mu4e-message-field msg :maildir))))
+    :vars '((user-mail-address . "juanerasmoe@gmail.com")
+            (user-full-name . "Juan E. Gómez-Morantes")
+            (mu4e-sent-folder . "/gmail-jee/[Gmail].Sent Mail")
+            (mu4e-drafts-folder . "/gmail-jee/[Gmail].drafts")
+            (mu4e-trash-folder . "/gmail-jee/[Gmail].Trash")
+            (mu4e-refile-folder . "/gmail-jee/[Gmail].All Mail")
+            (smtpmail-queue-dir . "~/mbsync/puj/queue/cur")
+            (message-send-mail-function . smtpmail-send-it)
+            (smtpmail-smtp-user . "juanerasmoe@gmail.com")
+            (smtpmail-starttls-credentials . (("smtp.gmail.com" 587 nil nil)))
+            (smtpmail-auth-credentials . (expand-file-name "~/.authinfo.gpg"))
+            (smtpmail-default-smtp-server . "smtp.gmail.com")
+            (smtpmail-smtp-server . "smtp.gmail.com")
+            (smtpmail-smtp-service . 587)
+            (smtpmail-debug-info . t)
+            (smtpmail-debug-verbose . t))))
+#+end_src
+**** Evitar inserción de cambios de línea al escribir correos
+#+begin_src emacs-lisp :noweb-ref mu4e-hook :tangle no
+  (mu4e-compose-mode . turn-off-auto-fill)
+  (mu4e-compose-mode . visual-line-mode)
+#+end_src
+**** org-msg
+Org-msg es un paquete que permite redactar correos electrónicos (desde mu4e) con funcionalidades de org-mode como formateo de código, secciones, tablas, firma en html, etc. En adición, permite responder correos con "formato outlook". Esto quiere decir que el mensaje original no se formatea en texto plano con > sino en formato amigable con outlook.
+
+#+begin_src emacs-lisp :noweb no-export
+  (use-package org-msg
+    ;;:straight (prg-msg :type git :host github :repo "jeremy-compostella/org-msg"
+    ;;                   :fork ( :host github
+    ;;                           :repo "Chris00/org-msg"
+    ;;                           :branch "MML"))
+    :after mu4e
+    :custom
+    (mail-user-agent 'mu4e-user-agent)
+    (org-msg-options "html-postamble:nil H:5 num:nil ^:{} toc:nil author:nil email:nil \\n:t")
+    (org-msg-startup "hidestars indent inlineimages")
+    (org-msg-greeting-fmt "\nQué tal %s,\n\n")
+    (org-msg-greeting-name-limit 3)
+    (org-msg-text-plain-alternative t)
+    (org-msg-signature "
+            Saludos,
+            ,#+begin_signature
+            Juan E. Gómez-Morantes, PhD \\\\
+            Profesor Asistente \\\\
+            Departamento de Ingeniería de Sistemas \\\\
+            Pontificia Universidad Javeriana \\\\
+            ,#+end_signature")
+
+    :config
+    <<org-msg-config>>
+    ;; Para evitar el problema de columnas angostas en outlook web, se defe redefinir la plantilla css usada por org-msg.
+    ;; Eso está definido en =org-msg-default-style= y se asigna a =org-msg-enforce-css. A continuación se crea otra plantilla y se hace la asignación.
+    (defconst j/org-msg-default-style
+      (let* ((font-family '(font-family . "\"Arial\""))
+             (font-size '(font-size . "10pt"))
+             (font `(,font-family ,font-size))
+             (line-height '(line-height . "10pt"))
+             (bold '(font-weight . "bold"))
+             (theme-color "#0071c5")
+             (color `(color . ,theme-color))
+             (table `(,@font (margin-top . "0px")))
+             (ftl-number `(,@font ,color ,bold (text-align . "left")))
+             (inline-modes '(asl c c++ conf cpp csv diff ditaa emacs-lisp
+                                 fundamental ini json makefile man org plantuml
+                                 python sh xml))
+             (inline-src `((color . ,(face-foreground 'default))
+                           (background-color . ,(face-background 'default))))
+             (code-src
+              (mapcar (lambda (mode)
+                        `(code ,(intern (concat "src src-" (symbol-name mode)))
+                               ,inline-src))
+                      inline-modes)))
+        `((del nil (,@font (color . "grey") (border-left . "none")
+                           (text-decoration . "line-through") (margin-bottom . "0px")
+                           (margin-top . "10px") (line-height . "11pt")))
+          (a nil (,color))
+          (a reply-header ((color . "black") (text-decoration . "none")))
+          (div reply-header ((padding . "3.0pt 0in 0in 0in")
+                             (border-top . "solid #e1e1e1 1.0pt")
+                             (margin-bottom . "20px")))
+          (span underline ((text-decoration . "underline")))
+          (li nil (,@font ,line-height (margin-bottom . "0px")
+                          (margin-top . "2px")))
+          (nil org-ul ((list-style-type . "square")))
+          (nil org-ol (,@font ,line-height (margin-bottom . "0px")
+                              (margin-top . "0px") (margin-left . "30px")
+                              (padding-top . "0px") (padding-left . "5px")))
+          (nil signature (,@font (margin-bottom . "20px")))
+          (blockquote nil ((padding-left . "5px") (margin-left . "10px")
+                           (margin-top . "20px") (margin-bottom . "0")
+                           (border-left . "3px solid #ccc") (font-style . "italic")
+                           (background . "#f9f9f9")))
+          (code nil (,font-size (font-family . "monospace") (background . "#f9f9f9")))
+          ,@code-src
+          (nil linenr ((padding-right . "1em")
+                       (color . "black")
+                       (background-color . "#aaaaaa")))
+          (pre nil ((line-height . "12pt")
+                    ,@inline-src
+                    (margin . "0px")
+                    (font-size . "9pt")
+                    (font-family . "monospace")))
+          (div org-src-container ((margin-top . "10px")))
+          (nil figure-number ,ftl-number)
+          (nil table-number)
+          (caption nil ((text-align . "left")
+                        (background . ,theme-color)
+                        (color . "white")
+                        ,bold))
+          (nil t-above ((caption-side . "top")))
+          (nil t-bottom ((caption-side . "bottom")))
+          (nil listing-number ,ftl-number)
+          (nil figure ,ftl-number)
+          (nil org-src-name ,ftl-number)
+
+          (table nil (,@table ,line-height (border-collapse . "collapse")))
+          (th nil ((border . "1px solid black")
+                   (background-color . ,theme-color)
+                   (color . "white")
+                   (padding-left . "10px") (padding-right . "10px")))
+          (td nil (,@table (padding-left . "10px") (padding-right . "10px")
+                           (background-color . "#f9f9f9") (border . "1px solid black")))
+          (td org-left ((text-align . "left")))
+          (td org-right ((text-align . "right")))
+          (td org-center ((text-align . "center")))
+
+          (div outline-text-4 ((margin-left . "15px")))
+          (div outline-4 ((margin-left . "10px")))
+          (h4 nil ((margin-bottom . "0px") (font-size . "11pt")
+                   ,font-family))
+          (h3 nil ((margin-bottom . "0px") (text-decoration . "underline")
+                   ,color (font-size . "12pt")
+                   ,font-family))
+          (h2 nil ((margin-top . "20px") (margin-bottom . "20px")
+                   (font-style . "italic") ,color (font-size . "13pt")
+                   ,font-family))
+          (h1 nil ((margin-top . "20px")
+                   (margin-bottom . "0px") ,color (font-size . "12pt")
+                   ,font-family))
+          (p nil ((text-decoration . "none") (margin-bottom . "0px")
+                  (margin-top . "10px") (line-height . "11pt") ,font-size
+                  ,font-family
+                  ;;(max-width . "100ch")
+                  ))
+          (div nil (,@font (line-height . "11pt"))))))
+    (setq org-msg-enforce-css j/org-msg-default-style)
+    ;; Evitar que org-msg interfiera con la aceptación de invitaciones de calendario 
+    (defun j/deshabilitar-org-msg (orig-fun &rest args)
+      (let ((activo org-msg-mode))
+        (org-msg-mode -1)
+        (apply orig-fun args)
+        (if activo
+            (org-msg-mode))))
+
+    ;; (advice-add 'gnus-article-press-button :around #'j/deshabilitar-org-msg)
+    ;; activar el modo
+    (org-msg-mode))
+#+end_src
+
+*** Integración con =org-capture=
+Una de las (la única?) razón de peso para tener el correo en emacs es la capacidad de crear TODOs en orgmode de forma rápida y que incluyan un link a un correo específico.
+
+Esto se logra usando ~org-mu4e~ y ~org-capture~. Las instrucciones que seguí están en http://pragmaticemacs.com/emacs/master-your-inbox-with-mu4e-and-org-mode/.
+
+**** Cargar módulo =org-mu4e=
+Viene incluido en mu4e, pero está desactivado por defecto.
+
+#+begin_src emacs-lisp :noweb-ref mu4e-config :tangle no
+  (require 'org-mu4e)
+#+end_src
+
+**** Hacer que el link sea a un correo específico y no al resultado de una búsqueda
+#+begin_src emacs-lisp :noweb-ref mu4e-config :tangle no
+  (setq org-mu4e-link-query-in-headers-mode nil)
+#+end_src
+La plantilla de org-capture ya se definió antes en [[Org-capture]]
+
+*** Acordes
+**** Definir modo de inicio
+#+begin_src emacs-lisp :noweb-ref mu4e-config :tangle no
+  (add-to-list 'evil-normal-state-modes 'mu4e-main-mode)
+  (add-to-list 'evil-normal-state-modes 'mu4e-headers-mode)
+  (add-to-list 'evil-normal-state-modes 'mu4e-view-mode)
+#+end_src
+**** De acceso directo
+#+begin_src emacs-lisp :noweb-ref mu4e-general :tangle no
+  (j/lider-accesos-directos 
+    "m" '(mu4e :which-key "mu4e")
+    "n" '(mu4e-compose-new :which-key "nuevo correo"))
+#+end_src
+**** De consulta de correos
+Los siguiente acordes funcionan en los modos =mu4e-main-mode=, =mu4e-headers-mode= y =mu4e-view-mode=.
+#+begin_src emacs-lisp :noweb-ref mu4e-general :tangle no
+  (j/lider-local
+    :states '(normal insert emacs)
+    :keymaps '(mu4e-main-mode-map mu4e-headers-mode-map mu4e-view-mode-map)
+    "b" '(mu4e-headers-search :which-key "buscar")
+    "i" '(mu4e~headers-jump-to-maildir :which-key "ir a carptea"))
+#+end_src
+**** De actualización
+El siguiente acorde funciona en los modos =mu4e-main-mode=, =mu4e-headers-mode= y =mu4e-view-mode=.
+#+begin_src emacs-lisp :noweb-ref mu4e-general :tangle no
+  (j/lider-local
+    :states '(normal insert emacs)
+    :keymaps '(mu4e-headers-mode-map mu4e-view-mode-map mu4e-main-mode-map)
+    "u" '(mu4e-update-mail-and-index :which-key "actualizar e indexar"))
+#+end_src
+
+**** De escritura de correos 
+El siguiente acorde funciona en los modos =mu4e-main-mode=, =mu4e-headers-mode= y =mu4e-view-mode=.
+#+begin_src emacs-lisp :noweb-ref mu4e-general :tangle no
+  (j/lider-local
+    :states '(normal insert emacs)
+    :keymaps '(mu4e-headers-mode-map mu4e-view-mode-map mu4e-main-mode-map)
+    ;; Composición
+    "n" '(mu4e-compose-new :which-key "nuevo correo"))
+#+end_src
+
+Los siguientes acordes funcionan en los modos =mu4e-headers-mode= y =mu4e-view-mode= ya que requieren un mensaje seleccionado.
+#+begin_src emacs-lisp :noweb-ref mu4e-general :tangle no
+  (j/lider-local
+    :states '(normal insert emacs)
+    :keymaps '(mu4e-headers-mode-map mu4e-view-mode-map)
+    ;; Composición
+    "r" '(mu4e-compose-reply :which-key "responder")
+    "R" '(mu4e-compose-forward :which-key "re-enviar"))
+#+end_src
+
+**** De vista principal
+#+begin_src emacs-lisp :noweb-ref mu4e-general :tangle no
+  (general-define-key
+   :states '(normal insert emacs)
+   :keymaps 'mu4e-main-mode-map
+   "q" '(mu4e-quit :which-key "salir")
+   "b" '(mu4e-headers-search-bookmark :which-key "bookmarks"))
+#+end_src
+
+**** De vista /headers/
+#+begin_src emacs-lisp :noweb-ref mu4e-general :tangle no
+  (general-define-key
+   :states '(normal insert emacs)
+   :keymaps 'mu4e-headers-mode-map
+   ;; Marcas 
+   "D" '(mu4e-mark-unmark-all :which-key "desmarcar todos")
+   "m" '(mu4e-headers-mark-for-move :which-key "mover")
+   "r" '(mu4e-headers-mark-for-refile :which-key "refile")
+   "e" '(mu4e-headers-mark-for-trash :which-key "eliminar")
+   "x" '(mu4e-mark-execute-all :which-key "ejecutar acciones")
+   "E" '(mu4e-headers-mark-for-delete :which-key "eliminar permanentemente")
+   "d" '(mu4e-headers-mark-for-unmark :which-key "desmarcar")
+   ;; Operación básica del modo
+   "b" '(mu4e-headers-search-bookmark :which-key "bookmarks")
+   "RET" '(mu4e-headers-view-message :which-key "ver mensaje") 
+   "q" '(mu4e~headers-quit-buffer :which-key "salir")
+   "j" '(mu4e-headers-next :which-key "siguiente mensaje")
+   "k" '(mu4e-headers-prev :which-key "mensaje anterior"))
+
+  (j/lider-local
+    :states '(normal insert emacs)
+    :keymaps 'mu4e-headers-mode-map
+    "h" '(mu4e-headers-toggle-threading :which-key "alternar hilo")
+    "l" '(mu4e-headers-toggle-include-related :which-key "alternar relacionados"))
+#+end_src
+
+**** De vista de mensaje
+#+begin_src emacs-lisp :noweb-ref mu4e-general :tangle no
+  (general-define-key
+   :states '(normal insert emacs)
+   :keymaps 'mu4e-view-mode-map
+   ;; Marcas
+   "m" '(mu4e-view-mark-for-move :which-key "mover")
+   "r" '(mu4e-view-mark-for-refile :which-key "refile")
+   "e" '(mu4e-view-mark-for-trash :which-key "eliminar")
+   "E" '(mu4e-view-mark-for-delete :which-key "eliminar permanentemente")
+   "x" '(mu4e-mark-execute-all :which-key "ejecutar acciones")
+   "d" '(mu4e-view-mark-for-unmark :which-key "desmarcar")
+   ;; Básicas del modo
+   "b" '(mu4e-headers-search-bookmark :which-key "bookmarks")
+   "q" '(mu4e~view-quit-buffer :which-key "salir")
+   "J" '(mu4e-view-headers-next :which-key "siguiente mensaje")
+   "K" '(mu4e-view-headers-prev :which-key "mensaje anterior")
+   "j" '(evil-next-line :which-key "siguiente linea")
+   "k" '(evil-previous-line :which-key "línea anterior"))
+
+  (j/lider-local 
+    :states '(normal insert emacs)
+    :keymaps 'mu4e-view-mode-map
+    "g" '(mu4e-view-go-to-url :which-key "ir a URL")
+    "C" '(mu4e~view-compose-contact :which-key "copiar dirección en punto")
+    "e" '(mu4e-view-save-attachment :which-key "extraer adjunto")
+    "b" '(mu4e-view-open-attachment :which-key "abrir adjunto")
+    "a" '(mu4e-view-action :which-key "acciones"))
+#+end_src
+
+**** De adjunto (en vista de mensaje)
+#+begin_src emacs-lisp :noweb-ref mu4e-general :tangle no
+  (j/lider-local 
+    :states '(normal insert emacs)
+    :keymaps 'gnus-mime-button-map
+    "v" '(gnus-mime-view-part :which-key "ver")
+    "g" '(gnus-mime-save-part :which-key "guardar")
+    "a" '(gnus-mime-action-on-part :which-key "acciones"))
 #+end_src
 
 * Footnotes

@@ -55,14 +55,15 @@
     :non-normal-prefix "M-SPC m"))
 
 (use-package evil-collection
-  :config
-  (evil-collection-init))
+  :after evil
+  :config 
+  (with-eval-after-load 'magit (evil-collection-magit-setup)))
 
 (use-package ivy
   :diminish ivy-mode
   :bind (:map ivy-minibuffer-map
-       ("C-j" . ivy-next-line)
-       ("C-k" . ivy-previous-line))
+              ("C-j" . ivy-next-line)
+              ("C-k" . ivy-previous-line))
   :config
   (ivy-mode 1))
 
@@ -122,7 +123,7 @@
   (prog-mode . rainbow-delimiters-mode))
 
 (j/lider
- "SPC" '(evil-normal-state :which-key "volver a modo normal"))
+  "SPC" '(evil-normal-state :which-key "volver a modo normal"))
 
 (j/lider
   :infix "a"
@@ -175,15 +176,15 @@
   "j" '(next-buffer :which-key "siguiente buffer"))
 
 (j/lider
- :infix "h"
- "" '(:ignore t :which-key "ayuda")
- "m" '(describe-mode :which-key "describir modo")
- "f" '(counsel-describe-function :which-key "describir función")
- "v" '(counsel-describe-variable :which-key "describir variable")
- "K" '(describe-key-briefly :which-key "describe-key-briefly")
- "w" '(where-is :which-key "where-is")
- "F" '(counsel-describe-face :which-key "describir face")
- "t" '(helpful-key :which-key "describir tecla"))
+  :infix "h"
+  "" '(:ignore t :which-key "ayuda")
+  "m" '(describe-mode :which-key "describir modo")
+  "f" '(counsel-describe-function :which-key "describir función")
+  "v" '(counsel-describe-variable :which-key "describir variable")
+  "K" '(describe-key-briefly :which-key "describe-key-briefly")
+  "w" '(where-is :which-key "where-is")
+  "F" '(counsel-describe-face :which-key "describir face")
+  "t" '(helpful-key :which-key "describir tecla"))
 
 (j/lider
   :infix "o"
@@ -625,8 +626,8 @@
   :commands (magit-status magit-init magit-clone)
   :init
   (j/lider
-      :infix "o"
-      "m" '(magit-status :which-key "magit")))
+    :infix "o"
+    "m" '(magit-status :which-key "magit")))
 
 (use-package projectile
   :custom
@@ -661,3 +662,320 @@
     "e" '(kmacro-set-counter :which-key "establecer contador")
     "s" '(kmacro-add-counter :which-key "adicionar a contador")
     "k" '(kmacro-call-macro :which-key "ejecutar macro")))
+
+(use-package mu4e
+  :straight (:local-repo 
+             "/run/current-system/sw/share/emacs/site-lisp/mu4e"
+             :pre-build ())
+  :init
+  
+  :commands mu4e
+  :custom
+  (mu4e-get-mail-command "mbsync -c ~/.mbsyncrc -a")
+  (mu4e-attachment-dir  "~/Downloads")
+  (mu4e-change-filenames-when-moving t)
+  (mu4e-update-interval (* 60 60))
+  (mu4e-headers-fields `((:human-date . 12)
+                         (:flags . 4)
+                         (:from-or-to . 15)
+                         (:subject)))
+  (mu4e-headers-auto-update t)
+  (mu4e-view-prefer-html t)
+  (mu4e-confirm-quit nil)
+  (mu4e-view-show-images t)
+  (mu4e-view-show-addresses 't)
+  (mu4e-headers-visible-lines 16)
+  (mu4e-completing-read-function 'ivy-completing-read)
+  (mu4e-compose-signature-auto-include nil)
+  (mu4e-bookmarks `(( :name "PUJ último mes"
+                            :query "maildir:/puj/INBOX date:4w.."
+                            :key ?j)))
+  (mu4e-compose-in-new-frame t)
+  (mu4e-sent-messages-behavior 'sent)
+  (mu4e-context-policy 'pick-first)
+  (mu4e-compose-context-policy 'always-ask) 
+  :hook
+  (mu4e-compose-mode . turn-off-auto-fill)
+  (mu4e-compose-mode . visual-line-mode)
+  :config 
+  (when (fboundp 'imagemagick-register-types)
+    (imagemagick-register-types))
+  (add-to-list 'mu4e-view-actions
+               '("hver en html" . mu4e-action-view-in-browser) t)
+  (add-to-list 
+   'mu4e-contexts 
+   (make-mu4e-context 
+    :name "trabajo"
+    :match-func
+    (lambda (msg)
+      (when msg
+        (string-prefix-p "/puj" (mu4e-message-field msg :maildir))))
+    :vars '((user-mail-address . "je.gomezm@javeriana.edu.co")
+            (user-full-name . "Juan E. Gómez-Morantes")
+            (mu4e-sent-folder . "/puj/Sent Items")
+            (mu4e-drafts-folder . "/puj/Drafts")
+            (mu4e-trash-folder . "/puj/Trash")
+            (mu4e-refile-folder . "/puj/Archive")
+            (smtpmail-queue-dir . "~/mbsync/puj/queue/cur")
+            (message-send-mail-function . smtpmail-send-it)
+            (smtpmail-smtp-user . "je.gomezm@javeriana.edu.co")
+            (smtpmail-starttls-credentials . (("smtp.office365.com" 587 nil nil)))
+            (smtpmail-auth-credentials . (expand-file-name "~/.authinfo.gpg"))
+            (smtpmail-default-smtp-server . "smtp.office365.com")
+            (smtpmail-smtp-server . "smtp.office365.com")
+            (smtpmail-smtp-service . 587)
+            (smtpmail-debug-info . t)
+            (smtpmail-debug-verbose . t))))
+  (add-to-list 
+   'mu4e-contexts 
+   (make-mu4e-context   
+    :name "gmail-jee" 
+    :match-func
+    (lambda (msg)
+      (when msg
+        (string-prefix-p "/gmail-jee" (mu4e-message-field msg :maildir))))
+    :vars '((user-mail-address . "juanerasmoe@gmail.com")
+            (user-full-name . "Juan E. Gómez-Morantes")
+            (mu4e-sent-folder . "/gmail-jee/[Gmail].Sent Mail")
+            (mu4e-drafts-folder . "/gmail-jee/[Gmail].drafts")
+            (mu4e-trash-folder . "/gmail-jee/[Gmail].Trash")
+            (mu4e-refile-folder . "/gmail-jee/[Gmail].All Mail")
+            (smtpmail-queue-dir . "~/mbsync/puj/queue/cur")
+            (message-send-mail-function . smtpmail-send-it)
+            (smtpmail-smtp-user . "juanerasmoe@gmail.com")
+            (smtpmail-starttls-credentials . (("smtp.gmail.com" 587 nil nil)))
+            (smtpmail-auth-credentials . (expand-file-name "~/.authinfo.gpg"))
+            (smtpmail-default-smtp-server . "smtp.gmail.com")
+            (smtpmail-smtp-server . "smtp.gmail.com")
+            (smtpmail-smtp-service . 587)
+            (smtpmail-debug-info . t)
+            (smtpmail-debug-verbose . t))))
+  (require 'org-mu4e)
+  (setq org-mu4e-link-query-in-headers-mode nil)
+  (add-to-list 'evil-normal-state-modes 'mu4e-main-mode)
+  (add-to-list 'evil-normal-state-modes 'mu4e-headers-mode)
+  (add-to-list 'evil-normal-state-modes 'mu4e-view-mode)
+  :general 
+  (j/lider-accesos-directos 
+    "m" '(mu4e :which-key "mu4e")
+    "n" '(mu4e-compose-new :which-key "nuevo correo"))
+  (j/lider-local
+    :states '(normal insert emacs)
+    :keymaps '(mu4e-main-mode-map mu4e-headers-mode-map mu4e-view-mode-map)
+    "b" '(mu4e-headers-search :which-key "buscar")
+    "i" '(mu4e~headers-jump-to-maildir :which-key "ir a carptea"))
+  (j/lider-local
+    :states '(normal insert emacs)
+    :keymaps '(mu4e-headers-mode-map mu4e-view-mode-map mu4e-main-mode-map)
+    "u" '(mu4e-update-mail-and-index :which-key "actualizar e indexar"))
+  (j/lider-local
+    :states '(normal insert emacs)
+    :keymaps '(mu4e-headers-mode-map mu4e-view-mode-map mu4e-main-mode-map)
+    ;; Composición
+    "n" '(mu4e-compose-new :which-key "nuevo correo"))
+  (j/lider-local
+    :states '(normal insert emacs)
+    :keymaps '(mu4e-headers-mode-map mu4e-view-mode-map)
+    ;; Composición
+    "r" '(mu4e-compose-reply :which-key "responder")
+    "R" '(mu4e-compose-forward :which-key "re-enviar"))
+  (general-define-key
+   :states '(normal insert emacs)
+   :keymaps 'mu4e-main-mode-map
+   "q" '(mu4e-quit :which-key "salir")
+   "b" '(mu4e-headers-search-bookmark :which-key "bookmarks"))
+  (general-define-key
+   :states '(normal insert emacs)
+   :keymaps 'mu4e-headers-mode-map
+   ;; Marcas 
+   "D" '(mu4e-mark-unmark-all :which-key "desmarcar todos")
+   "m" '(mu4e-headers-mark-for-move :which-key "mover")
+   "r" '(mu4e-headers-mark-for-refile :which-key "refile")
+   "e" '(mu4e-headers-mark-for-trash :which-key "eliminar")
+   "x" '(mu4e-mark-execute-all :which-key "ejecutar acciones")
+   "E" '(mu4e-headers-mark-for-delete :which-key "eliminar permanentemente")
+   "d" '(mu4e-headers-mark-for-unmark :which-key "desmarcar")
+   ;; Operación básica del modo
+   "b" '(mu4e-headers-search-bookmark :which-key "bookmarks")
+   "RET" '(mu4e-headers-view-message :which-key "ver mensaje") 
+   "q" '(mu4e~headers-quit-buffer :which-key "salir")
+   "j" '(mu4e-headers-next :which-key "siguiente mensaje")
+   "k" '(mu4e-headers-prev :which-key "mensaje anterior"))
+  
+  (j/lider-local
+    :states '(normal insert emacs)
+    :keymaps 'mu4e-headers-mode-map
+    "h" '(mu4e-headers-toggle-threading :which-key "alternar hilo")
+    "l" '(mu4e-headers-toggle-include-related :which-key "alternar relacionados"))
+  (general-define-key
+   :states '(normal insert emacs)
+   :keymaps 'mu4e-view-mode-map
+   ;; Marcas
+   "m" '(mu4e-view-mark-for-move :which-key "mover")
+   "r" '(mu4e-view-mark-for-refile :which-key "refile")
+   "e" '(mu4e-view-mark-for-trash :which-key "eliminar")
+   "E" '(mu4e-view-mark-for-delete :which-key "eliminar permanentemente")
+   "x" '(mu4e-mark-execute-all :which-key "ejecutar acciones")
+   "d" '(mu4e-view-mark-for-unmark :which-key "desmarcar")
+   ;; Básicas del modo
+   "b" '(mu4e-headers-search-bookmark :which-key "bookmarks")
+   "q" '(mu4e~view-quit-buffer :which-key "salir")
+   "J" '(mu4e-view-headers-next :which-key "siguiente mensaje")
+   "K" '(mu4e-view-headers-prev :which-key "mensaje anterior")
+   "j" '(evil-next-line :which-key "siguiente linea")
+   "k" '(evil-previous-line :which-key "línea anterior"))
+  
+  (j/lider-local 
+    :states '(normal insert emacs)
+    :keymaps 'mu4e-view-mode-map
+    "g" '(mu4e-view-go-to-url :which-key "ir a URL")
+    "C" '(mu4e~view-compose-contact :which-key "copiar dirección en punto")
+    "e" '(mu4e-view-save-attachment :which-key "extraer adjunto")
+    "b" '(mu4e-view-open-attachment :which-key "abrir adjunto")
+    "a" '(mu4e-view-action :which-key "acciones"))
+  (j/lider-local 
+    :states '(normal insert emacs)
+    :keymaps 'gnus-mime-button-map
+    "v" '(gnus-mime-view-part :which-key "ver")
+    "g" '(gnus-mime-save-part :which-key "guardar")
+    "a" '(gnus-mime-action-on-part :which-key "acciones")))
+
+(require 'mu4e-icalendar)
+(mu4e-icalendar-setup)
+
+(use-package org-mime
+  :after mu4e)
+(use-package smtpmail
+  :after mu4e)
+
+(use-package org-msg
+  ;;:straight (prg-msg :type git :host github :repo "jeremy-compostella/org-msg"
+  ;;                   :fork ( :host github
+  ;;                           :repo "Chris00/org-msg"
+  ;;                           :branch "MML"))
+  :after mu4e
+  :custom
+  (mail-user-agent 'mu4e-user-agent)
+  (org-msg-options "html-postamble:nil H:5 num:nil ^:{} toc:nil author:nil email:nil \\n:t")
+  (org-msg-startup "hidestars indent inlineimages")
+  (org-msg-greeting-fmt "\nQué tal %s,\n\n")
+  (org-msg-greeting-name-limit 3)
+  (org-msg-text-plain-alternative t)
+  (org-msg-signature "
+          Saludos,
+          #+begin_signature
+          Juan E. Gómez-Morantes, PhD \\\\
+          Profesor Asistente \\\\
+          Departamento de Ingeniería de Sistemas \\\\
+          Pontificia Universidad Javeriana \\\\
+          #+end_signature")
+
+  :config
+  
+  ;; Para evitar el problema de columnas angostas en outlook web, se defe redefinir la plantilla css usada por org-msg.
+  ;; Eso está definido en =org-msg-default-style= y se asigna a =org-msg-enforce-css. A continuación se crea otra plantilla y se hace la asignación.
+  (defconst j/org-msg-default-style
+    (let* ((font-family '(font-family . "\"Arial\""))
+           (font-size '(font-size . "10pt"))
+           (font `(,font-family ,font-size))
+           (line-height '(line-height . "10pt"))
+           (bold '(font-weight . "bold"))
+           (theme-color "#0071c5")
+           (color `(color . ,theme-color))
+           (table `(,@font (margin-top . "0px")))
+           (ftl-number `(,@font ,color ,bold (text-align . "left")))
+           (inline-modes '(asl c c++ conf cpp csv diff ditaa emacs-lisp
+                               fundamental ini json makefile man org plantuml
+                               python sh xml))
+           (inline-src `((color . ,(face-foreground 'default))
+                         (background-color . ,(face-background 'default))))
+           (code-src
+            (mapcar (lambda (mode)
+                      `(code ,(intern (concat "src src-" (symbol-name mode)))
+                             ,inline-src))
+                    inline-modes)))
+      `((del nil (,@font (color . "grey") (border-left . "none")
+                         (text-decoration . "line-through") (margin-bottom . "0px")
+                         (margin-top . "10px") (line-height . "11pt")))
+        (a nil (,color))
+        (a reply-header ((color . "black") (text-decoration . "none")))
+        (div reply-header ((padding . "3.0pt 0in 0in 0in")
+                           (border-top . "solid #e1e1e1 1.0pt")
+                           (margin-bottom . "20px")))
+        (span underline ((text-decoration . "underline")))
+        (li nil (,@font ,line-height (margin-bottom . "0px")
+                        (margin-top . "2px")))
+        (nil org-ul ((list-style-type . "square")))
+        (nil org-ol (,@font ,line-height (margin-bottom . "0px")
+                            (margin-top . "0px") (margin-left . "30px")
+                            (padding-top . "0px") (padding-left . "5px")))
+        (nil signature (,@font (margin-bottom . "20px")))
+        (blockquote nil ((padding-left . "5px") (margin-left . "10px")
+                         (margin-top . "20px") (margin-bottom . "0")
+                         (border-left . "3px solid #ccc") (font-style . "italic")
+                         (background . "#f9f9f9")))
+        (code nil (,font-size (font-family . "monospace") (background . "#f9f9f9")))
+        ,@code-src
+        (nil linenr ((padding-right . "1em")
+                     (color . "black")
+                     (background-color . "#aaaaaa")))
+        (pre nil ((line-height . "12pt")
+                  ,@inline-src
+                  (margin . "0px")
+                  (font-size . "9pt")
+                  (font-family . "monospace")))
+        (div org-src-container ((margin-top . "10px")))
+        (nil figure-number ,ftl-number)
+        (nil table-number)
+        (caption nil ((text-align . "left")
+                      (background . ,theme-color)
+                      (color . "white")
+                      ,bold))
+        (nil t-above ((caption-side . "top")))
+        (nil t-bottom ((caption-side . "bottom")))
+        (nil listing-number ,ftl-number)
+        (nil figure ,ftl-number)
+        (nil org-src-name ,ftl-number)
+
+        (table nil (,@table ,line-height (border-collapse . "collapse")))
+        (th nil ((border . "1px solid black")
+                 (background-color . ,theme-color)
+                 (color . "white")
+                 (padding-left . "10px") (padding-right . "10px")))
+        (td nil (,@table (padding-left . "10px") (padding-right . "10px")
+                         (background-color . "#f9f9f9") (border . "1px solid black")))
+        (td org-left ((text-align . "left")))
+        (td org-right ((text-align . "right")))
+        (td org-center ((text-align . "center")))
+
+        (div outline-text-4 ((margin-left . "15px")))
+        (div outline-4 ((margin-left . "10px")))
+        (h4 nil ((margin-bottom . "0px") (font-size . "11pt")
+                 ,font-family))
+        (h3 nil ((margin-bottom . "0px") (text-decoration . "underline")
+                 ,color (font-size . "12pt")
+                 ,font-family))
+        (h2 nil ((margin-top . "20px") (margin-bottom . "20px")
+                 (font-style . "italic") ,color (font-size . "13pt")
+                 ,font-family))
+        (h1 nil ((margin-top . "20px")
+                 (margin-bottom . "0px") ,color (font-size . "12pt")
+                 ,font-family))
+        (p nil ((text-decoration . "none") (margin-bottom . "0px")
+                (margin-top . "10px") (line-height . "11pt") ,font-size
+                ,font-family
+                ;;(max-width . "100ch")
+                ))
+        (div nil (,@font (line-height . "11pt"))))))
+  (setq org-msg-enforce-css j/org-msg-default-style)
+  ;; Evitar que org-msg interfiera con la aceptación de invitaciones de calendario 
+  (defun j/deshabilitar-org-msg (orig-fun &rest args)
+    (let ((activo org-msg-mode))
+      (org-msg-mode -1)
+      (apply orig-fun args)
+      (if activo
+          (org-msg-mode))))
+
+  ;; (advice-add 'gnus-article-press-button :around #'j/deshabilitar-org-msg)
+  ;; activar el modo
+  (org-msg-mode))
