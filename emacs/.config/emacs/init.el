@@ -575,7 +575,12 @@
     (when (eq backend 'beamer) ;;
       (replace-regexp-in-string "\\`\\\\[A-Za-z0-9]+" "\\\\textbf" contents)))
   ;;(add-to-list 'org-export-filter-bold-functions 'my-beamer-bold)
-  (org-beamer-mode))
+  (org-beamer-mode)
+  :general
+  (j/lider-local
+    :states '(normal insert emacs)
+    :keymaps '(org-capture-mode-map)
+    "r" '(org-capture-refile :which-key "org-capture-refile")))
 
 (use-package org-superstar
   :hook (org-mode . org-superstar-mode))

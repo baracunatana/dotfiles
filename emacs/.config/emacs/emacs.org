@@ -400,7 +400,9 @@ Nótece que hay que tener los diccionarios instalados. De lo contrario, la inici
     :custom
     <<org-custom>>
     :config
-    <<org-config>>)
+    <<org-config>>
+    :general
+    <<org-general>>)
 #+end_src
 
 ** Configuración básica
@@ -793,6 +795,14 @@ Esto acceso directo funciona desde cualquier modo
 #+begin_src emacs-lisp :tangle no :noweb-ref org-config
   (j/lider
     "c" '(org-capture :which-key "org-capture"))
+#+end_src
+
+*** Acordes para modo de captura
+#+begin_src emacs-lisp :noweb-ref org-general :tangle no
+  (j/lider-local
+    :states '(normal insert emacs)
+    :keymaps '(org-capture-mode-map)
+    "r" '(org-capture-refile :which-key "org-capture-refile"))
 #+end_src
 
 ** Hábitos
