@@ -711,6 +711,34 @@ Uso tectonic como distribución de latex en (ambientes linux).
 (org-agenda-skip-deadline-if-done t)
 #+end_src
 
+*** =org-super-agenda=
+#+begin_src emacs-lisp 
+  (use-package org-super-agenda    
+    :after org-agenda
+    :custom
+    (org-super-agenda-groups '(( :name "En seguimiento"
+                                 :todo "ESPE")
+                               ( :name "Urgentes"
+                                 :and ( :not (:todo "DONE")
+                                        :not (:todo "FUTU")
+                                        :priority "A"))
+                               ( :name "Importantes"
+                                 :and ( :todo "TODO"
+                                        :priority "B"))
+                               ( :name "Cortas (<30 min)"
+                                 :and ( :todo "TODO"
+                                        :effort< "30")))
+                             "Grupos de super-agenda")
+    :config
+    (org-super-agenda-mode))
+#+end_src
+
+También es importante deshabilitar =org-super-agenda-map= para evitar bindings por defecto en encabezados de =org-super-agenda=. En particular, si no se deshabilita esto, no se pueden usar los bindigs para movimiento de evil en encabezados de =org-super-agenda=.
+
+#+begin_src emacs-lisp :noweb-ref org-config :tangle no
+  (setq org-super-agenda-header-map (make-sparse-keymap))
+#+end_src
+
 ** =org-ref=
 =org-ref= permite usar referencias bibliográficas en formato bibtex desde =org=.
 

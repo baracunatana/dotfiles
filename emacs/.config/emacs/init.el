@@ -479,6 +479,7 @@
     (interactive)
     (org-set-property "ACTIONABLE" (concat "[" (org-read-date nil nil nil "ACTIONABLE: ") "]"))
     (org-todo "FUTU"))
+  (setq org-super-agenda-header-map (make-sparse-keymap))
   ;; Definir la lista DESPUÉS de cargar org-capture. Esto es necesario porque de no tenerlo la lista de plantillas se reiniciaba
   
   (with-eval-after-load 'org-capture       
@@ -585,6 +586,25 @@
 
 (use-package org-superstar
   :hook (org-mode . org-superstar-mode))
+
+(use-package org-super-agenda    
+  :after org-agenda
+  :custom
+  (org-super-agenda-groups '(( :name "En seguimiento"
+                               :todo "ESPE")
+                             ( :name "Urgentes"
+                               :and ( :not (:todo "DONE")
+                                      :not (:todo "FUTU")
+                                      :priority "A"))
+                             ( :name "Importantes"
+                               :and ( :todo "TODO"
+                                      :priority "B"))
+                             ( :name "Cortas (<30 min)"
+                               :and ( :todo "TODO"
+                                      :effort< "30")))
+                           "Grupos de super-agenda")
+  :config
+  (org-super-agenda-mode))
 
 (use-package org-ref
   :after org
