@@ -281,6 +281,7 @@
   (org-agenda-files '("~/personal/orgmode/gtd.org"))
   (org-agenda-window-setup 'current-window)
   (org-agenda-skip-scheduled-if-done t)
+  (org-agenda-skip-deadline-if-done t)
   ;; Destinos hasta de nivel 3
   (org-refile-targets '((org-agenda-files :maxlevel . 3)))
   ;; Construcción del destino paso a paso

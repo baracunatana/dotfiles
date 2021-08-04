@@ -708,6 +708,7 @@ Uso tectonic como distribución de latex en (ambientes linux).
 *** Excluir tareas completas de vista de agenda
 #+begin_src emacs-lisp :tangle no :noweb-ref org-custom
 (org-agenda-skip-scheduled-if-done t)
+(org-agenda-skip-deadline-if-done t)
 #+end_src
 
 ** =org-ref=
