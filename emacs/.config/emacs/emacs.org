@@ -699,9 +699,15 @@ Uso tectonic como distribución de latex en (ambientes linux).
 #+begin_src emacs-lisp :tangle no :noweb-ref org-custom
   (org-agenda-files '("~/personal/orgmode/gtd.org"))
 #+end_src
+
 *** Mostrar la agenda en la ventana actual
 #+begin_src emacs-lisp :tangle no :noweb-ref org-custom
   (org-agenda-window-setup 'current-window)
+#+end_src
+
+*** Excluir tareas completas de vista de agenda
+#+begin_src emacs-lisp :tangle no :noweb-ref org-custom
+(org-agenda-skip-scheduled-if-done t)
 #+end_src
 
 ** =org-ref=
