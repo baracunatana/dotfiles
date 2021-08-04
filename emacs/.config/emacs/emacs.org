@@ -67,8 +67,6 @@ Para esto, la fuente debe estar instalada correctamente en el sistema. Si se usa
     (evil-default-state 'normal)
     ;; Para evitar conflictos con TAB en org-mode
     (evil-want-C-i-jump nil)
-    ;; Evitar conflictos con evil-collecction
-    (evil-want-keybinding nil)
     :config
     ;; Arracnar evil-mode por defecto
     (evil-mode))
@@ -106,8 +104,8 @@ Para esto, la fuente debe estar instalada correctamente en el sistema. Si se usa
 **** Activar para =magit=
 #+begin_src emacs-lisp :noweb-ref evil-collection-config :tangle no
   (with-eval-after-load 'magit (evil-collection-magit-setup))
+  (with-eval-after-load 'pdf-tools (evil-collection-pdf-setup))
 #+end_src
-=evil-collection= trae acorder por defecto para muchos modos.
 
 ** =ivy= et. al.
 Esta configuración hace uso extensivo de =ivy= y =cousel= para terminación. En esta sección se hacen todas las configuraciones relevantes al sistema de terminación.

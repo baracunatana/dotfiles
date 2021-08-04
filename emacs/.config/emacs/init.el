@@ -32,8 +32,6 @@
   (evil-default-state 'normal)
   ;; Para evitar conflictos con TAB en org-mode
   (evil-want-C-i-jump nil)
-  ;; Evitar conflictos con evil-collecction
-  (evil-want-keybinding nil)
   :config
   ;; Arracnar evil-mode por defecto
   (evil-mode))
@@ -57,7 +55,8 @@
 (use-package evil-collection
   :after evil
   :config 
-  (with-eval-after-load 'magit (evil-collection-magit-setup)))
+  (with-eval-after-load 'magit (evil-collection-magit-setup))
+  (with-eval-after-load 'pdf-tools (evil-collection-pdf-setup)))
 
 (use-package ivy
   :diminish ivy-mode
