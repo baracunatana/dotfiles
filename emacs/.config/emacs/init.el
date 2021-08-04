@@ -627,7 +627,7 @@
   :init
   (j/lider
     :infix "o"
-    "m" '(magit-status :which-key "magit")))
+    "M" '(magit-status :which-key "magit")))
 
 (use-package projectile
   :custom
@@ -756,7 +756,8 @@
   (add-to-list 'evil-normal-state-modes 'mu4e-headers-mode)
   (add-to-list 'evil-normal-state-modes 'mu4e-view-mode)
   :general 
-  (j/lider-accesos-directos 
+  (j/lider
+    :infix "o"
     "m" '(mu4e :which-key "mu4e")
     "n" '(mu4e-compose-new :which-key "nuevo correo"))
   (j/lider-local

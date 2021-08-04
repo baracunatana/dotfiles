@@ -1526,10 +1526,12 @@ La plantilla de org-capture ya se definió antes en [[Org-capture]]
 #+end_src
 **** De acceso directo
 #+begin_src emacs-lisp :noweb-ref mu4e-general :tangle no
-  (j/lider-accesos-directos 
+  (j/lider
+    :infix "o"
     "m" '(mu4e :which-key "mu4e")
     "n" '(mu4e-compose-new :which-key "nuevo correo"))
 #+end_src
+
 **** De consulta de correos
 Los siguiente acordes funcionan en los modos =mu4e-main-mode=, =mu4e-headers-mode= y =mu4e-view-mode=.
 #+begin_src emacs-lisp :noweb-ref mu4e-general :tangle no
