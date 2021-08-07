@@ -67,6 +67,9 @@ Para esto, la fuente debe estar instalada correctamente en el sistema. Si se usa
     (evil-default-state 'normal)
     ;; Para evitar conflictos con TAB en org-mode
     (evil-want-C-i-jump nil)
+    :init
+    ;; Para evitar conflictos con evil-collection
+    (setq evil-want-keybinding nil)
     :config
     ;; Arracnar evil-mode por defecto
     (evil-mode))
@@ -101,9 +104,11 @@ Para esto, la fuente debe estar instalada correctamente en el sistema. Si se usa
     <<evil-collection-config>>)
 #+end_src
 
-**** Activar para =magit=
+**** Activar para modos específicos 
 #+begin_src emacs-lisp :noweb-ref evil-collection-config :tangle no
   (with-eval-after-load 'magit (evil-collection-magit-setup))
+  (with-eval-after-load 'dired (evil-collection-dired-setup))
+  (with-eval-after-load 'dired (evil-collection-wdired-setup))
   (with-eval-after-load 'pdf-tools (evil-collection-pdf-setup))
 #+end_src
 
