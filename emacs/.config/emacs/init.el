@@ -679,8 +679,25 @@
   "p" '(:keymap projectile-command-map :which-key "projectile"))
 
 (use-package pdf-tools
+  :mode
+  ("\\.pdf\\'" . pdf-view-mode)
+
   :config
   (pdf-tools-install))
+
+(use-package pocket-reader
+  :commands pocket-reader
+  :general
+  (j/lider-local
+    :states '(normal insert emacs)
+    :keymaps 'pocket-reader-mode-map
+    "r" '(pocket-reader-refresh :which-key "refrescar")
+    "h" '(pocket-reader-open-in-external-browser :which-key "ver en navegador"))
+  
+  (general-define-key
+   :states '(normal insert emacs)
+   :keymaps 'pocket-reader-mode-map
+   "RET" '(pocket-reader-open-url :which-key "ver entrada")))
 
 (use-package kmacro 
   :general

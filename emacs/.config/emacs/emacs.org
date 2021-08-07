@@ -1074,8 +1074,37 @@ Magit es el mejor cliente git no solo para emacs sino en general. Funciona desde
 
 #+begin_src emacs-lisp 
   (use-package pdf-tools
+    :mode
+    ("\\.pdf\\'" . pdf-view-mode)
+
     :config
     (pdf-tools-install))
+#+end_src
+
+* =pocket-reader=
+=[[https://github.com/alphapapa/pocket-reader.el][pocket-reader]]= es una interfaz para lectura de artículo guardados en [[http://www.getpocket.com][Pocket]].
+
+Luego de la instalación inicial, hay que correr la función =pocket-reader= para seguir el proceso de autenticación en Pocket.
+
+#+begin_src emacs-lisp :noweb no-export
+  (use-package pocket-reader
+    :commands pocket-reader
+    :general
+    <<pocket-reader-general>>)
+#+end_src
+
+** Acordes
+#+begin_src emacs-lisp :tangle no :noweb-ref pocket-reader-general
+  (j/lider-local
+    :states '(normal insert emacs)
+    :keymaps 'pocket-reader-mode-map
+    "r" '(pocket-reader-refresh :which-key "refrescar")
+    "h" '(pocket-reader-open-in-external-browser :which-key "ver en navegador"))
+  
+  (general-define-key
+   :states '(normal insert emacs)
+   :keymaps 'pocket-reader-mode-map
+   "RET" '(pocket-reader-open-url :which-key "ver entrada"))
 #+end_src
 
 * =kmacro=
