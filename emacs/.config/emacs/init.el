@@ -119,7 +119,13 @@
   counsel
   :custom
   (counsel-describe-function-function #'helpful-callable)
-  (counsel-describe-variable-function #'helpful-variable))
+  (counsel-describe-variable-function #'helpful-variable)
+  :general
+  (general-define-key
+   :states '(normal insert emacs)
+   :keymaps 'helpful-mode-map
+   ;; Marcas
+   "q" '(quit-window :which-key "salir")))
 
 (use-package rainbow-delimiters
   :hook 
