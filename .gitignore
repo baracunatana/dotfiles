@@ -20,3 +20,4 @@ emacs/.config/emacs/auto-save-list*
 /emacs/.config/emacs/.mbsyncpass-puj.gpg
 /emacs/.config/emacs/network-security.data
 /emacs/.config/emacs/.mbsyncpass-jee2.gpg
+/emacs/.config/emacs/tramp

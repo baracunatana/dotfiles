@@ -1723,6 +1723,15 @@ Los siguientes acordes funcionan en los modos =mu4e-headers-mode= y =mu4e-view-m
     "a" '(gnus-mime-action-on-part :which-key "acciones"))
 #+end_src
 
+*** =mu4e-column-faces=
+=mu4e-column-faces= agrega opciones para personalizar las fuentes usadas en las columnas de la vista de encabezados de =mu4e=.
+
+#+begin_src emacs-lisp 
+(use-package mu4e-column-faces
+  :after mu4e
+  :config (mu4e-column-faces-mode))
+#+end_src
+
 * Footnotes
 
 [fn:1] [[https://www.gnu.org/software/emacs/manual/html_node/efaq-w32/Spell-check.html]]

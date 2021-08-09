@@ -1028,3 +1028,7 @@
   ;; (advice-add 'gnus-article-press-button :around #'j/deshabilitar-org-msg)
   ;; activar el modo
   (org-msg-mode))
+
+(use-package mu4e-column-faces
+  :after mu4e
+  :config (mu4e-column-faces-mode))
