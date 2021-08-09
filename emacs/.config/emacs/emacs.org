@@ -953,6 +953,17 @@ Ya con esto, se tienen que definir los acrodes locales para agenda.
 
 #+RESULTS:
 
+*** De pie de página
+#+begin_src emacs-lisp :noweb-ref org-general :tangle no
+  (j/lider-local
+    :states '(normal insert emacs)
+    :keymaps 'org-mode-map
+    :infix "f"
+    "" '(:ignore t :which-key "Pie de página")
+    "f" '(org-footnote-new :which-key "agregar pie de página")
+    "n" '(org-footnote-normalize :which-key "normalizar pie de página"))
+#+end_src
+
 ** Exportación a latex
 *** Beamer
 Por defecto, =ox-latex= exporta =*asdf*= a texto de alerta en beamer. Para que se exporte como texto en negrilla se debe agregar un filtro de exportación a org-export.

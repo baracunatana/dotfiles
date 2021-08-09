@@ -593,7 +593,14 @@
   (j/lider-local
     :states '(normal insert emacs)
     :keymaps '(org-capture-mode-map)
-    "r" '(org-capture-refile :which-key "org-capture-refile")))
+    "r" '(org-capture-refile :which-key "org-capture-refile"))
+  (j/lider-local
+    :states '(normal insert emacs)
+    :keymaps 'org-mode-map
+    :infix "f"
+    "" '(:ignore t :which-key "Pie de página")
+    "f" '(org-footnote-new :which-key "agregar pie de página")
+    "n" '(org-footnote-normalize :which-key "normalizar pie de página")))
 
 (use-package org-superstar
   :hook (org-mode . org-superstar-mode))
