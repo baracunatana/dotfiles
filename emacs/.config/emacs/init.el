@@ -600,7 +600,14 @@
     :infix "f"
     "" '(:ignore t :which-key "Pie de página")
     "f" '(org-footnote-new :which-key "agregar pie de página")
-    "n" '(org-footnote-normalize :which-key "normalizar pie de página")))
+    "n" '(org-footnote-normalize :which-key "normalizar pie de página"))
+  (j/lider-local
+    :states '(normal insert emacs)
+    :keymaps 'org-mode-map
+    :infix "l"
+    "" '(:ignore t :which-key "enlaces")
+    "l" '(org-insert-link :which-key "crear enlace")
+    "s" '(org-open-at-point :which-key "segir enlace")))
 
 (use-package org-superstar
   :hook (org-mode . org-superstar-mode))
@@ -608,18 +615,18 @@
 (use-package org-super-agenda    
   :after org-agenda
   :custom
-  (org-super-agenda-groups '(( :name "En seguimiento"
-                               :todo "ESPE")
-                             ( :name "Urgentes"
-                               :and ( :not (:todo "DONE")
-                                      :not (:todo "FUTU")
-                                      :priority "A"))
+  (org-super-agenda-groups '((:name "En seguimiento"
+                                    :todo "ESPE")
+                             (:name "Urgentes"
+                                    :and (:not (:todo "DONE")
+                                               :not (:todo "FUTU")
+                                               :priority "A"))
                              ( :name "Importantes"
-                               :and ( :todo ("TODO" "EMPE")
-                                      :priority "B"))
+                                     :and ( :todo ("TODO" "EMPE")
+                                                  :priority "B"))
                              ( :name "Cortas (<30 min)"
-                               :and ( :todo "TODO"
-                                      :effort< "30")))
+                                     :and ( :todo "TODO"
+                                                  :effort< "30")))
                            "Grupos de super-agenda")
   :config
   (org-super-agenda-mode))
