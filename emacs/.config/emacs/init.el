@@ -615,7 +615,7 @@
                                       :not (:todo "FUTU")
                                       :priority "A"))
                              ( :name "Importantes"
-                               :and ( :todo "TODO"
+                               :and ( :todo ("TODO" "EMPE")
                                       :priority "B"))
                              ( :name "Cortas (<30 min)"
                                :and ( :todo "TODO"
