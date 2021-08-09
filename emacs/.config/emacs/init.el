@@ -879,9 +879,9 @@
     :keymaps 'mu4e-view-mode-map
     "g" '(mu4e-view-go-to-url :which-key "ir a URL")
     "C" '(mu4e~view-compose-contact :which-key "copiar dirección en punto")
-    "e" '(mu4e-view-save-attachment :which-key "extraer adjunto")
     "b" '(mu4e-view-open-attachment :which-key "abrir adjunto")
-    "a" '(mu4e-view-action :which-key "acciones"))
+    "a" '(mu4e-view-action :which-key "acciones")
+    "A" '(mu4e-view-mime-part-action :which-key "acciones de partes"))
   (j/lider-local 
     :states '(normal insert emacs)
     :keymaps 'gnus-mime-button-map
