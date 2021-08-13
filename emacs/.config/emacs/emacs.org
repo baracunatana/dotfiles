@@ -1,7 +1,11 @@
 #+title: Configuración literaria de Emacs
 #+author: Juan E. Gómez-Morantes, PhD.
 
-#+PROPERTY: header-args:emacs-lisp :tangle ./init.el
+#+property: header-args:emacs-lisp :tangle .~/config/emacs/init.el
+
+#+begin_quote
+Fuck vim, all my homies use emacs
+#+end_quote
 
 * Introducción
 Este archivo presenta una configuración literaria de emacs. En muchas partes se usa la funcionalidad =noweb= de =org= para tener una mejor trazabilidad y documentación de configuraciones complejas. En https://www.hhyu.org/posts/literate_config/ se puede encontrar más información al respecto.
