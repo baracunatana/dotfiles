@@ -21,3 +21,5 @@ emacs/.config/emacs/auto-save-list*
 /emacs/.config/emacs/network-security.data
 /emacs/.config/emacs/.mbsyncpass-jee2.gpg
 /emacs/.config/emacs/tramp
+/emacs/.config/emacs/nov-places
+/emacs/.config/emacs/recentf~

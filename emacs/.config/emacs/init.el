@@ -61,7 +61,8 @@
   (with-eval-after-load 'magit (evil-collection-magit-setup))
   (with-eval-after-load 'dired (evil-collection-dired-setup))
   (with-eval-after-load 'dired (evil-collection-wdired-setup))
-  (with-eval-after-load 'pdf-tools (evil-collection-pdf-setup)))
+  (with-eval-after-load 'pdf-tools (evil-collection-pdf-setup))
+  (with-eval-after-load 'nov (evil-collection-nov-setup)))
 
 (use-package ivy
   :diminish ivy-mode
@@ -647,6 +648,9 @@
     "}" '(org-ref-ivy-insert-ref-link :which-key "insertar referencia")
     "]" '(org-ref-ivy-insert-cite-link :which-key "insertar cita")))
 
+(use-package org-ql
+  :after org)
+
 (use-package yasnippet
   :after (evil general)
   :diminish yas-minor-mode
@@ -1052,3 +1056,14 @@
 (use-package mu4e-column-faces
   :after mu4e
   :config (mu4e-column-faces-mode))
+
+(use-package nov
+  :mode
+  ("\\.epub\\'" . nov-mode)
+
+  :hook
+  (nov-mode . olivetti-mode)
+  (nov-mode . (lambda ()
+                (face-remap-add-relative
+                 'variable-pitch :family "EB Garamond"
+                 :height 1.5))))

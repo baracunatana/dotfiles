@@ -110,6 +110,7 @@ Para esto, la fuente debe estar instalada correctamente en el sistema. Si se usa
   (with-eval-after-load 'dired (evil-collection-dired-setup))
   (with-eval-after-load 'dired (evil-collection-wdired-setup))
   (with-eval-after-load 'pdf-tools (evil-collection-pdf-setup))
+  (with-eval-after-load 'nov (evil-collection-nov-setup))
 #+end_src
 
 ** =ivy= et. al.
@@ -990,6 +991,12 @@ Activar =org-beamer-mode= por defecto para que esté disponible en el /dispacher
   (org-beamer-mode)
 #+end_src
 
+** =org-ql=
+#+begin_src emacs-lisp
+  (use-package org-ql
+    :after org)
+#+end_src
+
 * =yasnippet=
 Yasnippet es un paquete que permite la definición de /snippets/ (o plantillas) y su utilización en diferentes modos. Por defecto, no trae plantillas definidas; si se quieren plantillas, se debe agregar el paquete =yasnippet-snippets= que trae una colección de plantillas predefinidas para modos populares.
 
@@ -1759,6 +1766,27 @@ Los siguientes acordes funcionan en los modos =mu4e-headers-mode= y =mu4e-view-m
   :after mu4e
   :config (mu4e-column-faces-mode))
 #+end_src
+
+* =nov=
+[[https://depp.brause.cc/nov.el/][=nov=]] sirve para lectura de epubs. 
+
+Para que este paquete funcione es necesario tener instalado el paquete unzip en el sistema operativo.
+
+#+begin_src emacs-lisp 
+  (use-package nov
+    :mode
+    ("\\.epub\\'" . nov-mode)
+  
+    :hook
+    (nov-mode . olivetti-mode)
+    (nov-mode . (lambda ()
+                  (face-remap-add-relative
+                   'variable-pitch :family "EB Garamond"
+                   :height 1.5))))
+#+end_src
+
+#+RESULTS:
+: t
 
 * Footnotes
 
