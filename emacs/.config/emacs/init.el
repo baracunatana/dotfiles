@@ -1,3 +1,5 @@
+(setq comp-async-report-warnings-errors nil)
+
 (setq package-enable-at-startup nil)
 
 (defvar bootstrap-version)
@@ -1056,6 +1058,26 @@
 (use-package mu4e-column-faces
   :after mu4e
   :config (mu4e-column-faces-mode))
+
+(use-package excorporate
+  :defer 3
+
+  :custom
+  (excorporate-configuration
+   '("je.gomezm@javeriana.edu.co" . "https://outlook.office365.com/EWS/Exchange.asmx"))
+  (excorporate-calendar-show-day-function 'exco-calfw-show-day)
+  (org-agenda-include-diary t)
+
+  :config
+  (excorporate)
+  (excorporate-diary-enable)
+  (run-with-timer 30 (* 60 60) 'j/actualizar-diario-con-exchange)
+
+  :init
+  (defun j/actualizar-diario-con-exchange ()
+    (interactive)
+    "Usa excorporate para actualizar el diario con las citas del día"
+    (exco-diary-diary-advice (calendar-current-date) (calendar-current-date) #'message "citas actualizadas")))
 
 (use-package nov
   :mode

@@ -23,3 +23,8 @@ emacs/.config/emacs/auto-save-list*
 /emacs/.config/emacs/tramp
 /emacs/.config/emacs/nov-places
 /emacs/.config/emacs/recentf~
+/emacs/.config/emacs/diary
+/emacs/.config/emacs/diary~
+/emacs/.config/emacs/elpa/
+/emacs/.config/emacs/excorporate/
+/emacs/.config/emacs/tutorial/

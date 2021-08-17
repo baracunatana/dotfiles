@@ -1,7 +1,7 @@
 #+title: Configuración literaria de Emacs
 #+author: Juan E. Gómez-Morantes, PhD.
 
-#+property: header-args:emacs-lisp :tangle .~/config/emacs/init.el
+#+property: header-args:emacs-lisp :tangle ~/.config/emacs/init.el
 
 #+begin_quote
 Fuck vim, all my homies use emacs
@@ -10,6 +10,12 @@ Fuck vim, all my homies use emacs
 * Introducción
 Este archivo presenta una configuración literaria de emacs. En muchas partes se usa la funcionalidad =noweb= de =org= para tener una mejor trazabilidad y documentación de configuraciones complejas. En https://www.hhyu.org/posts/literate_config/ se puede encontrar más información al respecto.
   
+* Native comp
+** Ignorar reporte de /warnings/ de compilación
+#+begin_src emacs-lisp
+  (setq comp-async-report-warnings-errors nil)
+#+end_src
+
 * Manejador de paquetes
 Esta configuración está basada en =straight= y =use-package=. En esta sección se =straight= siguiendo las instrucciones encontradas en https://github.com/raxod502/straight.el, y se hace la configuración inicial para la instalación de =use-package= y su integración con =straight=.
 
@@ -1769,6 +1775,31 @@ Los siguientes acordes funcionan en los modos =mu4e-headers-mode= y =mu4e-view-m
 (use-package mu4e-column-faces
   :after mu4e
   :config (mu4e-column-faces-mode))
+#+end_src
+
+* =excorporate=
+=excorporate= es un paquete que sirve para consultar el calendario de exchange a través de EWS.
+  
+#+begin_src emacs-lisp 
+  (use-package excorporate
+    :defer 3
+  
+    :custom
+    (excorporate-configuration
+     '("je.gomezm@javeriana.edu.co" . "https://outlook.office365.com/EWS/Exchange.asmx"))
+    (excorporate-calendar-show-day-function 'exco-calfw-show-day)
+    (org-agenda-include-diary t)
+  
+    :config
+    (excorporate)
+    (excorporate-diary-enable)
+    (run-with-timer 30 (* 60 60) 'j/actualizar-diario-con-exchange)
+  
+    :init
+    (defun j/actualizar-diario-con-exchange ()
+      (interactive)
+      "Usa excorporate para actualizar el diario con las citas del día"
+      (exco-diary-diary-advice (calendar-current-date) (calendar-current-date) #'message "citas actualizadas")))
 #+end_src
 
 * =nov=
