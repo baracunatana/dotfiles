@@ -13,7 +13,7 @@ Este archivo presenta una configuración literaria de emacs. En muchas partes se
 * Native comp
 ** Ignorar reporte de /warnings/ de compilación
 #+begin_src emacs-lisp
-  (setq comp-async-report-warnings-errors nil)
+  (setq native-comp-async-report-warnings-errors nil)
 #+end_src
 
 * Manejador de paquetes
