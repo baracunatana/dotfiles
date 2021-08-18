@@ -250,7 +250,6 @@
   (org-tags-column 0)             ; Quitar espacio entre título y etiquetas
   (org-list-allow-alphabetical t) ; Permitir listas con letras
   (org-table-header-line-p t)     ; Congelar primera fila de tablas largas
-  (org-export-in-background t)    ; Exportación asíncrona
   (org-todo-keywords '((sequence "TODO(t)"
                                  "ESPE(e)"
                                  "EMPE(m)"

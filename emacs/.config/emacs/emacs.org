@@ -433,7 +433,6 @@ Nótece que hay que tener los diccionarios instalados. De lo contrario, la inici
   (org-tags-column 0)             ; Quitar espacio entre título y etiquetas
   (org-list-allow-alphabetical t) ; Permitir listas con letras
   (org-table-header-line-p t)     ; Congelar primera fila de tablas largas
-  (org-export-in-background t)    ; Exportación asíncrona
 #+end_src
 
 ** Configuración de estados, prioridades y etiquetas de tareas
