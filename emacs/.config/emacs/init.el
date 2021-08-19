@@ -567,9 +567,10 @@
   (j/lider-local
     :infix "c"
     :keymaps '(org-mode-map)
-    "" '(:ignore t :which-key "Calendario")
+    "" '(:ignore t :which-key "calendario")
     "d" '(org-deadline :which-key "definir deadline")
-    "f" '(j/org-set-futu :which-key "A futuro")
+    "f" '(j/org-set-futu :which-key "Aa futuro")
+    "t" '(org-time-stamp-inactive :which-key "time stamp")
     "c" '(org-schedule :which-key "agendar"))
   (add-to-list 'evil-normal-state-modes 'org-agenda-mode)
   (general-define-key
