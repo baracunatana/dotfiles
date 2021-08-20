@@ -493,6 +493,9 @@
     (org-set-property "ACTIONABLE" (concat "[" (org-read-date nil nil nil "ACTIONABLE: ") "]"))
     (org-todo "FUTU"))
   (setq org-super-agenda-header-map (make-sparse-keymap))
+  (with-eval-after-load 'org-agenda 
+    (add-to-list 'org-agenda-prefix-format '(agenda . " %i %-12:c%?-12t% s %b"))
+    (add-to-list 'org-agenda-prefix-format '(todo . " %i %-12:c %b")))
   ;; Definir la lista DESPUÉS de cargar org-capture. Esto es necesario porque de no tenerlo la lista de plantillas se reiniciaba
   
   (with-eval-after-load 'org-capture       
