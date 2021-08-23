@@ -1,22 +1,350 @@
-#+title: Configuración literaria de Emacs
-#+author: Juan E. Gómez-Morantes, PhD.
+#+title: Configuración completa de sistema operativo y aplicaciones básicas
+#+author: Juan E. Gómez-Morantes, PhD
 
-#+property: header-args:emacs-lisp :tangle ~/.config/emacs/init.el
+* Introducción
+Este archivo define, en un estilo literario, la configuración de todo mi sistema operativo y sus aplicaciones básicas. Para esto hace uso intensivo del paguete =org= de =Emacs=, las funcionalidades de tangling y noweb de =org=.
 
+Esta configuración es para un sistema operativo basado en la versión 21.05 de [[https://nixos.org][NixOS]].
+
+* Cómo usar este archivo
+Desde emacs, se debe hacer un tangling de este archivo. Eso es todo.
+
+Lo que se logra con esto es generar una serie de archivos de configuración en las ubicaciones correctas tanto para NixOS como para los paquetes configurados en este archivo. En adición, se genera un script (=./post-tangle.sh=) que debe ser ejecutado con =sudo= para que copie los archivos necesarios en carpetas son acceso para usuarios normales. 
+
+** Script post-tangle
+*** Mover ./configuration.nix a /etc/nixos/configuration.nix
+#+begin_src sh :tangle ./post-tangle.sh
+#!/bin/sh
+cp ./configuration.nix /etc/nixos/configuration.nix
+#+end_src
+
+* Sistema operativo
+:PROPERTIES:
+:header-args:nix: :tangle ./configuration.nix
+:END:
+NixOS se configura, en términos de paquetes, servicios, y opciones iniciales, en el archivo =/etc/nixos/configuration.nix=. Para evitar problemas de usuarios y accesos, este archivo se crea en =./= y se genera un script para moverlo a =/etc/nixos/configuration.nix=. De esta forma nos evitamos enredos a la hora de hacer el tangling de este archivo desde emacs.
+
+#+begin_src nix :noweb no-export
+  { config, pkgs, ... }:
+  let 
+    unstable = import (builtins.fetchTarball https://github.com/nixos/nixpkgs/tarball/nixos-unstable-small)
+    { config = config.nixpkgs.config; }; 
+  in
+  {
+    <<nixos-base>>
+
+    <<nixos-overlays>>  
+
+    # List packages installed in system profile. To search, run:
+    # $ nix search wget
+    environment.systemPackages = with pkgs; [
+      <<nixos-paquetes>>
+      #openssl
+      pcloud
+      pinentry
+      stow
+    ];
+
+    <<nixos-configuracion-paquetes>>
+
+  # This value determines the NixOS release from which the default
+  # settings for stateful data, like file locations and database versions
+  # on your system were taken. It‘s perfectly fine and recommended to leave
+  # this value at the release version of the first install of this system.
+  # Before changing this value read the documentation for this option
+  # (e.g. man configuration.nix or on https://nixos.org/nixos/options.html).
+  system.stateVersion = "21.05"; # Did you read the comment?
+}
+#+end_src
+
+** Incluir resultados del escaneo de /hardware/
+#+begin_src nix :tangle no :noweb-ref nixos-base
+imports =
+  [ 
+    ./hardware-configuration.nix
+  ];
+#+end_src
+
+** Periféricos 
+*** Trackpad
+#+begin_src nix :tangle no :noweb-ref nixos-base
+  # Enable touchpad support (enabled default in most desktopManager).
+  services.xserver.libinput.enable = true;
+#+end_src
+
+*** Sonido
+#+begin_src nix :tangle no :noweb-ref nixos-base
+  sound.enable = true;
+  hardware.pulseaudio.enable = true;
+#+end_src
+
+*** Servicio de impresión (con CUPS)
+#+begin_src nix :tangle no :noweb-ref nixos-base
+  # Enable CUPS to print documents.
+  # services.printing.enable = true;
+#+end_src
+
+*** Bluetooth
+#+begin_src nix :tangle no :noweb-ref nixos-base
+  # Habilitar bluetooth
+  # GNome 40 no requiere esto, pero Plasma 5 sí...
+  hardware.bluetooth.enable = true;
+  services.blueman.enable = true;
+#+end_src
+
+** Activación de gnupg agent
+#+begin_src nix :tangle no :noweb-ref nixos-base
+  # Some programs need SUID wrappers, can be configured further or are
+  # started in user sessions.
+  # programs.mtr.enable = true;
+  programs.gnupg.agent = {
+     enable = true;
+  #   enableSSHSupport = true;
+  };
+#+end_src
+
+** Usuarios
+#+begin_src nix :tangle no :noweb-ref nixos-base
+  # Define a user account. Don't forget to set a password with ‘passwd’.
+  users.users.juan = {
+     isNormalUser = true;
+     extraGroups = [ "wheel" ]; # Enable ‘sudo’ for the user.
+  };
+#+end_src
+
+** Permitir paquetes no /free/
+#+begin_src nix :tangle no :noweb-ref nixos-base
+  # Permite la instalacion de paquetes non free
+  nixpkgs.config.allowUnfree = true;
+#+end_src
+
+** Internacionalización
+#+begin_src nix :tangle no :noweb-ref nixos-base
+  # Select internationalisation properties.
+  # i18n.defaultLocale = "en_US.UTF-8";
+  # console = {
+  #   font = "Lat2-Terminus16";
+  #   keyMap = "us";
+  # };
+
+  # Configure keymap in X11
+  services.xserver.layout = "latam";
+  # services.xserver.xkbOptions = "eurosign:e";
+#+end_src
+
+** Escritorios y manejadores gráficos
+*** X11
+#+begin_src nix :tangle no :noweb-ref nixos-base
+  # Enable the X11 windowing system.
+  services.xserver.enable = true;
+#+end_src
+
+*** Gnome
+#+begin_src nix :tangle no :noweb-ref nixos-base
+  services.xserver.displayManager.gdm.enable = true;
+  services.xserver.desktopManager.gnome.enable = true;
+#+end_src
+
+*** Plasma
+#+begin_src nix :tangle no :noweb-ref nixos-base
+  #services.xserver.displayManager.sddm.enable = true;
+  #services.xserver.desktopManager.plasma5.enable = true;
+#+end_src
+
+** Configuración de carga de sistema operativo
+#+begin_src nix :tangle no :noweb-ref nixos-base
+  # Use the systemd-boot EFI boot loader.
+  boot.loader.systemd-boot.enable = true;
+  boot.loader.efi.canTouchEfiVariables = true;
+#+end_src
+
+** Configuración de red y conectividad
+#+begin_src nix :tangle no :noweb-ref nixos-base
+  # Configure network proxy if necessary
+  # networking.proxy.default = "http://user:password@proxy:port/";
+  # networking.proxy.noProxy = "127.0.0.1,localhost,internal.domain";
+
+  networking.hostName = "shion"; # Define your hostname.
+  networking.wireless.enable = false;  # Enables wireless support via wpa_supplicant.
+  networking.networkmanager.enable = true;
+
+  # The global useDHCP flag is deprecated, therefore explicitly set to false here.
+  # Per-interface useDHCP will be mandatory in the future, so this generated config
+  # replicates the default behaviour.
+  networking.useDHCP = false;
+  networking.interfaces.wlp2s0.useDHCP = true;
+
+  # Enable the OpenSSH daemon.
+  # services.openssh.enable = true;
+
+  # Open ports in the firewall.
+  # networking.firewall.allowedTCPPorts = [ ... ];
+  # networking.firewall.allowedUDPPorts = [ ... ];
+  # Or disable the firewall altogether.
+  # networking.firewall.enable = false;
+#+end_src
+
+** Zona horario
+#+begin_src nix :tangle no :noweb-ref nixos-base
+time.timeZone = "America/Bogota";
+#+end_src
+
+** Configuración de servidor cachix
+#+begin_src nix :tangle no :noweb-ref nixos-base
+nix = {
+    binaryCaches = [ "https://nix-community.cachix.org/" ];
+    binaryCachePublicKeys = [
+      "nix-community.cachix.org-1:mB9FSh9qf2dCimDSUo8Zy7bkq5CX+/rkCWyvRCYg3Fs="
+    ];
+};
+#+end_src
+
+** Fuentes
+#+begin_src nix :tangle no :noweb-ref nixos-base
+  fonts.fonts = with pkgs; [ 
+    eb-garamond
+    inconsolata-lgc
+  ];
+#+end_src
+
+* Aplicaciones y paquetes
+** Emulador de terminales
+*** [[https:alacritty.org][Alacritty]] 
+#+begin_src nix :tangle no :noweb-ref nixos-paquetes
+alacritty 
+#+end_src
+
+**** Configuración
+***** Definición de fuente
+#+begin_src yml :tangle ~/.config/alacritty/alacritty.yml
+font:
+  normal:
+    family: Inconsolata LGC
+#+end_src
+
+** Navegadores web
+*** [[https:www.mozilla.org/en-US/firefox/][Firefox]]
+#+begin_src nix :tangle no :noweb-ref nixos-paquetes
+firefox
+#+end_src
+
+*** [[https:qutebrowser.org][Qutebrowser]] 
+#+begin_src nix :tangle no :noweb-ref nixos-paquetes
+qutebrowser
+#+end_src
+
+**** Configuración
+#+begin_src python :tangle ~/.config/qutebrowser/config.py
+# No tomar en cuenta configuraciones hechas por gui
+config.load_autoconfig(False)
+
+# Tema oscuro para páginas web
+c.colors.webpage.darkmode.enabled = True
+#+end_src
+
+*** [[https:brave.com][Brave]]
+#+begin_src nix :tangle no :noweb-ref nixos-paquetes
+brave
+#+end_src
+
+** Multimedia
+*** [[https:www.spotify.com][Spotify]]
+#+begin_src nix :tangle no :noweb-ref nixos-paquetes
+spotify
+#+end_src
+
+*** [[https:www.pinta-project.com][Pinta]] 
+#+begin_src nix :tangle no :noweb-ref nixos-paquetes
+pinta
+#+end_src
+
+** Lectura de documentos
+*** [[http:wiki.gnome.org/Apps/Evince][Evince]]
+#+begin_src nix :tangle no :noweb-ref nixos-paquetes
+evince
+#+end_src
+
+*** [[https:calibre-ebook.com][Calibre]]
+#+begin_src nix :tangle no :noweb-ref nixos-paquetes
+calibre
+#+end_src
+
+** Desarrollo e ingeniería
+*** [[https:www.archimatetool.com][Archi]]
+#+begin_src nix :tangle no :noweb-ref nixos-paquetes
+archi
+#+end_src
+
+** Academia
+*** [[https:www.jabref.org][Jabref]]
+#+begin_src nix :tangle no :noweb-ref nixos-paquetes
+jabref
+#+end_src
+
+*** [[https:www.zotero.org][Zotero]]
+#+begin_src nix :tangle no :noweb-ref nixos-paquetes
+zotero
+#+end_src
+** Edición de texto y ofimática
+*** [[https:www.libreoffice.org][Libreoffice]]
+#+begin_src nix :tangle no :noweb-ref nixos-paquetes
+libreoffice
+#+end_src
+
+*** Latex (con [[https:tectonic-typesetting.github.io][Tectonic]])
+Se requiere =tectonic= 7+ para tener compatibilidad con =biber= y =biblatex=. Esta versión sólo está en el canal unstable de NixOS (a la fecha [2021-08-20 Fri]).
+
+Tectonic no instala biber, así que toca instalarlo "a mano".
+#+begin_src nix :tangle no :noweb-ref nixos-paquetes
+unstable.tectonic
+biber
+#+end_src
+
+*** [[https:www.pdflabs.com/tools/pdftk-the-pdf-toolkit/][Pdftk]]
+#+begin_src nix :tangle no :noweb-ref nixos-paquetes
+pdftk
+#+end_src
+
+*** [[https://hackage.haskell.org/package/pandoc][Pandoc]]
+#+begin_src nix :tangle no :noweb-ref nixos-paquetes
+pandoc
+#+end_src
+
+*** [[http://www.gnu.org/software/emacs/][Emacs]] 
+**** Instalación
+Emacs requiere configurar un overlay para poder instalar la última versión (28.0 con GCC a la fecha [2021-08-20 Fri]).
+#+begin_src nix :tangle no :noweb-ref nixos-overlays
+services.emacs.package = pkgs.emacsGcc;
+nixpkgs.overlays = [
+  (import (builtins.fetchGit {
+     url = "https://github.com/nix-community/emacs-overlay.git";
+     ref = "master";
+     # rev = "bfc8f6edcb7bcf3cf24e4a7199b3f6fed96aaecf";
+  }))
+];
+#+end_src
+
+Ahora sí se puede instalar =emacs= con gcc.
+
+#+begin_src nix :tangle no :noweb-ref nixos-paquetes
+emacsGcc
+#+end_src
+
+**** Configuración
+:PROPERTIES:
+:header-args:emacs-lisp: :tangle ~/.config/emacs/init.el
+:END:
 #+begin_quote
 Fuck vim, all my homies use emacs
 #+end_quote
 
-* Introducción
-Este archivo presenta una configuración literaria de emacs. En muchas partes se usa la funcionalidad =noweb= de =org= para tener una mejor trazabilidad y documentación de configuraciones complejas. En https://www.hhyu.org/posts/literate_config/ se puede encontrar más información al respecto.
-  
-* Native comp
-** Ignorar reporte de /warnings/ de compilación
+***** Native comp
+****** Ignorar reporte de /warnings/ de compilación
 #+begin_src emacs-lisp
   (setq native-comp-async-report-warnings-errors nil)
 #+end_src
 
-* Manejador de paquetes
+***** Manejador de paquetes
 Esta configuración está basada en =straight= y =use-package=. En esta sección se =straight= siguiendo las instrucciones encontradas en https://github.com/raxod502/straight.el, y se hace la configuración inicial para la instalación de =use-package= y su integración con =straight=.
 
 #+begin_src emacs-lisp
@@ -38,8 +366,8 @@ Esta configuración está basada en =straight= y =use-package=. En esta sección
   (setq straight-use-package-by-default t)
 #+end_src 
   
-* Interfaz
-** Configuración básica
+***** Interfaz
+****** Configuración básica
 #+begin_src emacs-lisp
   (scroll-bar-mode -1)        ; Desabilitar el scroll bar
   (tool-bar-mode -1)          ; Desabilitar la barra de herramientas
@@ -49,7 +377,7 @@ Esta configuración está basada en =straight= y =use-package=. En esta sección
   (global-visual-line-mode)   ; Word wrapping por defecto en todos los modos
   (global-auto-revert-mode t) ; Activar global auto-revert 
 #+end_src
-** Fuentes
+****** Fuentes
 Uso [[https://github.com/DeLaGuardo/Inconsolata-LGC][Inconsolata-LGC]] (la inconsolata normal no tiene cursiva) como fuente global de emacs. Algunos modos cambian la fuente.
 
 La lista de fuentes disponibles para emacs se puede consultar ejecutando el siguiente bloque de código:
@@ -67,9 +395,9 @@ Para poder usar inconsolata, es imporante verificar que esté disponible en esa 
 
 Para esto, la fuente debe estar instalada correctamente en el sistema. Si se usa desde wsl, se debe agregar la fuente a Ubuntu, no a Vcxsrv o al servidor de X11 que se esté usando. Esto se hace copiando la fuente a la carpeta apropiada dentro de =/usr/share/fonts= y actualizando el caché de fuentes de ubuntu con =sudo fc-cache -vr=. Luego de esto se puede verificar que la fuente quedó instalada ejecuntado =(font-family-list)= en emacs. Para este último paso lo más fácil es hacerlo dentro de un archivo de org tal y como se está realizando esta configuración y ejecutando el bloque de código respectivo.
 
-** =evil=
+****** =evil=
 =evil= permite edición modal y uso de acordes estilo vim en Emacs. Esta sección se limita a instalación y configuración básica de =evil= y =general= (para la definición de acordes locales). Luego, en las secciones correspondientes a cada paquete, se hace la configuración de los acordes locales.
-*** Configuración de =evil=
+******* Configuración de =evil=
 #+begin_src emacs-lisp
   (use-package evil
     :custom
@@ -85,7 +413,7 @@ Para esto, la fuente debe estar instalada correctamente en el sistema. Si se usa
     (evil-mode))
 #+end_src
     
-*** Configuración de =general=
+******* Configuración de =general=
 =general= es un paquete que ayuda a definir teclas líderes para diferentes conceptos, y es integrable con =use-package= usando la opción =:general=. En esta sección se define una tecla lider general (SPC) para arcordes globales y una tecla lider local (SPC m) para acordes relativos al modo actual.
 
 #+begin_src emacs-lisp
@@ -106,7 +434,7 @@ Para esto, la fuente debe estar instalada correctamente en el sistema. Si se usa
       :non-normal-prefix "M-SPC m"))
 #+end_src
 
-*** Configuración de =evil-collection=
+******* Configuración de =evil-collection=
 #+begin_src emacs-lisp :noweb no-export
   (use-package evil-collection
     :after evil
@@ -114,7 +442,7 @@ Para esto, la fuente debe estar instalada correctamente en el sistema. Si se usa
     <<evil-collection-config>>)
 #+end_src
 
-**** Activar para modos específicos 
+******** Activar para modos específicos 
 #+begin_src emacs-lisp :noweb-ref evil-collection-config :tangle no
   (with-eval-after-load 'magit (evil-collection-magit-setup))
   (with-eval-after-load 'dired (evil-collection-dired-setup))
@@ -123,10 +451,10 @@ Para esto, la fuente debe estar instalada correctamente en el sistema. Si se usa
   (with-eval-after-load 'nov (evil-collection-nov-setup))
 #+end_src
 
-** =ivy= et. al.
+****** =ivy= et. al.
 Esta configuración hace uso extensivo de =ivy= y =cousel= para terminación. En esta sección se hacen todas las configuraciones relevantes al sistema de terminación.
   
-*** TODO Configuración inicial de =ivy=
+******* TODO Configuración inicial de =ivy=
 (ver cómo se pueden configurar =C-j= y =C-k= en =ivy-minibuffer-map= usando general)
 
 #+begin_src emacs-lisp :noweb no-export
@@ -139,7 +467,7 @@ Esta configuración hace uso extensivo de =ivy= y =cousel= para terminación. En
     (ivy-mode 1))
 #+end_src
 
-*** Configuración de =counsel=
+******* Configuración de =counsel=
 Activo counsel y enlazo =M-x= a =counsel-M-x=. Con esto se logra ver los binds actuales de los comandos. También se usa =counsel= en otros puntos de esta configuración como por ejemplo en los acordes de apertura de archivo.
     
 #+begin_src emacs-lisp
@@ -149,7 +477,7 @@ Activo counsel y enlazo =M-x= a =counsel-M-x=. Con esto se logra ver los binds a
     (global-set-key (kbd "M-x") 'counsel-M-x))
 #+end_src
 
-*** =ivy-rich= y =all-the-icons-ivy-rich=
+******* =ivy-rich= y =all-the-icons-ivy-rich=
 Estos dos paquetes se usan para agregar íconos a ivy. Por ejemplo, agrega íconos a la selección de buffers o de apertura de archivos.
     
 #+begin_src emacs-lisp
@@ -163,7 +491,7 @@ Estos dos paquetes se usan para agregar íconos a ivy. Por ejemplo, agrega ícon
     :init (all-the-icons-ivy-rich-mode 1))
 #+end_src
 
-*** =prescient=
+******* =prescient=
 =presciente= le ayuda a =ivy= a mostrar opciones recientes y frecuentes en el tope de las listas mostradas para terminación.
   
 #+begin_src emacs-lisp
@@ -177,14 +505,14 @@ Estos dos paquetes se usan para agregar íconos a ivy. Por ejemplo, agrega ícon
       (prescient-persist-mode)))
 #+end_src
 
-** =all-the-icons=
+****** =all-the-icons=
 Este paquete instala fuentes con íconos que son usadas por muchos otros paquetes (e.g. [[Doom modeline]], Dired, [[ivy]], entre otros). Si luego de esta configuración no se logran visualizar los íconos, es porque falta ejecutar =(all-the-icons-install-fonts)=.
 
 #+begin_src emacs-lisp
   (use-package all-the-icons)
 #+end_src
 
-** =doom-modeline=
+****** =doom-modeline=
 #+begin_src emacs-lisp
   (use-package doom-modeline
     :after 
@@ -194,7 +522,7 @@ Este paquete instala fuentes con íconos que son usadas por muchos otros paquete
     (doom-modeline-mode 1))
 #+End_src
 
-** =which-key=
+****** =which-key=
 =which-key= es un paquete que muestra los acordes disponibles luego de iniciar un acorde normal o tipo vim. Lo que hace es mostrar un diálogo que muestra las opciones disponibles luego de iniciar un comando. Por ejemplo, si se presiona =C-c=, =which-key= muestra un diálogo con todos los comandos que se pueden ejecutar luego de =C-c= y la descripción de la función a ejecutar. También muestra comandos que abren más opciones (e.g. =C-c C-x=). 
 
 #+begin_src emacs-lisp
@@ -203,7 +531,7 @@ Este paquete instala fuentes con íconos que son usadas por muchos otros paquete
     (which-key-mode))
 #+end_src
 
-** Tema gráfico
+****** Tema gráfico
 Uso el tema gráfico =modus-vivendi= de Protesilaos (https://gitlab.com/protesilaos/modus-themes).
 
 #+begin_src emacs-lisp
@@ -215,7 +543,7 @@ Uso el tema gráfico =modus-vivendi= de Protesilaos (https://gitlab.com/protesil
     (modus-themes-load-vivendi))
 #+end_src
 
-** =helpful=
+****** =helpful=
 =helpful= es un paquete que mejora sustancialmente los /buffers/ de ayuda estándares de Emacs. Se carga después de general para integrarlo con ese paquete.
 
 #+begin_src emacs-lisp
@@ -233,7 +561,7 @@ Uso el tema gráfico =modus-vivendi= de Protesilaos (https://gitlab.com/protesil
      "q" '(quit-window :which-key "salir")))
 #+end_src
 
-** =rainbow delimiters=
+****** =rainbow delimiters=
 Este paquete agrega color a los paréntesis para tener una referencia gráfica de parejas de paréntesis.
    
 #+begin_src emacs-lisp
@@ -243,14 +571,14 @@ Este paquete agrega color a los paréntesis para tener una referencia gráfica d
     (prog-mode . rainbow-delimiters-mode))
 #+end_src
 
-** Acordes generales
-*** Operaciones sobre modos de edición
+****** Acordes generales
+******* Operaciones sobre modos de edición
 #+begin_src emacs-lisp
   (j/lider
     "SPC" '(evil-normal-state :which-key "volver a modo normal"))
 #+end_src
 
-*** Acordes de archivos
+******* Acordes de archivos
 #+begin_src emacs-lisp
   (j/lider
     :infix "a"
@@ -277,7 +605,7 @@ Algunas opciones de menú de archivo requieren funciones auxiliares:
         (message "Este buffer no representaba un archivo"))))
 #+end_src
 
-*** Operaciones sobre ventanas
+******* Operaciones sobre ventanas
 #+begin_src emacs-lisp
   (j/lider
     :infix "v"
@@ -296,7 +624,7 @@ Algunas opciones de menú de archivo requieren funciones auxiliares:
     "v" '(evil-window-vsplit :which-key "dividir verticalmente"))
 #+end_src
 
-*** Operaciones sobre buffers
+******* Operaciones sobre buffers
 #+begin_src emacs-lisp
   (j/lider
     :infix "b"
@@ -312,7 +640,7 @@ Algunas opciones de menú de archivo requieren funciones auxiliares:
     "j" '(next-buffer :which-key "siguiente buffer"))
 #+end_src
 
-*** Menú de ayuda
+******* Menú de ayuda
 #+begin_src emacs-lisp
   (j/lider
     :infix "h"
@@ -326,7 +654,7 @@ Algunas opciones de menú de archivo requieren funciones auxiliares:
     "t" '(helpful-key :which-key "describir tecla"))
 #+end_src
 
-*** Menú de accesos directos
+******* Menú de accesos directos
 #+BEGIN_SRC emacs-lisp
   (j/lider
     :infix "o"
@@ -343,7 +671,7 @@ Algunas opciones de menú de archivo requieren funciones auxiliares:
     (find-file "~/personal/orgmode/gtd.org"))
 #+END_SRC
 
-*** Movimiento
+******* Movimiento
 Mapa de movimiento general (cualquier modo)
 
 #+begin_src emacs-lisp
@@ -362,7 +690,7 @@ Mapa de movimiento general (cualquier modo)
    "l" '(evil-end-of-line :which-key "evil-end-of-line"))
 #+end_src
 
-** Olivetti
+****** Olivetti
 [[https://github.com/rnkn/olivetti][=olivetti=]] es un /minor mode/ que ofrece una mejor experiencia de edición y lectura de texto al reducir el ancho del texto y centrarlo en la ventana. En esta sección se hace la instalación y configuración por defecto del paquete, pero en otros paquetes (e.g. [[Elfeed]]) se puede activar por defecto (en ciertos modos) o se agregan configuraciones locales.
 
 #+begin_src emacs-lisp 
@@ -373,15 +701,22 @@ Mapa de movimiento general (cualquier modo)
     (olivetti-mode))
 #+end_src
 
-* Revisión ortográfica
+***** Revisión ortográfica
 Emacs permite hace revisión ortográfica desde cualquier modo. Esto resulta indispensable para escribir documentos, correos electrónicos, o archivos orgmode exportables.
 
 Existen dos modos para esto; ispell y flyspell. Ispell permite revisión ortográfica por demanda, mientras que flyspell permite revisión ortográfica a medida que se teclea[fn:1]. Por obvias razones, la mejor opción es flyspell.
 
 Los motores normales para hacer la revisión son aspell y hunspell. Hunspell es el más popular[fn:2], pero aspell tiene mejor desempeño (por lo menos con diccionarios en inglés)[fn:3]. Una de las razones para que hunspell sea más popular es que aspell no tenía mantenimiento desde 2011, pero el desarrollo continuó en 2019 y ahora está en versión 60.8[fn:4]. Por estas razones, se decide usar aspell en linux o wsl. Hunspell debe usarse en windows (nativo) porque aspell revienta a emacs en documentos latex.
 
-*** Configuración de emacs
-**** Para aspell
+****** Instalación de aspell
+#+begin_src nix :tangle no :noweb-ref nixos-paquetes
+aspell
+aspellDicts.en
+aspellDicts.es
+#+end_src
+
+****** Configuración de emacs
+******* Para aspell
 #+begin_src emacs-lisp 
   (use-package ispell
     :custom 
@@ -390,7 +725,7 @@ Los motores normales para hacer la revisión son aspell y hunspell. Hunspell es 
     (text-mode . flyspell-mode))
 #+end_src
 
-**** Para hunspell
+******* Para hunspell
 Se debe agregar lo siguiente en .emacs
 
 #+begin_src :tangle no
@@ -411,7 +746,7 @@ Para agregar diccionarios y definir español como diccionario por defecto, se ag
 
 Nótece que hay que tener los diccionarios instalados. De lo contrario, la inicialización falla.
 
-* =org=
+***** =org=
 #+begin_src emacs-lisp :noweb no-export
   (use-package org
     :commands (org-capture org-agenda)
@@ -425,7 +760,7 @@ Nótece que hay que tener los diccionarios instalados. De lo contrario, la inici
     <<org-general>>)
 #+end_src
 
-** Configuración básica
+****** Configuración básica
 #+begin_src emacs-lisp :tangle no :noweb-ref org-custom
   (org-startup-folded t)          ; Colapsar contenido al abrir un archivo
   (org-startup-align-all-table t) ; Empezar con las tablas colapsadas
@@ -435,7 +770,7 @@ Nótece que hay que tener los diccionarios instalados. De lo contrario, la inici
   (org-table-header-line-p t)     ; Congelar primera fila de tablas largas
 #+end_src
 
-** Configuración de estados, prioridades y etiquetas de tareas
+****** Configuración de estados, prioridades y etiquetas de tareas
 #+begin_src emacs-lisp :tangle no :noweb-ref org-custom
   (org-todo-keywords '((sequence "TODO(t)"
                                  "ESPE(e)"
@@ -478,24 +813,24 @@ Nótece que hay que tener los diccionarios instalados. De lo contrario, la inici
                               ("PasarBalon" . ?b)))
 #+end_src
 
-** Bitácora de tareas repetidas
+****** Bitácora de tareas repetidas
 Cada vez que marco como completada (o cancelada) una tarea con repetición, se guarda una línea de cambio de estado en el cuerpo de la tarea. Para que estas líneas de cambio de estado se guarden dentro de un /drawer/ (logrando tareas más limpias), se modifica el valor de la variable =org-log-into-drawer=. Esta variable acepta como parámetro el nombre del cajón en donde se quiere guardar las líneas de cambio de estado. También acepta =t=, usando LOGBOOK como nombre por defecto del cajón.
 
 #+begin_src emacs-lisp :tangle no :noweb-ref org-custom
   (org-log-into-drawer "BITÁCORA")
 #+end_src
 
-** Seguir enlaces en la misma ventana
+****** Seguir enlaces en la misma ventana
 #+begin_src emacs-lisp :tangle no :noweb-ref org-config
   (setf (alist-get 'file org-link-frame-setup) #'find-file)
 #+end_src
 
-** Desactivar =electric-indent-mode= en =org=
+****** Desactivar =electric-indent-mode= en =org=
 #+begin_src emacs-lisp :tangle no :noweb-ref org-hook
   (org-mode . (lambda () (electric-indent-local-mode -1)))
 #+end_src
    
-** dwim
+****** dwim
 La siguiente función dwim (do what I mean) se toma del [[https://github.com/hlissner/doom-emacs/blob/develop/modules/lang/org/autoload/org.el#L147][código de Doom]]. Se le modifica el nombre para conservar convención de nombramiento de funciones propias.
 
 #+begin_src emacs-lisp :tangle no :noweb-ref org-config
@@ -661,7 +996,7 @@ La siguiente función dwim (do what I mean) se toma del [[https://github.com/hli
                return keywords)))
 #+end_src
    
-** Actualización automática de tareas FUTU
+****** Actualización automática de tareas FUTU
 Esta sección define una serie de funciones para usar tareas con estado =FUTU=. Estas son tareas que no aparecen como accionables, pero que se vuelven accionables en una fecha específica. Se usan para tareas que se quieren registrar con anticipación, pero que sólo se puede empezar luego de una fecha específica. 
 
 La función =j/org-set-futu= se usa para asignar el estado =FUTU= a una tarea, preguntando antes cuál es la fecha en la que se convierte en accionable. La función =j/org-verify-actionable-tasks= revisa todas las tareas de archivos registrados como en =org-agenda-files= y, si encuentra tareas con estado =FUTU= y una fecha igual o menor a la actual en la propiedad =ACTIONABLE=, las pasa a estado =TODO= y les quita la propiedad =ACTIONABLE=.
@@ -700,7 +1035,7 @@ Ahora se agrega un hook para ejecutar =j/org-actionable= antes de cada ejecució
   (org-agenda-mode . j/org-actionable)
 #+end_src
 
-** =org-superstar-mode=
+****** =org-superstar-mode=
 =org-superstar= es un paquete que mejora el aspecto visual de archivos =org=.  
 
 #+begin_src emacs-lisp
@@ -708,31 +1043,31 @@ Ahora se agrega un hook para ejecutar =j/org-actionable= antes de cada ejecució
     :hook (org-mode . org-superstar-mode))
 #+end_src
 
-** Exportación a latex
+****** Exportación a latex
 Uso tectonic como distribución de latex en (ambientes linux).
 
 #+begin_src emacs-lisp :tangle no :noweb-ref org-custom
   (org-latex-pdf-process '("tectonic %f"))
 #+end_src
 
-** Configuración de agenda
-*** Definición de archivos de agenda
+****** Configuración de agenda
+******* Definición de archivos de agenda
 #+begin_src emacs-lisp :tangle no :noweb-ref org-custom
   (org-agenda-files '("~/personal/orgmode/gtd.org"))
 #+end_src
 
-*** Mostrar la agenda en la ventana actual
+******* Mostrar la agenda en la ventana actual
 #+begin_src emacs-lisp :tangle no :noweb-ref org-custom
   (org-agenda-window-setup 'current-window)
 #+end_src
 
-*** Excluir tareas completas de vista de agenda
+******* Excluir tareas completas de vista de agenda
 #+begin_src emacs-lisp :tangle no :noweb-ref org-custom
 (org-agenda-skip-scheduled-if-done t)
 (org-agenda-skip-deadline-if-done t)
 #+end_src
 
-*** =org-super-agenda=
+******* =org-super-agenda=
 #+begin_src emacs-lisp 
   (use-package org-super-agenda    
     :after org-agenda
@@ -760,14 +1095,14 @@ También es importante deshabilitar =org-super-agenda-map= para evitar bindings 
   (setq org-super-agenda-header-map (make-sparse-keymap))
 #+end_src
 
-*** Mostrar niveles superiores (segun arbol de org) en las búsquedas generales de la agenda
+******* Mostrar niveles superiores (segun arbol de org) en las búsquedas generales de la agenda
 #+begin_src emacs-lisp :noweb-ref org-config :tangle no
   (with-eval-after-load 'org-agenda 
     (add-to-list 'org-agenda-prefix-format '(agenda . " %i %-12:c%?-12t% s %b"))
     (add-to-list 'org-agenda-prefix-format '(todo . " %i %-12:c %b")))
 #+end_src
 
-** =org-ref=
+****** =org-ref=
 =org-ref= permite usar referencias bibliográficas en formato bibtex desde =org=.
 
 #+begin_src emacs-lisp :noweb no-export
@@ -779,7 +1114,7 @@ También es importante deshabilitar =org-super-agenda-map= para evitar bindings 
     <<org-ref-config>>)
 #+end_src
 
-*** Configuración básica
+******* Configuración básica
 #+begin_src emacs-lisp :tangle no :noweb-ref org-ref-custom
   (org-ref-default-citation-link "citep")
   (reftex-default-bibliography '("~/biblioteca/main.bib"))
@@ -788,12 +1123,12 @@ También es importante deshabilitar =org-super-agenda-map= para evitar bindings 
   (bibtex-dialect 'biblatex)
 #+end_src
 
-*** Integrar con =ivy= por defecto
+******* Integrar con =ivy= por defecto
 #+begin_src emacs-lisp :tangle no :noweb-ref org-ref-config
   (org-ref-ivy-cite-completion)
 #+end_src
 
-*** Acordes relevantes
+******* Acordes relevantes
 #+begin_src emacs-lisp :tangle no :noweb-ref org-ref-config
   (j/lider-local
     :states '(normal insert emacs)
@@ -802,7 +1137,7 @@ También es importante deshabilitar =org-super-agenda-map= para evitar bindings 
     "]" '(org-ref-ivy-insert-cite-link :which-key "insertar cita"))
 #+end_src
 
-** =org-refile=
+****** =org-refile=
 Configuración necesaria para que org-refile tome en cuenta elementos hasta de nivel 4 en el archivo actual. 
 #+begin_src emacs-lisp :tangle no :noweb-ref org-custom
   ;; Destinos hasta de nivel 3
@@ -812,7 +1147,7 @@ Configuración necesaria para que org-refile tome en cuenta elementos hasta de n
   (org-outline-path-complete-in-steps nil)
 #+end_src
  
-*** Acordes  
+******* Acordes  
 #+begin_src emacs-lisp :tangle no :noweb-ref org-custom
   (j/lider-local
     :states '(normal insert emacs)
@@ -820,10 +1155,10 @@ Configuración necesaria para que org-refile tome en cuenta elementos hasta de n
     "r"   '(org-capture-refile :which-key "refile"))
 #+end_src
 
-** =org-capture=
+****** =org-capture=
 Uso =org-capture= para captura de tareas, ideas, y notas. Lo hago definiendo plantillas para diferentes elementos que quiero captura y ejecutándolos cuando sea necesario.
  
-*** Plantillas
+******* Plantillas
 #+begin_src emacs-lisp :tangle no :noweb-ref org-config
   ;; Definir la lista DESPUÉS de cargar org-capture. Esto es necesario porque de no tenerlo la lista de plantillas se reiniciaba
   
@@ -851,14 +1186,14 @@ Uso =org-capture= para captura de tareas, ideas, y notas. Lo hago definiendo pla
                    "* TODO [#D] %? \n")))
 #+end_src
 
-*** Acorde de acceso directo  
+******* Acorde de acceso directo  
 Esto acceso directo funciona desde cualquier modo
 #+begin_src emacs-lisp :tangle no :noweb-ref org-config
   (j/lider
     "c" '(org-capture :which-key "org-capture"))
 #+end_src
 
-*** Acordes para modo de captura
+******* Acordes para modo de captura
 #+begin_src emacs-lisp :noweb-ref org-general :tangle no
   (j/lider-local
     :states '(normal insert emacs)
@@ -866,13 +1201,13 @@ Esto acceso directo funciona desde cualquier modo
     "r" '(org-capture-refile :which-key "org-capture-refile"))
 #+end_src
 
-** Hábitos
+****** Hábitos
 #+begin_src emacs-lisp :tangle no :noweb-ref org-config
   (add-to-list 'org-modules 'org-habit)
 #+end_src
 
-** Acordes locales
-*** De movimiento
+****** Acordes locales
+******* De movimiento
 #+begin_src emacs-lisp :tangle no :noweb-ref org-config
   (general-define-key
    :states '(normal)
@@ -882,7 +1217,7 @@ Esto acceso directo funciona desde cualquier modo
    "H"   '(outline-up-heading :which-key "Encabezado siguiente"))
 #+end_src
 
-*** De interacción con archivo
+******* De interacción con archivo
 #+begin_src emacs-lisp :tangle no :noweb-ref org-config
   (general-define-key
    :states '(normal)
@@ -895,7 +1230,7 @@ Esto acceso directo funciona desde cualquier modo
     "T"    '(org-babel-tangle :which-key "tangle"))
 #+end_src
 
-*** De operación sobre tareas o exportación
+******* De operación sobre tareas o exportación
 #+begin_src emacs-lisp :tangle no :noweb-ref org-config
   (j/lider-local
     :states '(normal insert emacs)
@@ -909,7 +1244,7 @@ Esto acceso directo funciona desde cualquier modo
     "e"   '(org-export-dispatch :which-key "exportar"))
 #+end_src
 
-*** De reloj 
+******* De reloj 
 #+begin_src emacs-lisp :tangle no :noweb-ref org-config
   (j/lider-local
     :infix "j"
@@ -932,7 +1267,7 @@ Esto acceso directo funciona desde cualquier modo
     "o" '(org-clock-out :which-key "cerrar y eliminar"))
 #+end_src
 
-*** De calendario
+******* De calendario
 #+begin_src emacs-lisp :tangle no :noweb-ref org-config
   (j/lider-local
     :infix "c"
@@ -944,7 +1279,7 @@ Esto acceso directo funciona desde cualquier modo
     "c" '(org-schedule :which-key "agendar"))
 #+end_src
 
-*** De agenda
+******* De agenda
 Lo primero que se tiene que hacer con la agenda es indicar que debe iniciar en modo NORMAL de =evil= para tener acceso a todos los acordes globales.
 
 #+begin_src emacs-lisp :tangle no :noweb-ref org-config
@@ -971,7 +1306,7 @@ Ya con esto, se tienen que definir los acrodes locales para agenda.
 
 #+RESULTS:
 
-*** De pie de página
+******* De pie de página
 #+begin_src emacs-lisp :noweb-ref org-general :tangle no
   (j/lider-local
     :states '(normal insert emacs)
@@ -982,7 +1317,7 @@ Ya con esto, se tienen que definir los acrodes locales para agenda.
     "n" '(org-footnote-normalize :which-key "normalizar pie de página"))
 #+end_src
 
-*** De enlace
+******* De enlace
 #+begin_src emacs-lisp :noweb-ref org-general :tangle no
   (j/lider-local
     :states '(normal insert emacs)
@@ -993,8 +1328,8 @@ Ya con esto, se tienen que definir los acrodes locales para agenda.
     "s" '(org-open-at-point :which-key "segir enlace"))
 #+end_src
 
-** Exportación a latex
-*** Beamer
+****** Exportación a latex
+******* Beamer
 Por defecto, =ox-latex= exporta =*asdf*= a texto de alerta en beamer. Para que se exporte como texto en negrilla se debe agregar un filtro de exportación a org-export.
 #+begin_src emacs-lisp :tangle no :noweb-ref org-config
   (defun my-beamer-bold (contents backend info)
@@ -1008,13 +1343,13 @@ Activar =org-beamer-mode= por defecto para que esté disponible en el /dispacher
   (org-beamer-mode)
 #+end_src
 
-** =org-ql=
+****** =org-ql=
 #+begin_src emacs-lisp
   (use-package org-ql
     :after org)
 #+end_src
 
-* =yasnippet=
+***** =yasnippet=
 Yasnippet es un paquete que permite la definición de /snippets/ (o plantillas) y su utilización en diferentes modos. Por defecto, no trae plantillas definidas; si se quieren plantillas, se debe agregar el paquete =yasnippet-snippets= que trae una colección de plantillas predefinidas para modos populares.
 
 #+begin_src emacs-lisp :noweb no-export
@@ -1031,19 +1366,19 @@ Yasnippet es un paquete que permite la definición de /snippets/ (o plantillas) 
 
 La definición de plantillas se hace a partir de un archivo de texto plano que se guarda en =.emacs.d/snippets/<mode>/=. 
 
-** Inicializar yasnippet para todos los modos
+****** Inicializar yasnippet para todos los modos
 #+begin_src emacs-lisp :tangle no :noweb-ref yasnippet-config
   (yas-global-mode)
   (yas-reload-all)
 #+end_src
 
-** Acordes relevantes
+****** Acordes relevantes
 #+begin_src emacs-lisp :tangle no :noweb-ref yasnippet-config
   (j/lider
     "y" '(yas-insert-snippet :which-key "insertar plantilla"))
 #+end_src
 
-* =dired=
+***** =dired=
 Esta sección contiene la configuración de Dired. Al ser un paquete incluido en emacs, es necesario incluir la línea =:straight (:type built-in)= para que =use-package= lo pueda encontrar (esto es necesario por la integración de =use-package= con =straight=)
    
 #+begin_src emacs-lisp :noweb no-export
@@ -1056,14 +1391,14 @@ Esta sección contiene la configuración de Dired. Al ser un paquete incluido en
     <<dired-config>>)
 #+end_src
 
-** Evitar apertura de múltiples /buffers/ con RET
+****** Evitar apertura de múltiples /buffers/ con RET
 Por defecto, =dired= crea un nuevo /buffer/ cada vez que se da =RET= en una carpeta. Si no se quiere abrir tantos /buffers/, una opción es usar =dired-find-alternate-file= (mapeado por defecto a =a=) en lugar de =dired-find-file= (mapeado por defecto a =RET=). Sin embargo, esta función está deshabilitada porque los usuarios la encontraban confusa. Para habilitarla por defecto y evitar el diálogo de confirmación se debe ejecutar:
 
 #+begin_src emacs-lisp :tangle no :noweb-ref dired-config
   (put 'dired-find-alternate-file 'disabled nil)
 #+end_src
   
-** all-the-icons-dired
+****** all-the-icons-dired
 Este paquete agrega íconos a los archivos mostrados en =dired=
 
 #+begin_src emacs-lisp
@@ -1072,13 +1407,13 @@ Este paquete agrega íconos a los archivos mostrados en =dired=
     :hook (dired-mode . all-the-icons-dired-mode))
 #+end_src
 
-** No pedir confirmación en operaciones recursivas
+****** No pedir confirmación en operaciones recursivas
 #+begin_src emacs-lisp :tangle no :noweb-ref dired-custom
   (dired-recursive-copies 'always)
   (dired-recursive-deletes 'always)
 #+end_src
 
-* =magit=
+***** =magit=
 Magit es el mejor cliente git no solo para emacs sino en general. Funciona desde emacs apoyado en el cliente git estándar para el sistema operativo en donde se esté corriendo emacs.
   
 #+begin_src emacs-lisp :noweb no-export
@@ -1088,14 +1423,14 @@ Magit es el mejor cliente git no solo para emacs sino en general. Funciona desde
     <<magit-init>>) 
 #+end_src
 
-** Comando de acceso directo 
+****** Comando de acceso directo 
 #+begin_src emacs-lisp :tangle no :noweb-ref magit-init
   (j/lider
     :infix "o"
     "M" '(magit-status :which-key "magit"))
 #+end_src
 
-* =projectile=
+***** =projectile=
 =projectile= es una librería de interacción con proyectos para Emacs. Lo uso para tener acceso rápido a archivos de proyectos y para facilitar tareas sobre proyectos como exportaciones, ejecuciones, etc.
 
 #+begin_src emacs-lisp
@@ -1115,13 +1450,13 @@ Magit es el mejor cliente git no solo para emacs sino en general. Funciona desde
     (counsel-projectile-mode))
 #+end_src
 
-** Acordes
+****** Acordes
 #+begin_src emacs-lisp
   (j/lider
     "p" '(:keymap projectile-command-map :which-key "projectile"))
 #+end_src
 
-* =pdf-tools=
+***** =pdf-tools=
 =pdf-tools= es un paquete para visualización y manipulación de archivos pdfs directamente en emacs.
 
 #+begin_src emacs-lisp 
@@ -1133,7 +1468,7 @@ Magit es el mejor cliente git no solo para emacs sino en general. Funciona desde
     (pdf-tools-install))
 #+end_src
 
-* =pocket-reader=
+***** =pocket-reader=
 =[[https://github.com/alphapapa/pocket-reader.el][pocket-reader]]= es una interfaz para lectura de artículo guardados en [[http://www.getpocket.com][Pocket]].
 
 Luego de la instalación inicial, hay que correr la función =pocket-reader= para seguir el proceso de autenticación en Pocket.
@@ -1145,7 +1480,7 @@ Luego de la instalación inicial, hay que correr la función =pocket-reader= par
     <<pocket-reader-general>>)
 #+end_src
 
-** Acordes
+****** Acordes
 #+begin_src emacs-lisp :tangle no :noweb-ref pocket-reader-general
   (j/lider-local
     :states '(normal insert emacs)
@@ -1159,7 +1494,7 @@ Luego de la instalación inicial, hay que correr la función =pocket-reader= par
    "RET" '(pocket-reader-open-url :which-key "ver entrada"))
 #+end_src
 
-* =kmacro=
+***** =kmacro=
 =kmacro= ya viene de base en emacs. Lo único que hay que configurar son los acordes.
 
 #+begin_src emacs-lisp 
@@ -1176,22 +1511,25 @@ Luego de la instalación inicial, hay que correr la función =pocket-reader= par
       "k" '(kmacro-call-macro :which-key "ejecutar macro")))
 #+end_src
 
-* TODO Correo electrónico
+***** TODO Correo electrónico
 (Falta un mantenimiento general a esta configuración) 
 
-** Introducción
+****** Introducción
 Para correo electrónico uso mu4e. Este paquete hace cosas no-estandar y por eso no se pude usar straight ni use-package para su instalación. Toca a la antigüita.
 
-** Instalación
-*** Linux
-La instalación requiere un =sudo apt-get install mu4e= en ubuntu 20.04.
+****** Instalación
+******* [[https://www.djcbsoftware.nl/code/mu/][Mu]] y [[http://isync.sourceforge.net/][isync]]
+Se instala =mu= desde canal unstable por que a la fecha ([2021-08-20 Fri]) no se tiene versión 1.6+ en canal estable.
 
-En NixOS toca instalar los paquetes =mu= y =isync=.
+#+begin_src nix :tangle no :noweb-ref nixos-paquetes
+isync
+unstable.mu
+#+end_src
 
-*** TODO Configuración de mbsync
+******* TODO Configuración de mbsync
 =mbsync= es la aplicación que descarga el correo, y =mu= es la aplicación que lo indexa. 
 
-** Configuración 
+****** Configuración 
 Lo primero es agregar mu4e al load-path de emacs. Dado que esto se hace distinto de acuerdo a la distribución que estemos usando, se hace de acuerdo al nombre del host.
 
 #+begin_src emacs-lisp :noweb no-export :tangle no
@@ -1220,8 +1558,8 @@ Ahora sí se puede cargar =mu4e=. Sin embargo, este no se puede cargar con =use-
     <<mu4e-general>>)
 #+end_src
 
-*** Configuración básica
-**** Configuración de calendario
+******* Configuración básica
+******** Configuración de calendario
 Para aceptar invitaciones de calendario ics, se necesita usar la vista de mensaje de gnus (activada por defecto en, por lo menos, versiones 1.5.11+) y la siguiente configuración
 
 #+begin_src emacs-lisp noweb-ref mu4e-config
@@ -1229,12 +1567,12 @@ Para aceptar invitaciones de calendario ics, se necesita usar la vista de mensaj
 (mu4e-icalendar-setup)
 #+end_src
 
-**** Comando para halar correo
+******** Comando para halar correo
 #+begin_src emacs-lisp :noweb-ref mu4e-custom :tangle no
   (mu4e-get-mail-command "mbsync -c ~/.mbsyncrc -a")
 #+end_src
 
-**** Ruta a carpeta de correo y base de datos
+******** Ruta a carpeta de correo y base de datos
 En sistemas linux, =mu4e= se encarga de encontrar la carpeta en donde están guardados los correos sin problema. Sin embargo, en MSys2 (windows), esto es problemático porque las funciones =mu4e-root-maildir= y =mu4e-database-path= responden algo del estilo "/c/Users/...". Para resolver esto, se define el siguiente consejo para esas funciones.
 #+begin_src emacs-lisp :noweb-ref mu4e-config-no :tangle no
   (when (eq window-system 'w32)
@@ -1311,71 +1649,71 @@ En sistemas linux, =mu4e= se encarga de encontrar la carpeta en donde están gua
               hostname mu4e-maildir-info-delimiter (or flagstr ""))))
 #+end_src
 
-**** Ruta para descarga de adjuntos
+******** Ruta para descarga de adjuntos
 #+begin_src emacs-lisp :noweb-ref mu4e-custom :tangle no
   (mu4e-attachment-dir  "~/Downloads")
 #+end_src
 
-**** Renombrar archivos al moverlos
+******** Renombrar archivos al moverlos
 Se necesita para que mbsync funcione correctamente
 #+begin_src emacs-lisp :noweb-ref mu4e-custom :tangle no
   (mu4e-change-filenames-when-moving t)
 #+end_src
 
-**** Tiempo de actualización (en segundos)
+******** Tiempo de actualización (en segundos)
 #+begin_src emacs-lisp :noweb-ref mu4e-custom :tangle no
   (mu4e-update-interval (* 60 60))
 #+end_src
 
-*** Configuración de interfaz
-**** Tamaño de columnas en vista de /headers/
+******* Configuración de interfaz
+******** Tamaño de columnas en vista de /headers/
 #+begin_src emacs-lisp :noweb-ref mu4e-custom :tangle no
   (mu4e-headers-fields `((:human-date . 12)
                          (:flags . 4)
                          (:from-or-to . 15)
                          (:subject)))
 #+end_src
-**** Actualizar /headers/ si llega más correo
+******** Actualizar /headers/ si llega más correo
 #+begin_src emacs-lisp :noweb-ref mu4e-custom :tangle no
   (mu4e-headers-auto-update t)
 #+end_src
 
-**** HTML por defecto
+******** HTML por defecto
 #+begin_src emacs-lisp :noweb-ref mu4e-custom :tangle no
   (mu4e-view-prefer-html t)
 #+end_src
-**** No pedir confirmación para salir
+******** No pedir confirmación para salir
 #+begin_src emacs-lisp :noweb-ref mu4e-custom :tangle no
   (mu4e-confirm-quit nil)
 #+end_src
-**** Mostrar imágenes en vista de mensaje
+******** Mostrar imágenes en vista de mensaje
 #+begin_src emacs-lisp :noweb-ref mu4e-custom :tangle no
   (mu4e-view-show-images t)
 #+end_src
-**** Mostrar direcciones completas en lugar de sólo nombres
+******** Mostrar direcciones completas en lugar de sólo nombres
 #+begin_src emacs-lisp :noweb-ref mu4e-custom :tangle no
   (mu4e-view-show-addresses 't)
 #+end_src
-**** Usar imagemagick de estar disponible
+******** Usar imagemagick de estar disponible
 #+begin_src emacs-lisp :noweb-ref mu4e-config :tangle no
   (when (fboundp 'imagemagick-register-types)
     (imagemagick-register-types))
 #+end_src
-**** Tamaño de encabezado
+******** Tamaño de encabezado
 #+begin_src emacs-lisp :noweb-ref mu4e-custom :tangle no
   (mu4e-headers-visible-lines 16)
 #+end_src
-**** Usar =ivy= para selección de carpetas
+******** Usar =ivy= para selección de carpetas
 #+begin_src emacs-lisp :noweb-ref mu4e-custom :tangle no
   (mu4e-completing-read-function 'ivy-completing-read)
 #+end_src
 
-**** No incluir firma por defecto
+******** No incluir firma por defecto
 #+begin_src emacs-lisp :noweb-ref mu4e-custom :tangle no
   (mu4e-compose-signature-auto-include nil)
 #+end_src
 
-**** Correcciones a libreta de direcciones
+******** Correcciones a libreta de direcciones
 # +begin_src emacs-lisp :noweb-ref mu4e-init :tangle no
   (defun j/corregir-contactos (contact)
     (cond
@@ -1390,7 +1728,7 @@ Se necesita para que mbsync funcione correctamente
   (mu4e-contact-process-function 'j/corregir-contactos)
 # +end_src
 
-**** /Bookmarks/
+******** /Bookmarks/
 La definición de /bookmarks/ en =mu4e= se hace a través de la variable =mu4e-bookmarks=. Si bien se le podría agregar /bookmarks/ a esa lista, ninguna de las opciones por defecto me sirve, así que la redefino por completo.
 #+begin_src emacs-lisp :noweb-ref mu4e-custom :tangle no
   (mu4e-bookmarks `(( :name "PUJ último mes"
@@ -1398,32 +1736,32 @@ La definición de /bookmarks/ en =mu4e= se hace a través de la variable =mu4e-b
                             :key ?j)))
 #+end_src
 
-**** Acciones sobre mensajes
-***** Agregar acción para ver mensaje en navegador web
+******** Acciones sobre mensajes
+********* Agregar acción para ver mensaje en navegador web
 #+begin_src emacs-lisp :noweb-ref mu4e-config :tangle no
   (add-to-list 'mu4e-view-actions
                '("hver en html" . mu4e-action-view-in-browser) t)
 #+end_src
 
-*** Envío de correo
+******* Envío de correo
 La configuración de envió de correos está basada en [[https://www.reddit.com/r/emacs/comments/bfsck6/mu4e_for_dummies/]].
-**** Paquetes adicionales
+******** Paquetes adicionales
 #+begin_src emacs-lisp 
   (use-package org-mime
     :after mu4e)
   (use-package smtpmail
     :after mu4e)
 #+end_src
-**** Configuraciones específicas para envío de correo
-***** Usar nuevo /frame/ para escritura de mensajes
+******** Configuraciones específicas para envío de correo
+********* Usar nuevo /frame/ para escritura de mensajes
 #+begin_src emacs-lisp :noweb-ref mu4e-custom :tangle no
   (mu4e-compose-in-new-frame t)
 #+end_src
-***** No mover mensajes a carpeta Sent. Dejar que el servidor se encargue de eso
+********* No mover mensajes a carpeta Sent. Dejar que el servidor se encargue de eso
 #+begin_src emacs-lisp :noweb-ref mu4e-custom :tangle no
   (mu4e-sent-messages-behavior 'sent)
 #+end_src
-**** Contexto
+******** Contexto
 Para tener envío desde 2 o más cuentas, se tienen que definir contextos.
 
 #+begin_src emacs-lisp :noweb-ref mu4e-custom :tangle no
@@ -1431,7 +1769,7 @@ Para tener envío desde 2 o más cuentas, se tienen que definir contextos.
   (mu4e-compose-context-policy 'always-ask)
 #+end_src
 
-***** Contexto PUJ
+********* Contexto PUJ
 #+begin_src emacs-lisp :noweb-ref mu4e-config :tangle no
   (add-to-list 
    'mu4e-contexts 
@@ -1459,7 +1797,7 @@ Para tener envío desde 2 o más cuentas, se tienen que definir contextos.
             (smtpmail-debug-verbose . t))))
 #+end_src
 
-***** Contexto Gmail
+********* Contexto Gmail
 #+begin_src emacs-lisp :noweb-ref mu4e-config :tangle no
   (add-to-list 
    'mu4e-contexts 
@@ -1486,12 +1824,12 @@ Para tener envío desde 2 o más cuentas, se tienen que definir contextos.
             (smtpmail-debug-info . t)
             (smtpmail-debug-verbose . t))))
 #+end_src
-**** Evitar inserción de cambios de línea al escribir correos
+******** Evitar inserción de cambios de línea al escribir correos
 #+begin_src emacs-lisp :noweb-ref mu4e-hook :tangle no
   (mu4e-compose-mode . turn-off-auto-fill)
   (mu4e-compose-mode . visual-line-mode)
 #+end_src
-**** org-msg
+******** org-msg
 Org-msg es un paquete que permite redactar correos electrónicos (desde mu4e) con funcionalidades de org-mode como formateo de código, secciones, tablas, firma en html, etc. En adición, permite responder correos con "formato outlook". Esto quiere decir que el mensaje original no se formatea en texto plano con > sino en formato amigable con outlook.
 
 #+begin_src emacs-lisp :noweb no-export
@@ -1628,32 +1966,32 @@ Org-msg es un paquete que permite redactar correos electrónicos (desde mu4e) co
     (org-msg-mode))
 #+end_src
 
-*** Integración con =org-capture=
+******* Integración con =org-capture=
 Una de las (la única?) razón de peso para tener el correo en emacs es la capacidad de crear TODOs en orgmode de forma rápida y que incluyan un link a un correo específico.
 
 Esto se logra usando ~org-mu4e~ y ~org-capture~. Las instrucciones que seguí están en http://pragmaticemacs.com/emacs/master-your-inbox-with-mu4e-and-org-mode/.
 
-**** Cargar módulo =org-mu4e=
+******** Cargar módulo =org-mu4e=
 Viene incluido en mu4e, pero está desactivado por defecto.
 
 #+begin_src emacs-lisp :noweb-ref mu4e-config :tangle no
   (require 'org-mu4e)
 #+end_src
 
-**** Hacer que el link sea a un correo específico y no al resultado de una búsqueda
+******** Hacer que el link sea a un correo específico y no al resultado de una búsqueda
 #+begin_src emacs-lisp :noweb-ref mu4e-config :tangle no
   (setq org-mu4e-link-query-in-headers-mode nil)
 #+end_src
 La plantilla de org-capture ya se definió antes en [[Org-capture]]
 
-*** Acordes
-**** Definir modo de inicio
+******* Acordes
+******** Definir modo de inicio
 #+begin_src emacs-lisp :noweb-ref mu4e-config :tangle no
   (add-to-list 'evil-normal-state-modes 'mu4e-main-mode)
   (add-to-list 'evil-normal-state-modes 'mu4e-headers-mode)
   (add-to-list 'evil-normal-state-modes 'mu4e-view-mode)
 #+end_src
-**** De acceso directo
+******** De acceso directo
 #+begin_src emacs-lisp :noweb-ref mu4e-general :tangle no
   (j/lider
     :infix "o"
@@ -1661,7 +1999,7 @@ La plantilla de org-capture ya se definió antes en [[Org-capture]]
     "n" '(mu4e-compose-new :which-key "nuevo correo"))
 #+end_src
 
-**** De consulta de correos
+******** De consulta de correos
 Los siguiente acordes funcionan en los modos =mu4e-main-mode=, =mu4e-headers-mode= y =mu4e-view-mode=.
 #+begin_src emacs-lisp :noweb-ref mu4e-general :tangle no
   (j/lider-local
@@ -1670,7 +2008,7 @@ Los siguiente acordes funcionan en los modos =mu4e-main-mode=, =mu4e-headers-mod
     "b" '(mu4e-headers-search :which-key "buscar")
     "i" '(mu4e~headers-jump-to-maildir :which-key "ir a carptea"))
 #+end_src
-**** De actualización
+******** De actualización
 El siguiente acorde funciona en los modos =mu4e-main-mode=, =mu4e-headers-mode= y =mu4e-view-mode=.
 #+begin_src emacs-lisp :noweb-ref mu4e-general :tangle no
   (j/lider-local
@@ -1679,7 +2017,7 @@ El siguiente acorde funciona en los modos =mu4e-main-mode=, =mu4e-headers-mode= 
     "u" '(mu4e-update-mail-and-index :which-key "actualizar e indexar"))
 #+end_src
 
-**** De escritura de correos 
+******** De escritura de correos 
 El siguiente acorde funciona en los modos =mu4e-main-mode=, =mu4e-headers-mode= y =mu4e-view-mode=.
 #+begin_src emacs-lisp :noweb-ref mu4e-general :tangle no
   (j/lider-local
@@ -1699,7 +2037,7 @@ Los siguientes acordes funcionan en los modos =mu4e-headers-mode= y =mu4e-view-m
     "R" '(mu4e-compose-forward :which-key "re-enviar"))
 #+end_src
 
-**** De vista principal
+******** De vista principal
 #+begin_src emacs-lisp :noweb-ref mu4e-general :tangle no
   (general-define-key
    :states '(normal insert emacs)
@@ -1708,7 +2046,7 @@ Los siguientes acordes funcionan en los modos =mu4e-headers-mode= y =mu4e-view-m
    "b" '(mu4e-headers-search-bookmark :which-key "bookmarks"))
 #+end_src
 
-**** De vista /headers/
+******** De vista /headers/
 #+begin_src emacs-lisp :noweb-ref mu4e-general :tangle no
   (general-define-key
    :states '(normal insert emacs)
@@ -1735,7 +2073,7 @@ Los siguientes acordes funcionan en los modos =mu4e-headers-mode= y =mu4e-view-m
     "l" '(mu4e-headers-toggle-include-related :which-key "alternar relacionados"))
 #+end_src
 
-**** De vista de mensaje
+******** De vista de mensaje
 #+begin_src emacs-lisp :noweb-ref mu4e-general :tangle no
   (general-define-key
    :states '(normal insert emacs)
@@ -1765,7 +2103,7 @@ Los siguientes acordes funcionan en los modos =mu4e-headers-mode= y =mu4e-view-m
     "A" '(mu4e-view-mime-part-action :which-key "acciones de partes"))
 #+end_src
 
-**** De adjunto (en vista de mensaje)
+******** De adjunto (en vista de mensaje)
 #+begin_src emacs-lisp :noweb-ref mu4e-general :tangle no
   (j/lider-local 
     :states '(normal insert emacs)
@@ -1775,7 +2113,7 @@ Los siguientes acordes funcionan en los modos =mu4e-headers-mode= y =mu4e-view-m
     "a" '(gnus-mime-action-on-part :which-key "acciones"))
 #+end_src
 
-*** =mu4e-column-faces=
+******* =mu4e-column-faces=
 =mu4e-column-faces= agrega opciones para personalizar las fuentes usadas en las columnas de la vista de encabezados de =mu4e=.
 
 #+begin_src emacs-lisp 
@@ -1784,7 +2122,9 @@ Los siguientes acordes funcionan en los modos =mu4e-headers-mode= y =mu4e-view-m
   :config (mu4e-column-faces-mode))
 #+end_src
 
-* =excorporate=
+***** TODO =excorporate=
+(Esconder correo)
+
 =excorporate= es un paquete que sirve para consultar el calendario de exchange a través de EWS.
   
 #+begin_src emacs-lisp 
@@ -1809,7 +2149,7 @@ Los siguientes acordes funcionan en los modos =mu4e-headers-mode= y =mu4e-view-m
       (exco-diary-diary-advice (calendar-current-date) (calendar-current-date) #'message "citas actualizadas")))
 #+end_src
 
-* =nov=
+***** =nov=
 [[https://depp.brause.cc/nov.el/][=nov=]] sirve para lectura de epubs. 
 
 Para que este paquete funcione es necesario tener instalado el paquete unzip en el sistema operativo.
@@ -1827,8 +2167,78 @@ Para que este paquete funcione es necesario tener instalado el paquete unzip en 
                    :height 1.5))))
 #+end_src
 
-#+RESULTS:
-: t
+** Juegos
+*** [[https:mgba.io][Mgba]]
+#+begin_src nix :tangle no :noweb-ref nixos-paquetes
+mgba
+#+end_src
+
+*** [[https://libretro.com/][Retroarch]] 
+#+begin_src nix :tangle no :noweb-ref nixos-paquetes
+retroarch
+#+end_src
+
+**** Configuración
+#+begin_src nix :tangle no :noweb-ref nixos-configuracion-paquetes
+nixpkgs.config.retroarch = {
+    #enableDolphin = true;
+    enableMGBA = true;
+    #enableMAME = true;
+    enableSnes9x = true;  
+    enableSameBoy = true;
+    enableNestopia = true;
+  };
+#+end_src
+
+** Comunicación y colaboración
+*** [[https:git-scm.com][Git]]
+#+begin_src nix :tangle no :noweb-ref nixos-paquetes
+git
+#+end_src
+*** [[https://zoom.us/][Zoom]]
+#+begin_src nix :tangle no :noweb-ref nixos-paquetes
+zoom-us
+#+end_src
+
+*** [[https://teams.microsoft.com/][Microsoft Teams]] 
+#+begin_src nix :tangle no :noweb-ref nixos-paquetes
+teams
+#+end_src
+
+*** [[https://signal.org/][Signal]] 
+#+begin_src nix :tangle no :noweb-ref nixos-paquetes
+signal-desktop
+#+end_src
+
+** Seguridad
+*** [[https://www.keepassx.org/][Keepassx2]] 
+#+begin_src nix :tangle no :noweb-ref nixos-paquetes
+keepassx2
+#+end_src
+
+*** [[https://gnupg.org/][Gnupg]]
+#+begin_src nix :tangle no :noweb-ref nixos-paquetes
+gnupg
+#+end_src
+
+** Utilidades
+*** [[https:linux.die.net/man/1/unzip][Unzip]]
+#+begin_src nix :tangle no :noweb-ref nixos-paquetes
+unzip
+#+end_src
+
+*** [[https://www.gnu.org/software/wget/][Wget]]
+#+begin_src nix :tangle no :noweb-ref nixos-paquetes
+wget
+#+end_src
+
+*** [[https://www.nano-editor.org/][Nano]]
+Nano viene por defecto en NixOS 21.05
+
+*** [[https://www.gnu.org/software/autoconf/][Autoconf]] 
+#+begin_src nix :tangle no :noweb-ref nixos-paquetes
+autoconf
+#+end_src
 
 * Footnotes
 

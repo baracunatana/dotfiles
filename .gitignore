@@ -28,3 +28,7 @@ emacs/.config/emacs/auto-save-list*
 /emacs/.config/emacs/elpa/
 /emacs/.config/emacs/excorporate/
 /emacs/.config/emacs/tutorial/
+/sistema.org~
+/configuration.nix.bck
+/configuration.nix.bck~
+/configuration.nix~

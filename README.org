@@ -2,3 +2,13 @@
 #+title: Repositorio de configuración personal
 
 Configuraciones adaptadas a preferencias personales. No prentenden ser de uso general. 
+
+* Modo de uso
++ Clonar este repositorio en =~/.dotfiles=
++ Abrir este archivo desde emacs (desde la cuenta de usuario en la que se quieren las configuraciones)
++ Ejectura =org-babel-tangle=
++ Ejecutar desde terminal
+#+begin_src sh
+  chmod +x post-tangle.sh
+  sudo ./post-tangle.sh
+#+end_src
