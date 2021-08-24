@@ -239,7 +239,7 @@ qutebrowser
 config.load_autoconfig(False)
 
 # Tema oscuro para páginas web
-c.colors.webpage.darkmode.enabled = True
+c.colors.webpage.darkmode.enabled = False
 #+end_src
 
 *** [[https:brave.com][Brave]]
@@ -285,6 +285,7 @@ jabref
 #+begin_src nix :tangle no :noweb-ref nixos-paquetes
 zotero
 #+end_src
+
 ** Edición de texto y ofimática
 *** [[https:www.libreoffice.org][Libreoffice]]
 #+begin_src nix :tangle no :noweb-ref nixos-paquetes
