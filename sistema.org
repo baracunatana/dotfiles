@@ -233,13 +233,23 @@ firefox
 qutebrowser
 #+end_src
 
-**** Configuración
+**** Configuración básica
 #+begin_src python :tangle ~/.config/qutebrowser/config.py
-# No tomar en cuenta configuraciones hechas por gui
-config.load_autoconfig(False)
+  # No tomar en cuenta configuraciones hechas por gui
+  config.load_autoconfig(False)
+  
+  # Tema oscuro para páginas web
+  c.colors.webpage.darkmode.enabled = False
+  
+  # Habilitar pdf.js para visualización de pdfs
+  c.content.pdfjs = True
+#+end_src
 
-# Tema oscuro para páginas web
-c.colors.webpage.darkmode.enabled = False
+**** Acordes
+#+begin_src python :tangle ~/.config/qutebrowser/config.py
+  # C-j y C-k para navegar opciones de completion
+  config.bind('<Ctrl+j>', 'completion-item-focus next', mode='command')
+  config.bind('<Ctrl+k>', 'completion-item-focus prev', mode='command')
 #+end_src
 
 *** [[https:brave.com][Brave]]
@@ -2167,6 +2177,40 @@ Para que este paquete funcione es necesario tener instalado el paquete unzip en 
                    'variable-pitch :family "EB Garamond"
                    :height 1.5))))
 #+end_src
+
+***** =biblio=
+#+begin_src emacs-lisp 
+  (use-package biblio
+    :commands (biblio-lookup biblio-crossref-lookup doi-insert-bibtex)
+
+    :custom
+    (biblio-bibtex-use-autokey t "Usar configuración de modo bibtex para generación de llaves")      
+    (biblio-crossref-user-email-address "ujhytghytg@gmail.com" "hace que las búsquedas en crossref tengan prioridad")
+
+    :config
+    (setq biblio-default-file "~/biblioteca/main.bib")
+
+    (defun j/biblio--selection-insert-at-end-of-bibfile-callback (bibtex entry)
+      "Add BIBTEX (from ENTRY) to end of a user-specified bibtex file."
+      (with-current-buffer (find-file-noselect biblio-default-file)
+        (goto-char (point-max))
+        (insert bibtex))
+      (message "Inserted bibtex entry for %S."
+               (biblio--prepare-title (biblio-alist-get 'title entry))))
+
+    (defun ans/biblio-selection-insert-end-of-bibfile ()
+      "Insert BibTeX of current entry at the end of user-specified bibtex file."
+      (interactive)
+      (biblio--selection-forward-bibtex #'j/biblio--selection-insert-at-end-of-bibfile-callback))
+
+    :general
+    (general-define-key
+     :state '(normal insert emacs)
+     :keymaps 'biblio-selection-mode-map
+     "I" '(ans/biblio-selection-insert-end-of-bibfile :which-key "insertar en main.bib")))
+#+end_src
+
+#+RESULTS:
 
 ** Juegos
 *** [[https:mgba.io][Mgba]]
