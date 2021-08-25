@@ -2178,7 +2178,24 @@ Para que este paquete funcione es necesario tener instalado el paquete unzip en 
                    :height 1.5))))
 #+end_src
 
-***** =biblio=
+***** Latex, bibtex, y biblatex
+****** =bibtex=
+Formato para generación de identificadores de referencias:
+
+#+begin_src emacs-lisp 
+  (use-package bibtex
+    :custom
+    (bibtex-autokey-year-length 4)
+    (bibtex-autokey-name-year-separator "")
+    (bibtex-autokey-year-title-separator "")
+    (bibtex-autokey-titleword-separator "")
+    (bibtex-autokey-titlewords 0)
+    (bibtex-autokey-titlewords-stretch 1)
+    (bibtex-autokey-titleword-length 0)
+    (bibtex-autokey-name-case-convert-function 'capitalize))
+#+end_src
+
+****** =biblio=
 #+begin_src emacs-lisp 
   (use-package biblio
     :commands (biblio-lookup biblio-crossref-lookup doi-insert-bibtex)
@@ -2209,9 +2226,6 @@ Para que este paquete funcione es necesario tener instalado el paquete unzip en 
      :keymaps 'biblio-selection-mode-map
      "I" '(ans/biblio-selection-insert-end-of-bibfile :which-key "insertar en main.bib")))
 #+end_src
-
-#+RESULTS:
-
 ** Juegos
 *** [[https:mgba.io][Mgba]]
 #+begin_src nix :tangle no :noweb-ref nixos-paquetes
