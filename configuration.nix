@@ -122,7 +122,7 @@
       mgba
       retroarch
       git
-      zoom-us
+      unstable.zoom-us
       teams
       signal-desktop
       keepassx2
