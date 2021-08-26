@@ -250,6 +250,8 @@ qutebrowser
   # C-j y C-k para navegar opciones de completion
   config.bind('<Ctrl+j>', 'completion-item-focus next', mode='command')
   config.bind('<Ctrl+k>', 'completion-item-focus prev', mode='command')
+  config.bind('<Shift+J>', 'tab-prev')
+  config.bind('<Shift+K>', 'tab-next')
 #+end_src
 
 *** [[https:brave.com][Brave]]
@@ -2256,7 +2258,7 @@ git
 #+end_src
 *** [[https://zoom.us/][Zoom]]
 #+begin_src nix :tangle no :noweb-ref nixos-paquetes
-zoom-us
+unstable.zoom-us
 #+end_src
 
 *** [[https://teams.microsoft.com/][Microsoft Teams]] 
