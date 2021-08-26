@@ -199,6 +199,11 @@ nix = {
 };
 #+end_src
 
+** Activar gnome-keyring
+#+begin_src nix :tangle no :noweb-ref nixos-base
+services.gnome.gnome-keyring.enable = true;
+#+end_src
+
 ** Fuentes
 #+begin_src nix :tangle no :noweb-ref nixos-base
   fonts.fonts = with pkgs; [ 

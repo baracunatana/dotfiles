@@ -32,3 +32,6 @@ emacs/.config/emacs/auto-save-list*
 /configuration.nix.bck
 /configuration.nix.bck~
 /configuration.nix~
+/isync/
+configuration.nix
+post-tangle.sh
