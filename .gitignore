@@ -35,3 +35,4 @@ emacs/.config/emacs/auto-save-list*
 /isync/
 configuration.nix
 post-tangle.sh
+configuration.nix

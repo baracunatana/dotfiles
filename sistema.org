@@ -15,8 +15,15 @@ Lo que se logra con esto es generar una serie de archivos de configuración en l
 *** Mover ./configuration.nix a /etc/nixos/configuration.nix
 #+begin_src sh :tangle ./post-tangle.sh
 #!/bin/sh
-cp ./configuration.nix /etc/nixos/configuration.nix
+sudo cp ./configuration.nix /etc/nixos/configuration.nix
 #+end_src
+
+* Parámetros
+** Host-name
+#+begin_src nix :noweb-ref host-name
+  shion
+#+end_src
+
 
 * Sistema operativo
 :PROPERTIES:
@@ -145,6 +152,19 @@ imports =
   services.xserver.desktopManager.gnome.enable = true;
 #+end_src
 
+**** Configuración
+La configuración de Gnome no se hace con archivos de configuración sin con una base de datos que se guarda en formato binario y se manipula con el comando =gsettings=.
+
+***** Usar =caps= como =ctrl=
+#+begin_src sh :tangle ./post-tangle.sh
+  gsettings set org.gnome.desktop.input-sources xkb-options "['caps:ctrl_modifier', 'lv3:ralt_switch']"
+#+end_src
+
+***** Teclado en español
+#+begin_src sh :tangle ./post-tangle.sh
+  gsettings set org.gnome.desktop.input-sources sources "[('xkb', 'latam')]"
+#+end_src
+
 *** Plasma
 #+begin_src nix :tangle no :noweb-ref nixos-base
   #services.xserver.displayManager.sddm.enable = true;
@@ -159,12 +179,12 @@ imports =
 #+end_src
 
 ** Configuración de red y conectividad
-#+begin_src nix :tangle no :noweb-ref nixos-base
+#+begin_src nix :tangle no :noweb no-export :noweb-ref nixos-base
   # Configure network proxy if necessary
   # networking.proxy.default = "http://user:password@proxy:port/";
   # networking.proxy.noProxy = "127.0.0.1,localhost,internal.domain";
 
-  networking.hostName = "shion"; # Define your hostname.
+  networking.hostName = "<<host-name>>"; # Define your hostname.
   networking.wireless.enable = false;  # Enables wireless support via wpa_supplicant.
   networking.networkmanager.enable = true;
 
