@@ -1,6 +1,8 @@
 #+title: Configuración completa de sistema operativo y aplicaciones básicas
 #+author: Juan E. Gómez-Morantes, PhD
 
+#+property: header-args :mkdirp yes
+
 * Introducción
 Este archivo define, en un estilo literario, la configuración de todo mi sistema operativo y sus aplicaciones básicas. Para esto hace uso intensivo del paguete =org= de =Emacs=, las funcionalidades de tangling y noweb de =org=.
 
@@ -23,7 +25,6 @@ sudo cp ./configuration.nix /etc/nixos/configuration.nix
 #+begin_src nix :noweb-ref host-name
   shion
 #+end_src
-
 
 * Sistema operativo
 :PROPERTIES:
