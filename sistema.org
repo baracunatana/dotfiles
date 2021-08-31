@@ -65,6 +65,16 @@ NixOS se configura, en términos de paquetes, servicios, y opciones iniciales, e
 }
 #+end_src
 
+** Grub y carga
+Usar OS Prober para detectar otros sitemas operativos en el disco y configurar el /dual boot/.
+
+#+begin_src nix :tangle no :noweb-ref nixos-base
+boot.loader.grub.enable = true;
+boot.loader.grub.version = 2;
+boot.loader.grub.device = "/dev/sda";
+boot.loader.grub.useOSProber = true;
+#+end_src
+
 ** Incluir resultados del escaneo de /hardware/
 #+begin_src nix :tangle no :noweb-ref nixos-base
 imports =
