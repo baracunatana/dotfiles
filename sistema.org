@@ -20,6 +20,12 @@ Lo que se logra con esto es generar una serie de archivos de configuración en l
 sudo cp ./configuration.nix /etc/nixos/configuration.nix
 #+end_src
 
+** Otros pasos a completar
++ Iniciar sesión en almacenamiento en nube
++ Configuración de llave para autenticación en github. 
++ Emacs
+  - =all-the-icons-install-fonts=
+
 * Parámetros
 ** Host-name
 #+begin_src nix :noweb-ref host-name
