@@ -838,6 +838,7 @@ Nótece que hay que tener los diccionarios instalados. De lo contrario, la inici
   (org-tags-column 0)             ; Quitar espacio entre título y etiquetas
   (org-list-allow-alphabetical t) ; Permitir listas con letras
   (org-table-header-line-p t)     ; Congelar primera fila de tablas largas
+  (org-confirm-babel-evaluate nil); No pedir confirmación para ejecutar código desde babel
 #+end_src
 
 ****** Configuración de estados, prioridades y etiquetas de tareas
@@ -1606,7 +1607,7 @@ unstable.mu
 IMAPAccount gmail-jee
 # Address to connect to
 Host imap.gmail.com
-User <<pregunta("Corre gmail: ")>>
+User <<pregunta("Correo gmail: ")>>
 PassCmd "gpg2 -q --for-your-eyes-only --no-tty -d ~/.config/emacs/.mbsyncpass-jee.gpg"
 AuthMechs LOGIN
 SSLType IMAPS
