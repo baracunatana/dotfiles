@@ -338,6 +338,11 @@ evince
 calibre
 #+end_src
 
+*** [[https://okular.kde.org/][Okular]]
+#+begin_src nix :tangle no :noweb-ref nixos-paquetes
+libsForQt5.okular
+#+end_src
+
 ** Desarrollo e ingeniería
 *** [[https:www.archimatetool.com][Archi]]
 #+begin_src nix :tangle no :noweb-ref nixos-paquetes
