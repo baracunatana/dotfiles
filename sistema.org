@@ -6,6 +6,14 @@
 * Introducción
 Este archivo define, en un estilo literario, la configuración de todo mi sistema operativo y sus aplicaciones básicas. Para esto hace uso intensivo del paguete =org= de =Emacs=, las funcionalidades de tangling y noweb de =org=.
 
+Dado que este archivo de configuración se usa para diferentes máquinas, se quiere tener un proceso de /tangling/ interactivo en donde se especifiquen algunos valores específicos a la hora de generar los archivos respectivos. En adición, esto también permite ingresar información sensible como correos electrónicos al momento de hacer el /tangling/, evitando así su ingreso a repositorios git. Esto se logra con el siguiente bloque de código:
+
+#+name: pregunta
+#+begin_src emacs-lisp :tangle no :var p=""
+(setq r (read-string p))
+r
+#+end_src
+
 Esta configuración es para un sistema operativo basado en la versión 21.05 de [[https://nixos.org][NixOS]].
 
 * Cómo usar este archivo
@@ -25,12 +33,6 @@ sudo cp ./configuration.nix /etc/nixos/configuration.nix
 + Configuración de llave para autenticación en github. 
 + Emacs
   - =all-the-icons-install-fonts=
-
-* Parámetros
-** Host-name
-#+begin_src nix :noweb-ref host-name
-  shion
-#+end_src
 
 * Sistema operativo
 :PROPERTIES:
@@ -201,7 +203,7 @@ La configuración de Gnome no se hace con archivos de configuración sin con una
   # networking.proxy.default = "http://user:password@proxy:port/";
   # networking.proxy.noProxy = "127.0.0.1,localhost,internal.domain";
 
-  networking.hostName = "<<host-name>>"; # Define your hostname.
+  networking.hostName = "<<pregunta("Nombre del host a configurar: ")>>"; # Define your hostname.
   networking.wireless.enable = false;  # Enables wireless support via wpa_supplicant.
   networking.networkmanager.enable = true;
 
