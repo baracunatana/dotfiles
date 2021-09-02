@@ -9,10 +9,17 @@ Este archivo define, en un estilo literario, la configuración de todo mi sistem
 Dado que este archivo de configuración se usa para diferentes máquinas, se quiere tener un proceso de /tangling/ interactivo en donde se especifiquen algunos valores específicos a la hora de generar los archivos respectivos. En adición, esto también permite ingresar información sensible como correos electrónicos al momento de hacer el /tangling/, evitando así su ingreso a repositorios git. Esto se logra con el siguiente bloque de código:
 
 #+name: pregunta
-#+begin_src emacs-lisp :tangle no :var p=""
-(setq r (read-string p))
-r
+#+begin_src emacs-lisp :tangle no :var p="" :session temporal
+  (unless (boundp 'propiedades)
+    (setq propiedades '()))
+  (unless (lax-plist-get propiedades p)
+    (setq propiedades (lax-plist-put propiedades 
+                                     p 
+                                     (read-string p))))
+  (lax-plist-get propiedades p)
 #+end_src
+
+Nótece que se hacen las preguntas de la misma forma, el código anterior guarda respuestas previas y no vuelve a hacer la pregunta.
 
 Esta configuración es para un sistema operativo basado en la versión 21.05 de [[https://nixos.org][NixOS]].
 
@@ -182,6 +189,12 @@ La configuración de Gnome no se hace con archivos de configuración sin con una
 ***** Teclado en español
 #+begin_src sh :tangle ./post-tangle.sh
   gsettings set org.gnome.desktop.input-sources sources "[('xkb', 'latam')]"
+#+end_src
+
+***** Formato de 12 horas
+#+begin_src sh :tangle ./post-tangle.sh
+  gsettings set org.gnome.desktop.interface clock-format '12h'
+  gsettings set org.gtk.Settings.FileChooser clock-format '12h'
 #+end_src
 
 *** Plasma
@@ -1593,7 +1606,7 @@ unstable.mu
 IMAPAccount gmail-jee
 # Address to connect to
 Host imap.gmail.com
-User <<pregunta("Dirección de corre gmail: ")>>
+User <<pregunta("Corre gmail: ")>>
 PassCmd "gpg2 -q --for-your-eyes-only --no-tty -d ~/.config/emacs/.mbsyncpass-jee.gpg"
 AuthMechs LOGIN
 SSLType IMAPS
@@ -1678,7 +1691,7 @@ Channel gmail-jee-starred
 IMAPAccount puj
 Host outlook.office365.com
 Port 993
-User <<pregunta("Dirección de correo PUJ: ")>>
+User <<pregunta("Correo PUJ: ")>>
 PassCmd "gpg2 -q --for-your-eyes-only --no-tty -d ~/.config/emacs/.mbsyncpass-puj.gpg"
 AuthMechs PLAIN
 SSLType IMAPS
