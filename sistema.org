@@ -1570,12 +1570,9 @@ Luego de la instalación inicial, hay que correr la función =pocket-reader= par
 
 ***** TODO Correo electrónico
 (Falta un mantenimiento general a esta configuración) 
+****** [[https://www.djcbsoftware.nl/code/mu/][Mu]] y [[http://isync.sourceforge.net/][isync]]
+=mbsync= (parte de =isync=) es la aplicación que uso para descargar correo, y =mu= se usa para indexar el correo. 
 
-****** Introducción
-Para correo electrónico uso mu4e. Este paquete hace cosas no-estandar y por eso no se pude usar straight ni use-package para su instalación. Toca a la antigüita.
-
-****** Instalación
-******* [[https://www.djcbsoftware.nl/code/mu/][Mu]] y [[http://isync.sourceforge.net/][isync]]
 Se instala =mu= desde canal unstable por que a la fecha ([2021-08-20 Fri]) no se tiene versión 1.6+ en canal estable.
 
 #+begin_src nix :tangle no :noweb-ref nixos-paquetes
@@ -1583,10 +1580,165 @@ isync
 unstable.mu
 #+end_src
 
-******* TODO Configuración de mbsync
-=mbsync= es la aplicación que descarga el correo, y =mu= es la aplicación que lo indexa. 
+******* Configuración de mbsync
+******** Generación de =.mbsyncrc=
+#+begin_src dotfile :tangle ~/.mbsyncrc :noweb no-export
+# mbsyncrc basado en 
+# https://ryanwhittingham.com/using-multiple-email-accounts-with-mu4e/
+# https://www.reddit.com/r/emacs/comments/bfsck6/mu4e_for_dummies/
 
-****** Configuración 
+# ========================================================================
+# Gmail personal
+# ========================================================================
+IMAPAccount gmail-jee
+# Address to connect to
+Host imap.gmail.com
+User <<pregunta("Dirección de corre gmail: ")>>
+PassCmd "gpg2 -q --for-your-eyes-only --no-tty -d ~/.config/emacs/.mbsyncpass-jee.gpg"
+AuthMechs LOGIN
+SSLType IMAPS
+SSLVersions TLsv1.3
+CertificateFile /etc/ssl/certs/ca-certificates.crt
+
+# THEN WE SPECIFY THE LOCAL AND REMOTE STORAGE
+# - THE REMOTE STORAGE IS WHERE WE GET THE MAIL FROM (E.G., THE
+#   SPECIFICATION OF AN IMAP ACCOUNT)
+# - THE LOCAL STORAGE IS WHERE WE STORE THE EMAIL ON OUR COMPUTER
+
+# REMOTE STORAGE (USE THE IMAP ACCOUNT SPECIFIED ABOVE)
+IMAPStore gmail-jee-remote
+Account gmail-jee
+
+# LOCAL STORAGE (CREATE DIRECTORIES with mkdir -p Maildir/gmail)
+MaildirStore gmail-jee-local
+Path ~/mbsync/gmail-jee/
+Inbox ~/mbsync/gmail-jee/INBOX
+
+# CONNECTIONS SPECIFY LINKS BETWEEN REMOTE AND LOCAL FOLDERS
+#
+# CONNECTIONS ARE SPECIFIED USING PATTERNS, WHICH MATCH REMOTE MAIl
+# FOLDERS. SOME COMMONLY USED PATTERS INCLUDE:
+#
+# 1 "*" TO MATCH EVERYTHING
+# 2 "!DIR" TO EXCLUDE "DIR"
+# 3 "DIR" TO MATCH DIR
+
+Channel gmail-jee-inbox
+Master :gmail-jee-remote:
+Slave :gmail-jee-local:
+Patterns "INBOX"
+Create Both
+Expunge Both
+SyncState *
+
+Channel gmail-jee-trash
+Master :gmail-jee-remote:"[Gmail]/Papelera"
+Slave :gmail-jee-local:"[Gmail].Trash"
+Create Both
+Expunge Both
+SyncState *
+
+Channel gmail-jee-sent
+Master :gmail-jee-remote:"[Gmail]/Enviados"
+Slave :gmail-jee-local:"[Gmail].Sent Mail"
+Create Both
+Expunge Both
+SyncState *
+
+Channel gmail-jee-all
+Master :gmail-jee-remote:"[Gmail]/Todos"
+Slave :gmail-jee-local:"[Gmail].All Mail"
+Create Both
+Expunge Both
+SyncState *
+
+Channel gmail-jee-starred
+Master :gmail-jee-remote:"[Gmail]/Destacados"
+Slave :gmail-jee-local:"[Gmail].Starred"
+Create Both
+Expunge Both
+SyncState *
+
+# GROUPS PUT TOGETHER CHANNELS, SO THAT WE CAN INVOKE
+# MBSYNC ON A GROUP TO SYNC ALL CHANNELS
+#
+# FOR INSTANCE: "mbsync gmail-jee" GETS MAIL FROM
+# "gmail-jee-inbox", "gmail-jee-sent", and "gmail-jee-trash"
+#
+Group gmail-jee
+Channel gmail-jee-inbox
+Channel gmail-jee-sent
+Channel gmail-jee-trash
+Channel gmail-jee-all
+Channel gmail-jee-starred
+
+# =======================================================================
+# Outlook Javeriana
+# =======================================================================
+IMAPAccount puj
+Host outlook.office365.com
+Port 993
+User <<pregunta("Dirección de correo PUJ: ")>>
+PassCmd "gpg2 -q --for-your-eyes-only --no-tty -d ~/.config/emacs/.mbsyncpass-puj.gpg"
+AuthMechs PLAIN
+SSLType IMAPS
+SSLVersions TLSv1.2
+
+IMAPStore puj-remote
+Account puj
+
+MaildirStore puj-local
+SubFolders Verbatim 
+Path ~/mbsync/puj/
+Inbox ~/mbsync/puj/INBOX/
+
+Channel puj
+Master :puj-remote:
+Slave :puj-local:
+Patterns "INBOX" "*"
+Create Slave
+Sync All
+Expunge Both
+SyncState *
+MaxMessages 5000
+#+end_src
+******** Script para generación de llaves y creación de carpetas
+#+begin_src sh :tangle ./inicio-correo.sh :noweb no-export
+  # Crear ~/.emacs.d/.mbsyncpass-jee.gpg de forma interactiva
+  echo "Ingrese la contraseña para cuenta de gmail"
+  echo "Recuerde que para esto debe crearse una contraseña de aplicación. No usar contraseña maestra"
+  read contraG
+  echo $contraG>.mbsyncpass-jee
+  gpg2 --output .mbsyncpass-jee.gpg --symmetric .mbsyncpass-jee
+  rm .mbsyncpass-jee
+  mv .mbsyncpass-jee.gpg ~/.config/emacs
+  # Crear ~/.emacs.d/.mbsyncpass-jee.gpg de forma interactiva
+  echo "Ingrese la contraseña para cuenta de PUJ"
+  read contra
+  echo $contra>.mbsyncpass-puj
+  gpg2 --output .mbsyncpass-puj.gpg --symmetric .mbsyncpass-puj
+  rm .mbsyncpass-puj
+  mv .mbsyncpass-puj.gpg ~/.config/emacs
+
+  # Crear archivo ~/.authinfo.gpg para envío de correo
+  # TODO
+  echo "machine smtp.office365.com login <<pregunta("Correo PUJ: ")>> port 587 password $contra">~/.authinfo
+  echo "machine outlook.office365.com login <<pregunta("Correo PUJ: ")>> port 993 password $contra">>~/.authinfo
+  echo "machine outlook.office365.com:443 login <<pregunta("Correo PUJ: ")>> password $contra">>~/.authinfo
+  echo "machine smtp.gmail.com login <<pregunta("Correo gmail: ")>> port 587 password $contraG">>~/.authinfo
+  gpg2 --output ~/.authinfo.gpg --symmetric ~/.authinfo
+  rm ~/.authinfo
+
+  # Creación de carpetas para mbsync
+  mkdir -p ~/mbsync/gmail-jee
+  mkdir -p ~/mbsync/puj 
+  # Correr por primera vez e indexar
+  # mbsync -c ~/.mbsyncrc -a
+  # mu init --maildir=~/mbsync --my-address=<<pregunta("Correo PUJ: ")>> --my-address=<<pregunta("Corre gmail: ")>>
+  # mu index
+#+end_src
+
+****** Configuración de =mu4e=
 Lo primero es agregar mu4e al load-path de emacs. Dado que esto se hace distinto de acuerdo a la distribución que estemos usando, se hace de acuerdo al nombre del host.
 
 #+begin_src emacs-lisp :noweb no-export :tangle no
@@ -1836,15 +1988,15 @@ Para tener envío desde 2 o más cuentas, se tienen que definir contextos.
     (lambda (msg)
       (when msg
         (string-prefix-p "/puj" (mu4e-message-field msg :maildir))))
-    :vars '((user-mail-address . "je.gomezm@javeriana.edu.co")
-            (user-full-name . "Juan E. Gómez-Morantes")
+    :vars '((user-mail-address . "<<pregunta("Correo PUJ: ")>>")
+            (user-full-name . "<<pregunta("Nombre para uso en correo: ")>>")
             (mu4e-sent-folder . "/puj/Sent Items")
             (mu4e-drafts-folder . "/puj/Drafts")
             (mu4e-trash-folder . "/puj/Trash")
             (mu4e-refile-folder . "/puj/Archive")
             (smtpmail-queue-dir . "~/mbsync/puj/queue/cur")
             (message-send-mail-function . smtpmail-send-it)
-            (smtpmail-smtp-user . "je.gomezm@javeriana.edu.co")
+            (smtpmail-smtp-user . "<<pregunta("Correo PUJ: ")>>")
             (smtpmail-starttls-credentials . (("smtp.office365.com" 587 nil nil)))
             (smtpmail-auth-credentials . (expand-file-name "~/.authinfo.gpg"))
             (smtpmail-default-smtp-server . "smtp.office365.com")
@@ -1864,15 +2016,15 @@ Para tener envío desde 2 o más cuentas, se tienen que definir contextos.
     (lambda (msg)
       (when msg
         (string-prefix-p "/gmail-jee" (mu4e-message-field msg :maildir))))
-    :vars '((user-mail-address . "juanerasmoe@gmail.com")
-            (user-full-name . "Juan E. Gómez-Morantes")
+    :vars '((user-mail-address . "<<pregunta("Correo gmail: ")>>")
+            (user-full-name . "<<pregunta("Nombre para uso en gmail: ")>>")
             (mu4e-sent-folder . "/gmail-jee/[Gmail].Sent Mail")
             (mu4e-drafts-folder . "/gmail-jee/[Gmail].drafts")
             (mu4e-trash-folder . "/gmail-jee/[Gmail].Trash")
             (mu4e-refile-folder . "/gmail-jee/[Gmail].All Mail")
             (smtpmail-queue-dir . "~/mbsync/puj/queue/cur")
             (message-send-mail-function . smtpmail-send-it)
-            (smtpmail-smtp-user . "juanerasmoe@gmail.com")
+            (smtpmail-smtp-user . "<<pregunta("Correo gmail: ")>>")
             (smtpmail-starttls-credentials . (("smtp.gmail.com" 587 nil nil)))
             (smtpmail-auth-credentials . (expand-file-name "~/.authinfo.gpg"))
             (smtpmail-default-smtp-server . "smtp.gmail.com")
@@ -2190,7 +2342,7 @@ Los siguientes acordes funcionan en los modos =mu4e-headers-mode= y =mu4e-view-m
   
     :custom
     (excorporate-configuration
-     '("je.gomezm@javeriana.edu.co" . "https://outlook.office365.com/EWS/Exchange.asmx"))
+     '("<<pregunta("Correo PUJ: ")>>" . "https://outlook.office365.com/EWS/Exchange.asmx"))
     (excorporate-calendar-show-day-function 'exco-calfw-show-day)
     (org-agenda-include-diary t)
   

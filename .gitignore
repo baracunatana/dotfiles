@@ -36,3 +36,5 @@ emacs/.config/emacs/auto-save-list*
 configuration.nix
 post-tangle.sh
 configuration.nix
+/inicio-correo.sh
+/inicio-correo.sh~
