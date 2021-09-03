@@ -1614,7 +1614,7 @@ IMAPAccount gmail-jee
 Host imap.gmail.com
 User <<pregunta("Correo gmail: ")>>
 PassCmd "gpg2 -q --for-your-eyes-only --no-tty -d ~/.config/emacs/.mbsyncpass-jee.gpg"
-AuthMechs LOGIN
+AuthMechs PLAIN
 SSLType IMAPS
 SSLVersions TLsv1.3
 CertificateFile /etc/ssl/certs/ca-certificates.crt
@@ -2357,7 +2357,7 @@ Los siguientes acordes funcionan en los modos =mu4e-headers-mode= y =mu4e-view-m
 
 =excorporate= es un paquete que sirve para consultar el calendario de exchange a través de EWS.
   
-#+begin_src emacs-lisp 
+#+begin_src emacs-lisp :noweb no-export
   (use-package excorporate
     :defer 3
   
