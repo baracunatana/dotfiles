@@ -1780,11 +1780,13 @@ Ahora sí se puede cargar =mu4e=. Sin embargo, este no se puede cargar con =use-
     <<mu4e-custom>> 
     :hook
     <<mu4e-hook>>
-    :config 
-    <<mu4e-config>>
     :general 
-    <<mu4e-general>>)
+    <<mu4e-general>>
+    :config 
+    <<mu4e-config>>)
 #+end_src
+
+#+RESULTS:
 
 ******* Configuración básica
 ******** Configuración de calendario
@@ -1942,7 +1944,7 @@ Se necesita para que mbsync funcione correctamente
 #+end_src
 
 ******** Correcciones a libreta de direcciones
-# +begin_src emacs-lisp :noweb-ref mu4e-init :tangle no
+#+begin_src emacs-lisp :noweb-ref mu4e-init :tangle no
   (defun j/corregir-contactos (contact)
     (cond
      ((string-match "pomares@javeriana.edu.co" contact)
@@ -1950,11 +1952,11 @@ Se necesita para que mbsync funcione correctamente
      ((string-match "ragonzalez@javeriana.edu.co" contact)
       (replace-regexp-in-string "ragonzalez@javeriana.edu.co" "Rafael González <ragonzalez@javeriana.edu.co>" contact))
      (t contact)))
-# +end_src
+#+end_src
 
-# +begin_src emacs-lisp :noweb-ref mu4e-custom :tangle no
+#+begin_src emacs-lisp :noweb-ref mu4e-custom :tangle no
   (mu4e-contact-process-function 'j/corregir-contactos)
-# +end_src
+#+end_src
 
 ******** /Bookmarks/
 La definición de /bookmarks/ en =mu4e= se hace a través de la variable =mu4e-bookmarks=. Si bien se le podría agregar /bookmarks/ a esa lista, ninguna de las opciones por defecto me sirve, así que la redefino por completo.
