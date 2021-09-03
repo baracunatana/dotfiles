@@ -1998,7 +1998,7 @@ Para tener envío desde 2 o más cuentas, se tienen que definir contextos.
 #+end_src
 
 ********* Contexto PUJ
-#+begin_src emacs-lisp :noweb-ref mu4e-config :tangle no
+#+begin_src emacs-lisp :noweb-ref mu4e-config :tangle no :noweb no-export
   (add-to-list 
    'mu4e-contexts 
    (make-mu4e-context 
@@ -2026,7 +2026,7 @@ Para tener envío desde 2 o más cuentas, se tienen que definir contextos.
 #+end_src
 
 ********* Contexto Gmail
-#+begin_src emacs-lisp :noweb-ref mu4e-config :tangle no
+#+begin_src emacs-lisp :noweb-ref mu4e-config :tangle no :noweb no-export
   (add-to-list 
    'mu4e-contexts 
    (make-mu4e-context   
