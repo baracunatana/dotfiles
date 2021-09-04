@@ -1092,9 +1092,8 @@ La función =j/org-set-futu= se usa para asignar el estado =FUTU= a una tarea, p
   
   (defun j/org-verify-actionable-tasks ()
     "Goes through al agenda files checking if FUTU tasks are actionable"
-    (org-map-entries
-     '(j/org-process-task)
-     "/+FUTU" 'agenda))
+    (org-map-entries '(j/org-process-task)
+                     "/+FUTU" 'agenda))
   
   (defun j/org-actionable ()
     (j/org-verify-actionable-tasks))
@@ -1107,7 +1106,7 @@ La función =j/org-set-futu= se usa para asignar el estado =FUTU= a una tarea, p
 #+end_src
 
 Ahora se agrega un hook para ejecutar =j/org-actionable= antes de cada ejecución de la agenda:
-#+begin_src emacs-lisp :noweb-ref org-mode-hooks :tangle no
+#+begin_src emacs-lisp :noweb-ref org-hook :tangle no
   (org-agenda-mode . j/org-actionable)
 #+end_src
 
