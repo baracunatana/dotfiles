@@ -878,14 +878,13 @@ Nótece que hay que tener los diccionarios instalados. De lo contrario, la inici
                               ("@Internet" . ?i)
                               ("@Lectura" . ?l)
                               ("@Calle" . ?k)
+                              ("@Video" . ?v)
                               ("#Docencia" . ?d)
                               ("#Carrera" . ?u)
-                              ("#DevP" . ?v)
+                              ("#DevP" . ?e)
                               ("#ProyPer" . ?y)
                               ("#IngresoAdicional" . ?s)
                               ("#Puntos" . ?n)
-                              ("Urgente" . ?g)
-                              ("Corta" . ?r)
                               ("PasarBalon" . ?b)))
 #+end_src
 
