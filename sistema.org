@@ -863,9 +863,9 @@ Nótece que hay que tener los diccionarios instalados. De lo contrario, la inici
                             ("FUTU" . (:foreground "#2aa198" :weight bold))
                             ("TODO" . (:foreground "#6c71c4" :weight bold))))
   
-  (org-highest-priority ?A)
-  (org-default-priority ?D)
-  (org-lowest-priority ?D)
+  (org-priority-highest ?A)
+  (org-priority-default ?D)
+  (org-priority-lowest ?D)
   (org-priority-faces '((?A . (:foreground "#dc322f" :weight bold))
                         (?B . (:foreground "#b58900" :weight bold))
                         (?C . (:foreground "#2aa198"))
