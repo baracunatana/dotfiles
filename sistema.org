@@ -699,6 +699,16 @@ Algunas opciones de menú de archivo requieren funciones auxiliares:
     "v" '(evil-window-vsplit :which-key "dividir verticalmente"))
 #+end_src
 
+******* Operaciones sobre /frames/
+#+begin_src emacs-lisp
+  (j/lider
+    :infix "f"
+    "" '(:ignore t :which-key "frames")
+    "TAB" '(other-frame :which-key "siguiente frame")
+    "q" '(delete-frame :which-key "cerrar ")
+    "c" '(make-frame :which-key "crear frame"))
+#+end_src
+
 ******* Operaciones sobre buffers
 #+begin_src emacs-lisp
   (j/lider
