@@ -1385,10 +1385,9 @@ Ya con esto, se tienen que definir los acrodes locales para agenda.
    "i" '(org-agenda-clock-in :which-key "iniciar reloj")
    "o" '(org-agenda-clock-out :which-key "cerrar reloj")
    "G" '(org-save-all-org-buffers :which-key "guardar archivos org")
+   "m" '(org-agenda-entry-text-mode :which-key "mostrar contenido")
    "RET" '(org-agenda-switch-to :which-key "visitar"))
 #+end_src
-
-#+RESULTS:
 
 ******* De pie de página
 #+begin_src emacs-lisp :noweb-ref org-general :tangle no
