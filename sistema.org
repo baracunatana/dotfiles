@@ -261,6 +261,7 @@ services.gnome.gnome-keyring.enable = true;
   fonts.fonts = with pkgs; [ 
     eb-garamond
     inconsolata-lgc
+    vistafonts
   ];
 #+end_src
 
