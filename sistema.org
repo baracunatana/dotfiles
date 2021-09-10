@@ -548,6 +548,14 @@ Activo counsel y enlazo =M-x= a =counsel-M-x=. Con esto se logra ver los binds a
 #+begin_src emacs-lisp
   (use-package counsel
     :after ivy
+    :custom
+    (counsel-find-file-extern-extensions '("mp4" 
+                                         "mkv" 
+                                         "xlsx"
+                                         "pptx" 
+                                         "docx" 
+                                         "xlsm" 
+                                         "odp"))
     :config
     (global-set-key (kbd "M-x") 'counsel-M-x))
 #+end_src
