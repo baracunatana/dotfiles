@@ -328,6 +328,11 @@ spotify
 pinta
 #+end_src
 
+*** [[https://mpv.io/][MPV]]
+#+begin_src nix :tangle no :noweb-ref nixos-paquetes
+mpv
+#+end_src
+
 ** Lectura de documentos
 *** [[http:wiki.gnome.org/Apps/Evince][Evince]]
 #+begin_src nix :tangle no :noweb-ref nixos-paquetes
