@@ -19,6 +19,13 @@ Dado que este archivo de configuración se usa para diferentes máquinas, se qui
   (lax-plist-get propiedades p)
 #+end_src
 
+#+name: secreto
+#+begin_src emacs-lisp :tangle no :var host="" :var item=""
+  (message (concat "secreto: " host "-" item))
+  (plist-get (nth 0 (auth-source-search :host host)) 
+             (intern (concat ":" item)))
+#+end_src
+
 Nótece que se hacen las preguntas de la misma forma, el código anterior guarda respuestas previas y no vuelve a hacer la pregunta.
 
 Esta configuración es para un sistema operativo basado en la versión 21.05 de [[https://nixos.org][NixOS]].
@@ -335,7 +342,7 @@ unstable.spotify-tui
 **** Configuración de [[https://github.com/Spotifyd/spotifyd][Spotifyd]]
 #+begin_src toml :tangle ~/.config/spotifyd/spotifyd.conf :noweb no-export
 [global]
-username = "<<pregunta("Usuario spotify: ")>>"
+username = "<<secreto("spotify.com", "user")>>"
 password_cmd = "gpg2 -q --for-your-eyes-only --no-tty -d ~/.config/spotifyd/.spotifyd-pass.gpg"
 
 # If set to true, `spotifyd` tries to bind to the session dbus
@@ -1723,7 +1730,7 @@ unstable.mu
 IMAPAccount gmail-jee
 # Address to connect to
 Host imap.gmail.com
-User <<pregunta("Correo gmail: ")>>
+User <<secreto("gmail-jee", "user")>>
 PassCmd "gpg2 -q --for-your-eyes-only --no-tty -d ~/.config/emacs/.mbsyncpass-jee.gpg"
 AuthMechs PLAIN
 SSLType IMAPS
@@ -1808,7 +1815,7 @@ Channel gmail-jee-starred
 IMAPAccount puj
 Host outlook.office365.com
 Port 993
-User <<pregunta("Correo PUJ: ")>>
+User <<secreto("puj", "user")>>
 PassCmd "gpg2 -q --for-your-eyes-only --no-tty -d ~/.config/emacs/.mbsyncpass-puj.gpg"
 AuthMechs PLAIN
 SSLType IMAPS
@@ -1852,10 +1859,10 @@ MaxMessages 5000
 
   # Crear archivo ~/.authinfo.gpg para envío de correo
   # TODO
-  echo "machine smtp.office365.com login <<pregunta("Correo PUJ: ")>> port 587 password $contra">~/.authinfo
-  echo "machine outlook.office365.com login <<pregunta("Correo PUJ: ")>> port 993 password $contra">>~/.authinfo
-  echo "machine outlook.office365.com:443 login <<pregunta("Correo PUJ: ")>> password $contra">>~/.authinfo
-  echo "machine smtp.gmail.com login <<pregunta("Correo gmail: ")>> port 587 password $contraG">>~/.authinfo
+  echo "machine smtp.office365.com login <<secreto("puj", "user")>> port 587 password $contra">~/.authinfo
+  echo "machine outlook.office365.com login <<secreto("puj", "user")>> port 993 password $contra">>~/.authinfo
+  echo "machine outlook.office365.com:443 login <<secreto("puj", "user")>> password $contra">>~/.authinfo
+  echo "machine smtp.gmail.com login <<secreto("gmail-jee", "user")>> port 587 password $contraG">>~/.authinfo
   gpg2 --output ~/.authinfo.gpg --symmetric ~/.authinfo
   rm ~/.authinfo
 
@@ -1864,7 +1871,7 @@ MaxMessages 5000
   mkdir -p ~/mbsync/puj 
   # Correr por primera vez e indexar
   # mbsync -c ~/.mbsyncrc -a
-  # mu init --maildir=~/mbsync --my-address=<<pregunta("Correo PUJ: ")>> --my-address=<<pregunta("Correo gmail: ")>>
+  # mu init --maildir=~/mbsync --my-address=<<secreto("puj", "user")>> --my-address=<<secreto("gmail-jee", "user")>>
   # mu index
 #+end_src
 
@@ -2122,15 +2129,15 @@ Para tener envío desde 2 o más cuentas, se tienen que definir contextos.
     (lambda (msg)
       (when msg
         (string-prefix-p "/puj" (mu4e-message-field msg :maildir))))
-    :vars '((user-mail-address . "<<pregunta("Correo PUJ: ")>>")
-            (user-full-name . "<<pregunta("Nombre para uso en correo: ")>>")
+    :vars '((user-mail-address . "<<secreto("puj", "user")>>")
+            (user-full-name . "<<secreto("puj", "nombre")>>")
             (mu4e-sent-folder . "/puj/Sent Items")
             (mu4e-drafts-folder . "/puj/Drafts")
             (mu4e-trash-folder . "/puj/Trash")
             (mu4e-refile-folder . "/puj/Archive")
             (smtpmail-queue-dir . "~/mbsync/puj/queue/cur")
             (message-send-mail-function . smtpmail-send-it)
-            (smtpmail-smtp-user . "<<pregunta("Correo PUJ: ")>>")
+            (smtpmail-smtp-user . "<<secreto("puj", "user")>>")
             (smtpmail-starttls-credentials . (("smtp.office365.com" 587 nil nil)))
             (smtpmail-auth-credentials . (expand-file-name "~/.authinfo.gpg"))
             (smtpmail-default-smtp-server . "smtp.office365.com")
@@ -2150,15 +2157,15 @@ Para tener envío desde 2 o más cuentas, se tienen que definir contextos.
     (lambda (msg)
       (when msg
         (string-prefix-p "/gmail-jee" (mu4e-message-field msg :maildir))))
-    :vars '((user-mail-address . "<<pregunta("Correo gmail: ")>>")
-            (user-full-name . "<<pregunta("Nombre para uso en gmail: ")>>")
+    :vars '((user-mail-address . "<<secreto("gmail-jee", "user")>>")
+            (user-full-name . "<<secreto("gmail-jee", "nombre")>>")
             (mu4e-sent-folder . "/gmail-jee/[Gmail].Sent Mail")
             (mu4e-drafts-folder . "/gmail-jee/[Gmail].drafts")
             (mu4e-trash-folder . "/gmail-jee/[Gmail].Trash")
             (mu4e-refile-folder . "/gmail-jee/[Gmail].All Mail")
             (smtpmail-queue-dir . "~/mbsync/puj/queue/cur")
             (message-send-mail-function . smtpmail-send-it)
-            (smtpmail-smtp-user . "<<pregunta("Correo gmail: ")>>")
+            (smtpmail-smtp-user . "<<secreto("gmail-jee", "user")>>")
             (smtpmail-starttls-credentials . (("smtp.gmail.com" 587 nil nil)))
             (smtpmail-auth-credentials . (expand-file-name "~/.authinfo.gpg"))
             (smtpmail-default-smtp-server . "smtp.gmail.com")
@@ -2476,7 +2483,7 @@ Los siguientes acordes funcionan en los modos =mu4e-headers-mode= y =mu4e-view-m
   
     :custom
     (excorporate-configuration
-     '("<<pregunta("Correo PUJ: ")>>" . "https://outlook.office365.com/EWS/Exchange.asmx"))
+     '("<<secreto("puj", "user")>>" . "https://outlook.office365.com/EWS/Exchange.asmx"))
     (excorporate-calendar-show-day-function 'exco-calfw-show-day)
     (org-agenda-include-diary t)
   
