@@ -406,12 +406,6 @@ Para poder usar =spotifyd= sin tener contraseñas en archivos de texto, se agreg
   mv .spotifyd-pass.gpg ~/.config/spotifyd
 #+end_src
 
-Finalmente, se debe iniciar el daemon de =spotifyd= por defecto al arrancar el sistema.
-
-#+begin_src nix :tangle no :noweb-ref nixos-configuracion-paquetes
-  services.spotifyd.enable = true;
-#+end_src
-
 *** [[https:www.pinta-project.com][Pinta]] 
 #+begin_src nix :tangle no :noweb-ref nixos-paquetes
 pinta
