@@ -1807,8 +1807,6 @@ Ahora sí se puede cargar =mu4e=. Sin embargo, este no se puede cargar con =use-
     <<mu4e-config>>)
 #+end_src
 
-#+RESULTS:
-
 ******* Configuración básica
 ******** Configuración de calendario
 Para aceptar invitaciones de calendario ics, se necesita usar la vista de mensaje de gnus (activada por defecto en, por lo menos, versiones 1.5.11+) y la siguiente configuración
@@ -1923,6 +1921,10 @@ Se necesita para que mbsync funcione correctamente
                          (:flags . 4)
                          (:from-or-to . 15)
                          (:subject)))
+#+end_src
+******** Reducir ancho de texto en vista de mensaje y centrar
+#+begin_src emacs-lisp :noweb-ref mu4e-hook :tangle no
+  (mu4e-view-mode . olivetti-mode)
 #+end_src
 ******** Actualizar /headers/ si llega más correo
 #+begin_src emacs-lisp :noweb-ref mu4e-custom :tangle no
