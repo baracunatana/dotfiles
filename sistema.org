@@ -21,7 +21,6 @@ Dado que este archivo de configuración se usa para diferentes máquinas, se qui
 
 #+name: secreto
 #+begin_src emacs-lisp :tangle no :var host="" :var item=""
-  (message (concat "secreto: " host "-" item))
   (plist-get (nth 0 (auth-source-search :host host)) 
              (intern (concat ":" item)))
 #+end_src
