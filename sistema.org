@@ -324,8 +324,86 @@ brave
 
 ** Multimedia
 *** [[https:www.spotify.com][Spotify]]
+Si bien el cliente oficial de spotify para linux funciona bien en NixOS (con el paquete =spotify=), prefiero usarlo en terminal con la combinación =spotifyd= + =spotify-tui=.
+
 #+begin_src nix :tangle no :noweb-ref nixos-paquetes
 spotify
+spotifyd
+unstable.spotify-tui
+#+end_src
+
+**** Configuración de [[https://github.com/Spotifyd/spotifyd][Spotifyd]]
+#+begin_src toml :tangle ~/.config/spotifyd/spotifyd.conf :noweb no-export
+[global]
+username = "<<pregunta("Usuario spotify: ")>>"
+password_cmd = "gpg2 -q --for-your-eyes-only --no-tty -d ~/.config/spotifyd/.spotifyd-pass.gpg"
+
+# If set to true, `spotifyd` tries to bind to the session dbus
+# and expose MPRIS controls. When running headless, without a dbus session,
+# then set this to false to avoid binding errors
+#
+use_mpris = true
+
+# The audio backend used to play the your music. To get
+# a list of possible backends, run `spotifyd --help`.
+backend = "alsa"
+
+# The alsa audio device to stream audio to. To get a
+# list of valid devices, run `aplay -L`,
+device = "default" 
+
+# The alsa control device. By default this is the same
+# name as the `device` field.
+#control = "alsa_audio_device"
+
+# The volume controller. Each one behaves different to
+# volume increases. For possible values, run
+# `spotifyd --help`.
+volume_controller = "alsa" 
+
+# A command that gets executed in your shell after each song changes.
+#on_song_change_hook = "command_to_run_on_playback_events"
+
+# The name that gets displayed under the connect tab on
+# official clients. Spaces are not allowed!
+device_name = "spotifyd"
+
+bitrate = 320
+cache_path = "/home/juan/.config/spotifyd/cache"
+
+# If set to true, audio data does NOT get cached.
+no_audio_cache = false
+
+# Volume on startup between 0 and 100
+# NOTE: This variable's type will change in v0.4, to a number (instead of string)
+initial_volume = "90"
+
+volume_normalisation = true
+
+# The normalisation pregain that is applied for each song.
+normalisation_pregain = -10
+
+# The displayed device type in Spotify clients.
+# Can be unknown, computer, tablet, smartphone, speaker, t_v,
+# a_v_r (Audio/Video Receiver), s_t_b (Set-Top Box), and audio_dongle.
+device_type = "speaker"
+#+end_src
+
+Para poder usar =spotifyd= sin tener contraseñas en archivos de texto, se agrega lo siguiente al script de post-tangle para crear el archivo encriptado con la contraseña usada en el archivo de configuración de =spotifyd=.
+
+#+begin_src sh :tangle ./inicio-correo.sh :noweb no-export
+  echo "Ingrese la contraseña de spotify (para spotifyd)"
+  read contraSpo
+  echo $contraSpo>.spotifyd-pass
+  gpg2 --output .spotifyd-pass.gpg --symmetric .spotifyd-pass
+  rm .spotifyd-pass
+  mv .spotifyd-pass.gpg ~/.config/spotifyd
+#+end_src
+
+Finalmente, se debe iniciar el daemon de =spotifyd= por defecto al arrancar el sistema.
+
+#+begin_src nix :tangle no :noweb-ref nixos-configuracion-paquetes
+  services.spotifyd.enable = true;
 #+end_src
 
 *** [[https:www.pinta-project.com][Pinta]] 
