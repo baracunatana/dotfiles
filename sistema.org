@@ -50,8 +50,7 @@ NixOS se configura, en términos de paquetes, servicios, y opciones iniciales, e
 #+begin_src nix :noweb no-export
   { config, pkgs, ... }:
   let 
-    unstable = import (builtins.fetchTarball https://github.com/nixos/nixpkgs/tarball/nixos-unstable-small)
-    { config = config.nixpkgs.config; }; 
+    <<nixos-let>>
   in
   {
     <<nixos-base>>
@@ -78,6 +77,12 @@ NixOS se configura, en términos de paquetes, servicios, y opciones iniciales, e
   # (e.g. man configuration.nix or on https://nixos.org/nixos/options.html).
   system.stateVersion = "21.05"; # Did you read the comment?
 }
+#+end_src
+
+** Habilitar canal inestable
+#+begin_src nix :tangle no :noweb-ref nixos-let
+  unstable = import (builtins.fetchTarball https://github.com/nixos/nixpkgs/tarball/nixos-unstable-small)
+    { config = config.nixpkgs.config; }; 
 #+end_src
 
 ** Grub y carga
@@ -405,10 +410,17 @@ nixpkgs.overlays = [
 ];
 #+end_src
 
-Ahora sí se puede instalar =emacs= con gcc.
+Luego, para instalar con paquetes que requieran compilación (como =vterm=), se define un emacs específico en la sección let de nixos.
+
+
+#+begin_src nix :tangle no :noweb-ref nixos-let
+  emacsWithPackages = (pkgs.emacsPackagesGen pkgs.emacsGcc).emacsWithPackages (epkgs: ([epkgs.vterm]));
+#+end_src
+
+Ahora sí se puede instalar =emacs= con gcc (definido en el paso anterior).
 
 #+begin_src nix :tangle no :noweb-ref nixos-paquetes
-emacsGcc
+  emacsWithPackages
 #+end_src
 
 **** Configuración
