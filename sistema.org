@@ -314,13 +314,52 @@ qutebrowser
   c.content.pdfjs = True
 #+end_src
 
+***** Guardar sesión
+#+begin_src python :tangle ~/.config/qutebrowser/config.py
+  c.auto_save.session = True
+#+end_src
+
+**** Buscadores
+#+begin_src python :tangle ~/.config/qutebrowser/config.py
+  c.url.searchengines = {'DEFAULT': 'https://duckduckgo.com/?q={}', 
+                         'am': 'https://www.amazon.com/s?k={}',
+                         'np': 'https://search.nixos.org/packages/?query={}',
+                         'no': 'https://search.nixos.org/options/?query={}',
+                         'go': 'https://www.google.com/search?q={}', 
+                         'gs': 'https://scholar.google.com/search?q={}', 
+                         're': 'https://www.reddit.com/r/{}', 
+                         'yt': 'https://www.youtube.com/results?search_query={}'}
+#+end_src
+
 **** Acordes
 #+begin_src python :tangle ~/.config/qutebrowser/config.py
   # C-j y C-k para navegar opciones de completion
   config.bind('<Ctrl+j>', 'completion-item-focus next', mode='command')
   config.bind('<Ctrl+k>', 'completion-item-focus prev', mode='command')
-  config.bind('<Shift+J>', 'tab-prev')
-  config.bind('<Shift+K>', 'tab-next')
+  config.bind('<Ctrl+j>', 'tab-prev', mode='normal')
+  config.bind('<Ctrl+k>', 'tab-next', mode='normal')
+  config.bind('<Ctrl+h>', 'tab-prev', mode='normal')
+  config.bind('<Ctrl+l>', 'tab-next', mode='normal')
+#+end_src
+
+***** De apertura de aplicaciones externas
+#+begin_src python :tangle ~/.config/qutebrowser/config.py
+  config.bind('<Space>ov','hint links spawn mpv {hint-url}' , mode='normal')
+#+end_src
+
+***** De buscadores
+#+begin_src python :tangle ~/.config/qutebrowser/config.py
+#+end_src
+
+***** De manipulación de /buffers/ (/tabs/)
+#+begin_src python :tangle ~/.config/qutebrowser/config.py
+  config.bind('<Space>bN','tab-give' , mode='normal')
+  config.bind('<Space>be','tab-close' , mode='normal')
+#+end_src
+
+***** De ayuda
+#+begin_src python :tangle ~/.config/qutebrowser/config.py
+  config.bind('<Space>hc','config-source' , mode='normal')
 #+end_src
 
 *** [[https:brave.com][Brave]]
