@@ -37,8 +37,8 @@ Lo que se logra con esto es generar una serie de archivos de configuración en l
 ** Script post-tangle
 *** Mover ./configuration.nix a /etc/nixos/configuration.nix
 #+begin_src sh :tangle ./post-tangle.sh
-#!/bin/sh
-sudo cp ./configuration.nix /etc/nixos/configuration.nix
+  #!/bin/sh
+  sudo cp ./configuration.nix /etc/nixos/configuration.nix
 #+end_src
 
 ** Otros pasos a completar
@@ -299,7 +299,7 @@ firefox
 
 *** [[https:qutebrowser.org][Qutebrowser]] 
 #+begin_src nix :tangle no :noweb-ref nixos-paquetes
-qutebrowser
+  qutebrowser
 #+end_src
 
 **** Configuración básica
@@ -559,7 +559,7 @@ Esta configuración está basada en =straight= y =use-package=. En esta sección
 
 #+begin_src emacs-lisp
   (setq package-enable-at-startup nil)
-
+  
   (defvar bootstrap-version)
   (let ((bootstrap-file
          (expand-file-name "straight/repos/straight.el/bootstrap.el" user-emacs-directory))
@@ -571,7 +571,7 @@ Esta configuración está basada en =straight= y =use-package=. En esta sección
         (goto-char (point-max))
         (eval-print-last-sexp)))
     (load bootstrap-file nil 'nomessage))
-
+  
   (straight-use-package 'use-package)
   (setq straight-use-package-by-default t)
 #+end_src 
@@ -593,7 +593,7 @@ Uso [[https://github.com/DeLaGuardo/Inconsolata-LGC][Inconsolata-LGC]] (la incon
 La lista de fuentes disponibles para emacs se puede consultar ejecutando el siguiente bloque de código:
 
 #+begin_src emacs-lisp :tangle no
-(font-family-list)
+  (font-family-list)
 #+end_src
 
 Para poder usar inconsolata, es imporante verificar que esté disponible en esa lista.
@@ -636,7 +636,7 @@ Para esto, la fuente debe estar instalada correctamente en el sistema. Si se usa
       :keymaps 'override
       :prefix "SPC"
       :non-normal-prefix "M-SPC")
-
+  
     ;; definición de tecla lider local (relativo al major mode) para modo normal.
     (general-create-definer j/lider-local
       :states '(normal insert emacs)
@@ -1291,8 +1291,8 @@ Uso tectonic como distribución de latex en (ambientes linux).
 
 ******* Excluir tareas completas de vista de agenda
 #+begin_src emacs-lisp :tangle no :noweb-ref org-custom
-(org-agenda-skip-scheduled-if-done t)
-(org-agenda-skip-deadline-if-done t)
+  (org-agenda-skip-scheduled-if-done t)
+  (org-agenda-skip-deadline-if-done t)
 #+end_src
 
 ******* =org-super-agenda=
@@ -1307,11 +1307,11 @@ Uso tectonic como distribución de latex en (ambientes linux).
                                                  :not (:todo "FUTU")
                                                  :priority "A"))
                                ( :name "Importantes"
-                                       :and ( :todo ("TODO" "EMPE")
-                                                    :priority "B"))
+                                 :and ( :todo ("TODO" "EMPE")
+                                        :priority "B"))
                                ( :name "Cortas (<30 min)"
-                                       :and ( :todo "TODO"
-                                                    :effort< "30")))
+                                 :and ( :todo "TODO"
+                                        :effort< "30")))
                              "Grupos de super-agenda")
     :config
     (org-super-agenda-mode))
@@ -1613,7 +1613,7 @@ La definición de plantillas se hace a partir de un archivo de texto plano que s
     "y" '(yas-insert-snippet :which-key "insertar plantilla"))
 #+end_src
 
-***** =dired=
+***** TODO =dired=
 Esta sección contiene la configuración de Dired. Al ser un paquete incluido en emacs, es necesario incluir la línea =:straight (:type built-in)= para que =use-package= lo pueda encontrar (esto es necesario por la integración de =use-package= con =straight=)
    
 #+begin_src emacs-lisp :noweb no-export
