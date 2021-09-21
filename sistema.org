@@ -2,7 +2,7 @@
 #+author: Juan E. Gómez-Morantes, PhD
 
 #+property: header-args :mkdirp yes
-
+ 
 * Introducción
 Este archivo define, en un estilo literario, la configuración de todo mi sistema operativo y sus aplicaciones básicas. Para esto hace uso intensivo del paguete =org= de =Emacs=, las funcionalidades de tangling y noweb de =org=.
 
