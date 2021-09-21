@@ -1576,6 +1576,14 @@ Activar =org-beamer-mode= por defecto para que esté disponible en el /dispacher
     :after org)
 #+end_src
 
+****** =org-reveal=
+[[https://github.com/yjwen/org-reveal][org-reveal]] es un paquete que permite exportar un archivo de org-mode como una presentación de [[https://revealjs.com/][reveal.js]].
+
+#+begin_src emacs-lisp 
+  (use-package ox-reveal
+    :config)
+#+end_src
+
 ***** =yasnippet=
 Yasnippet es un paquete que permite la definición de /snippets/ (o plantillas) y su utilización en diferentes modos. Por defecto, no trae plantillas definidas; si se quieren plantillas, se debe agregar el paquete =yasnippet-snippets= que trae una colección de plantillas predefinidas para modos populares.
 
