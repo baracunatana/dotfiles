@@ -1584,6 +1584,18 @@ Activar =org-beamer-mode= por defecto para que esté disponible en el /dispacher
     :config)
 #+end_src
 
+****** =org-re-reveal=
+#+begin_src emacs-lisp 
+  (use-package org-re-reveal
+   :config)
+  
+(use-package org-re-reveal-ref
+  :config)
+#+end_src
+
+#+RESULTS:
+
+
 ***** =yasnippet=
 Yasnippet es un paquete que permite la definición de /snippets/ (o plantillas) y su utilización en diferentes modos. Por defecto, no trae plantillas definidas; si se quieren plantillas, se debe agregar el paquete =yasnippet-snippets= que trae una colección de plantillas predefinidas para modos populares.
 
@@ -2661,9 +2673,10 @@ gnupg
 #+end_src
 
 ** Utilidades
-*** [[https:linux.die.net/man/1/unzip][Unzip]]
+*** [[https://linux.die.net/man/1/zip][Zip]] y [[https:linux.die.net/man/1/unzip][Unzip]]
 #+begin_src nix :tangle no :noweb-ref nixos-paquetes
 unzip
+zip
 #+end_src
 
 *** [[https://www.gnu.org/software/wget/][Wget]]
