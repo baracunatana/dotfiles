@@ -455,6 +455,11 @@ pinta
 mpv
 #+end_src
 
+*** [[https://obsproject.com/][OBS]]
+#+begin_src nix :tangle no :noweb-ref nixos-paquetes
+obs-studio
+#+end_src
+
 ** Lectura de documentos
 *** [[http:wiki.gnome.org/Apps/Evince][Evince]]
 #+begin_src nix :tangle no :noweb-ref nixos-paquetes
