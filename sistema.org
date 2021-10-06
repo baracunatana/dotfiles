@@ -663,6 +663,7 @@ Para esto, la fuente debe estar instalada correctamente en el sistema. Si se usa
   (with-eval-after-load 'dired (evil-collection-dired-setup))
   (with-eval-after-load 'dired (evil-collection-wdired-setup))
   (with-eval-after-load 'pdf-tools (evil-collection-pdf-setup))
+  (with-eval-after-load 'ebib (evil-collection-ebib-setup))
   (with-eval-after-load 'nov (evil-collection-nov-setup))
 #+end_src
 
@@ -1599,7 +1600,6 @@ Activar =org-beamer-mode= por defecto para que esté disponible en el /dispacher
 #+end_src
 
 #+RESULTS:
-
 
 ***** =yasnippet=
 Yasnippet es un paquete que permite la definición de /snippets/ (o plantillas) y su utilización en diferentes modos. Por defecto, no trae plantillas definidas; si se quieren plantillas, se debe agregar el paquete =yasnippet-snippets= que trae una colección de plantillas predefinidas para modos populares.
@@ -2623,6 +2623,28 @@ Formato para generación de identificadores de referencias:
      :keymaps 'biblio-selection-mode-map
      "I" '(ans/biblio-selection-insert-end-of-bibfile :which-key "insertar en main.bib")))
 #+end_src
+
+****** =ebib=
+#+begin_src emacs-lisp 
+  (use-package ebib
+    :commands ebib
+
+    :custom
+    (ebib-citation-template "{Author|Editor} ({Date|Year}). {\"Title\".} {Publisher.}")
+    (ebib-preload-bib-files '("~/biblioteca/main.bib"))
+    (ebib-bibtex-dialect 'biblatex)
+    (ebib-notes-directory "~/personal/orgmode/inbox/")
+  
+    :config
+    (delete "edition" ebib-hidden-fields) 
+    (delete "location" ebib-hidden-fields)
+  
+    :general
+    (j/lider
+    :infix "o"
+     "e" '(ebib :which-key "ebib")))
+#+end_src
+
 ** Juegos
 *** [[https:mgba.io][Mgba]]
 #+begin_src nix :tangle no :noweb-ref nixos-paquetes
