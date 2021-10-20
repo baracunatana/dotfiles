@@ -1589,6 +1589,16 @@ Ya con esto, se tienen que definir los acrodes locales para agenda.
 #+end_src
 
 ****** Exportación a latex
+******* Configuración para exportar a cartas
+#+begin_src emacs-lisp :noweb-ref org-config :tangle no
+  (add-to-list 'org-latex-classes
+               '("letter"
+                 "\\documentclass{letter}"
+                 ("\\section{%s}" . "\\section*{%s}")
+                 ("\\subsection{%s}" . "\\subsection*{%s}")
+                 ("\\subsubsection{%s}" . "\\subsubsection*{%s}")))
+#+end_src
+
 ******* Beamer
 Por defecto, =ox-latex= exporta =*asdf*= a texto de alerta en beamer. Para que se exporte como texto en negrilla se debe agregar un filtro de exportación a org-export.
 #+begin_src emacs-lisp :tangle no :noweb-ref org-config
