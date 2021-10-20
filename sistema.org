@@ -268,8 +268,8 @@ kwriteconfig5 --file $HOME/.config/kwinrc --group "Windows" "Placement" "Centere
   # services.openssh.enable = true;
 
   # Open ports in the firewall.
-  # networking.firewall.allowedTCPPorts = [ ... ];
-  # networking.firewall.allowedUDPPorts = [ ... ];
+  networking.firewall.allowedTCPPortRanges = [ { from = 1714; to = 1764; } ];
+  networking.firewall.allowedUDPPortRanges = [ { from = 1714; to = 1764; } ];
   # Or disable the firewall altogether.
   # networking.firewall.enable = false;
 #+end_src
@@ -2713,6 +2713,12 @@ teams
 *** [[https://signal.org/][Signal]] 
 #+begin_src nix :tangle no :noweb-ref nixos-paquetes
 signal-desktop
+#+end_src
+
+*** [[https://kdeconnect.kde.org/][KDE Connect]]
+#+begin_src nix :tangle no :noweb-ref nixos-paquetes
+libsForQt5.kdeconnect-kde
+#gnomeExtensions.gsconnect
 #+end_src
 
 ** Seguridad
