@@ -2762,6 +2762,10 @@ Nano viene por defecto en NixOS 21.05
 autoconf
 #+end_src
 
+*** [[https://github.com/tuxera/ntfs-3g][ntfs3g]]
+#+begin_src nix :tangle no :noweb-ref nixos-paquetes
+ntfs3g
+#+end_src
 
 * Footnotes
 
