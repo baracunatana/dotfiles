@@ -902,6 +902,13 @@ Algunas opciones de menú de archivo requieren funciones auxiliares:
     "j" '(next-buffer :which-key "siguiente buffer"))
 #+end_src
 
+******* Finalización
+#+begin_src emacs-lisp
+  (general-define-key
+   :states '(normal insert emacs)
+   "C-M-i" '(completion-at-point :which-key "completar"))
+#+end_src
+
 ******* Menú de ayuda
 #+begin_src emacs-lisp
   (j/lider
@@ -2682,6 +2689,50 @@ Formato para generación de identificadores de referencias:
      "e" '(ebib :which-key "ebib")))
 #+end_src
 
+***** =org-roam=
+Para compilar el binario de SQLite que usa org-roam, es necesario instalar [[gcc]]
+
+#+begin_src emacs-lisp :noweb no-export
+  (use-package org-roam
+    :init
+    (setq org-roam-v2-ack t)
+  
+    :custom
+    (org-roam-directory "~/org-roam/")
+    (org-roam-completion-everywhere t)
+
+    :config
+    (org-roam-db-autosync-enable)
+  
+    :general
+    <<org-roam-general>>)
+#+end_src
+
+****** Acordes globales
+#+begin_src emacs-lisp :noweb-ref org-roam-general
+  (j/lider
+    :infix "r"
+    "" '(:ignore t :which-key "org-roam")
+    "i" '(org-roam-node-insert :which-key "insertar nodo")
+    "a" '(org-roam-alias-add :which-key "alias")
+    "A" '(org-roam-alias-remove :which-key "quitar alias")
+    "b" '(org-roam-buffer-toggle :which-key "mostrar buffer")
+    "f" '(org-roam-node-find :which-key "buscar nodo"))
+#+end_src
+
+****** org-roam-ui
+#+begin_src emacs-lisp
+(use-package org-roam-ui
+  :straight
+    (:host github :repo "org-roam/org-roam-ui" :branch "main" :files ("*.el" "out"))
+    :after org-roam
+    :config
+    (setq org-roam-ui-sync-theme t
+          org-roam-ui-follow t
+          org-roam-ui-update-on-save t
+          org-roam-ui-open-on-start t))
+#+end_src
+
 ** Juegos
 *** [[https:mgba.io][Mgba]]
 #+begin_src nix :tangle no :noweb-ref nixos-paquetes
@@ -2765,6 +2816,11 @@ autoconf
 *** [[https://github.com/tuxera/ntfs-3g][ntfs3g]]
 #+begin_src nix :tangle no :noweb-ref nixos-paquetes
 ntfs3g
+#+end_src
+
+*** gcc
+#+begin_src nix :tangle no :noweb-ref nixos-paquetes
+gcc
 #+end_src
 
 * Footnotes
