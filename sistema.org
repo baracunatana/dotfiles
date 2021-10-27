@@ -1029,6 +1029,8 @@ Nótece que hay que tener los diccionarios instalados. De lo contrario, la inici
     <<org-general>>)
 #+end_src
 
+#+RESULTS:
+
 ****** Configuración básica
 #+begin_src emacs-lisp :tangle no :noweb-ref org-custom
   (org-startup-folded t)          ; Colapsar contenido al abrir un archivo
@@ -1098,7 +1100,7 @@ Cada vez que marco como completada (o cancelada) una tarea con repetición, se g
 #+begin_src emacs-lisp :tangle no :noweb-ref org-hook
   (org-mode . (lambda () (electric-indent-local-mode -1)))
 #+end_src
-   
+  
 ****** dwim
 La siguiente función dwim (do what I mean) se toma del [[https://github.com/hlissner/doom-emacs/blob/develop/modules/lang/org/autoload/org.el#L147][código de Doom]]. Se le modifica el nombre para conservar convención de nombramiento de funciones propias.
 
@@ -1312,10 +1314,48 @@ Ahora se agrega un hook para ejecutar =j/org-actionable= antes de cada ejecució
 #+end_src
 
 ****** Exportación a latex
-Uso tectonic como distribución de latex en (ambientes linux).
+******* TODO Cadena para compilación de latex
+Uso ~tectonic~ como distribución de latex en (ambientes linux).
+
+UPDATE: Luego de actualización a tectonic 8 en NixOS, biber dejó de funcionar (borra el archivo de biblatex...), así que tocó volver a TexLive. Ojalá en un futuro pueda volver a a revisar ~tectonic~.
 
 #+begin_src emacs-lisp :tangle no :noweb-ref org-custom
-  (org-latex-pdf-process '("tectonic %f"))
+  (org-latex-pdf-process
+   '("%latex -interaction nonstopmode -output-directory %o %f"
+     "biber %b"
+     "%latex -interaction nonstopmode -output-directory %o %f"
+     "%latex -interaction nonstopmode -output-directory %o %f"))
+#+end_src
+
+******* Beamer
+Por defecto, =ox-latex= exporta =*asdf*= a texto de alerta en beamer. Para que se exporte como texto en negrilla se debe agregar un filtro de exportación a org-export.
+#+begin_src emacs-lisp :tangle no :noweb-ref org-config
+  (defun my-beamer-bold (contents backend info)
+    (when (eq backend 'beamer) ;;
+      (replace-regexp-in-string "\\`\\\\[A-Za-z0-9]+" "\\\\textbf" contents)))
+  ;;(add-to-list 'org-export-filter-bold-functions 'my-beamer-bold)
+#+end_src
+
+Activar =org-beamer-mode= por defecto para que esté disponible en el /dispacher/ de /org export/:
+#+begin_src emacs-lisp :tangle no :noweb-ref org-config
+  (org-beamer-mode)
+#+end_src
+
+******* Configuración para exportar a cartas
+#+begin_src emacs-lisp :noweb-ref org-config :tangle no
+  (add-to-list 'org-latex-classes
+               '("letter"
+                 "\\documentclass{letter}"
+                 ("\\section{%s}" . "\\section*{%s}")
+                 ("\\subsection{%s}" . "\\subsection*{%s}")
+                 ("\\subsubsection{%s}" . "\\subsubsection*{%s}")))
+#+end_src
+
+******* Eliminación de archivos intermedios
+Además a los ya presentes en ~org-latex-logfiles-extensions~, se agrega la extensión ~bbl~ para que también elimine ese archivo intermedio después de exportar.
+
+#+begin_src emacs-lisp :noweb-ref org-config :tangle no
+  (add-to-list 'org-latex-logfiles-extensions "bbl")
 #+end_src
 
 ****** Configuración de agenda
