@@ -2718,14 +2718,11 @@ Para compilar el binario de SQLite que usa org-roam, es necesario instalar [[gcc
   (use-package org-roam
     :init
     (setq org-roam-v2-ack t)
-  
     :custom
     (org-roam-directory "~/org-roam/")
     (org-roam-completion-everywhere t)
-
     :config
     (org-roam-db-autosync-enable)
-  
     :general
     <<org-roam-general>>)
 #+end_src
@@ -2737,22 +2734,37 @@ Para compilar el binario de SQLite que usa org-roam, es necesario instalar [[gcc
     "" '(:ignore t :which-key "org-roam")
     "i" '(org-roam-node-insert :which-key "insertar nodo")
     "a" '(org-roam-alias-add :which-key "alias")
+    "u" '(org-roam-ui-mode :which-key "lanzar ui")
     "A" '(org-roam-alias-remove :which-key "quitar alias")
     "b" '(org-roam-buffer-toggle :which-key "mostrar buffer")
     "f" '(org-roam-node-find :which-key "buscar nodo"))
 #+end_src
 
-****** org-roam-ui
+****** =org-roam-ui=
 #+begin_src emacs-lisp
-(use-package org-roam-ui
-  :straight
+  (use-package org-roam-ui
+    :straight
     (:host github :repo "org-roam/org-roam-ui" :branch "main" :files ("*.el" "out"))
     :after org-roam
+    :custom
+    (org-roam-ui-sync-theme t)
+    (org-roam-ui-follow t)
+    (org-roam-ui-update-on-save t)
+    (org-roam-ui-open-on-start t))
+#+end_src
+
+****** =org-roam-bibtex=
+[[https://github.com/org-roam/org-roam-bibtex][org-roam-bibtex]] integra =org-roam=, =ivy-bibtext=, y =org-ref=. En particular, hace que las notas asociadas a entradas de bibtex (que se toman desde =ivy-bibtex= o =org-ref=) se integren al grafo de =org-ref=. 
+
+#+begin_src emacs-lisp
+  (use-package org-roam-bibtex
     :config
-    (setq org-roam-ui-sync-theme t
-          org-roam-ui-follow t
-          org-roam-ui-update-on-save t
-          org-roam-ui-open-on-start t))
+    (org-roam-bibtex-mode 1))
+#+end_src
+
+*** Latex (con [[https://tug.org/texlive/][Tex Live]])
+#+begin_src nix :tangle no :noweb-ref nixos-paquetes
+texlive.combined.scheme-full
 #+end_src
 
 ** Juegos
@@ -2854,3 +2866,4 @@ gcc
 [fn:3] [[http://aspell.net/test/cur/]]
 
 [fn:4] Publicada en octubre 2019
+
