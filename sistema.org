@@ -1424,16 +1424,12 @@ También es importante deshabilitar =org-super-agenda-map= para evitar bindings 
 
 ******* Configuración básica
 #+begin_src emacs-lisp :tangle no :noweb-ref org-ref-custom
-  (org-ref-default-citation-link "citep")
-  (reftex-default-bibliography '("~/biblioteca/main.bib"))
-  (org-ref-default-bibliography '("~/biblioteca/main.bib"))
-  (org-ref-pdf-directory "~/biblioteca/")
+  (bibtex-completion-cite-default-command "citep")
+  (bibtex-completion-bibliography '("~/biblioteca/main.bib"))
+  (bibtex-completion-library-path "~/biblioteca/")
+  (bibtex-completion-notes-path "~/biblioteca/notas/")
+  ;(org-ref-notes-function 'orb-edit-note)
   (bibtex-dialect 'biblatex)
-#+end_src
-
-******* Integrar con =ivy= por defecto
-#+begin_src emacs-lisp :tangle no :noweb-ref org-ref-config
-  (org-ref-ivy-cite-completion)
 #+end_src
 
 ******* Acordes relevantes
@@ -1441,8 +1437,8 @@ También es importante deshabilitar =org-super-agenda-map= para evitar bindings 
   (j/lider-local
     :states '(normal insert emacs)
     :keymaps 'org-mode-map
-    "}" '(org-ref-ivy-insert-ref-link :which-key "insertar referencia")
-    "]" '(org-ref-ivy-insert-cite-link :which-key "insertar cita"))
+    "}" '(org-ref-insert-label-link :which-key "insertar referencia")
+    "]" '(org-ref-insert-cite-link :which-key "insertar cita"))
 #+end_src
 
 ****** =org-refile=
@@ -1635,31 +1631,6 @@ Ya con esto, se tienen que definir los acrodes locales para agenda.
     "s" '(org-open-at-point :which-key "segir enlace"))
 #+end_src
 
-****** Exportación a latex
-******* Configuración para exportar a cartas
-#+begin_src emacs-lisp :noweb-ref org-config :tangle no
-  (add-to-list 'org-latex-classes
-               '("letter"
-                 "\\documentclass{letter}"
-                 ("\\section{%s}" . "\\section*{%s}")
-                 ("\\subsection{%s}" . "\\subsection*{%s}")
-                 ("\\subsubsection{%s}" . "\\subsubsection*{%s}")))
-#+end_src
-
-******* Beamer
-Por defecto, =ox-latex= exporta =*asdf*= a texto de alerta en beamer. Para que se exporte como texto en negrilla se debe agregar un filtro de exportación a org-export.
-#+begin_src emacs-lisp :tangle no :noweb-ref org-config
-  (defun my-beamer-bold (contents backend info)
-    (when (eq backend 'beamer) ;;
-      (replace-regexp-in-string "\\`\\\\[A-Za-z0-9]+" "\\\\textbf" contents)))
-  ;;(add-to-list 'org-export-filter-bold-functions 'my-beamer-bold)
-#+end_src
-
-Activar =org-beamer-mode= por defecto para que esté disponible en el /dispacher/ de /org export/:
-#+begin_src emacs-lisp :tangle no :noweb-ref org-config
-  (org-beamer-mode)
-#+end_src
-
 ****** =org-ql=
 #+begin_src emacs-lisp
   (use-package org-ql
@@ -1677,13 +1648,16 @@ Activar =org-beamer-mode= por defecto para que esté disponible en el /dispacher
 ****** =org-re-reveal=
 #+begin_src emacs-lisp 
   (use-package org-re-reveal
-   :config)
+    :config)
   
-(use-package org-re-reveal-ref
-  :config)
-#+end_src
+  (use-package org-re-reveal-ref
+    :config)
+  #+end_src
 
-#+RESULTS:
+****** =org-noter=
+#+begin_src emacs-lisp 
+  (use-package org-noter)
+#+end_src
 
 ***** =yasnippet=
 Yasnippet es un paquete que permite la definición de /snippets/ (o plantillas) y su utilización en diferentes modos. Por defecto, no trae plantillas definidas; si se quieren plantillas, se debe agregar el paquete =yasnippet-snippets= que trae una colección de plantillas predefinidas para modos populares.
@@ -2728,6 +2702,14 @@ Formato para generación de identificadores de referencias:
     :infix "o"
      "e" '(ebib :which-key "ebib")))
 #+end_src
+
+****** =helm-bibtext=
+#+begin_src emacs-lisp 
+  (use-package helm-bibtex
+    :custom
+    (helm-bibtex-bibliography "~/biblioteca/main.bib")
+    (helm-bibtex-notes-path "~/org-roam/"))
+  #+end_src
 
 ***** =org-roam=
 Para compilar el binario de SQLite que usa org-roam, es necesario instalar [[gcc]]
