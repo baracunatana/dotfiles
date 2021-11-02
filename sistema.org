@@ -1326,6 +1326,11 @@ UPDATE: Luego de actualización a tectonic 8 en NixOS, biber dejó de funcionar 
      "%latex -interaction nonstopmode -output-directory %o %f"
      "%latex -interaction nonstopmode -output-directory %o %f"))
 #+end_src
+******* Preferir /labels/ de usuario
+Esto se hace para que, al exportar latex, no se generen /labels/ aleatorios para las secciones sino que se usen los que estén en propiedades de las secciones (si existen).
+#+begin_src emacs-lisp :tangle no :noweb-ref org-custom
+  (org-latex-prefer-user-labels t)
+#+end_src
 
 ******* Beamer
 Por defecto, =ox-latex= exporta =*asdf*= a texto de alerta en beamer. Para que se exporte como texto en negrilla se debe agregar un filtro de exportación a org-export.
@@ -1424,7 +1429,7 @@ También es importante deshabilitar =org-super-agenda-map= para evitar bindings 
 
 ******* Configuración básica
 #+begin_src emacs-lisp :tangle no :noweb-ref org-ref-custom
-  (bibtex-completion-cite-default-command "citep")
+  (org-ref-default-citation-link "citep")
   (bibtex-completion-bibliography '("~/biblioteca/main.bib"))
   (bibtex-completion-library-path "~/biblioteca/")
   (bibtex-completion-notes-path "~/biblioteca/notas/")
@@ -1437,7 +1442,7 @@ También es importante deshabilitar =org-super-agenda-map= para evitar bindings 
   (j/lider-local
     :states '(normal insert emacs)
     :keymaps 'org-mode-map
-    "}" '(org-ref-insert-label-link :which-key "insertar referencia")
+    "}" '(org-ref-insert-ref-link :which-key "insertar referencia")
     "]" '(org-ref-insert-cite-link :which-key "insertar cita"))
 #+end_src
 
