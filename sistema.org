@@ -509,6 +509,11 @@ libsForQt5.okular
 archi
 #+end_src
 
+*** [[https://www.python.org/][Python]]
+#+begin_src nix :tangle no :noweb-ref nixos-paquetes
+python3Full
+#+end_src
+
 ** Academia
 *** [[https:www.jabref.org][Jabref]]
 #+begin_src nix :tangle no :noweb-ref nixos-paquetes
