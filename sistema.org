@@ -1451,6 +1451,25 @@ También es importante deshabilitar =org-super-agenda-map= para evitar bindings 
     "]" '(org-ref-insert-cite-link :which-key "insertar cita"))
 #+end_src
 
+******* Agregar /tooltip/ al ubicar cursor en referencia
+#+begin_src emacs-lisp :tangle no :noweb-ref org-ref-config
+(defun org-ref-link-message (&optional a1 a2 a3)
+  (when (and (eq major-mode 'org-mode)
+   (eq (get-text-property (point) 'help-echo) 'org-ref-cite-tooltip))
+  (display-local-help)))
+
+(advice-add 'right-char :after 'org-ref-link-message)
+(advice-add 'left-char :after 'org-ref-link-message)
+(advice-add 'evil-forward-char :after 'org-ref-link-message)
+(advice-add 'evil-backward-char :after 'org-ref-link-message)
+(advice-add 'evil-next-visual-line :after 'org-ref-link-message)
+(advice-add 'evil-next-line :after 'org-ref-link-message)
+(advice-add 'evil-previous-visual-line :after 'org-ref-link-message)
+(advice-add 'evil-previous-line :after 'org-ref-link-message)
+(advice-add 'previous-line :after 'org-ref-link-message)
+(advice-add 'next-line :after 'org-ref-link-message)
+#+end_src
+
 ****** =org-refile=
 Configuración necesaria para que org-refile tome en cuenta elementos hasta de nivel 4 en el archivo actual. 
 #+begin_src emacs-lisp :tangle no :noweb-ref org-custom
