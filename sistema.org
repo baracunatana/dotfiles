@@ -1370,8 +1370,8 @@ Además a los ya presentes en ~org-latex-logfiles-extensions~, se agrega la exte
 
 ****** Configuración de agenda
 ******* Definición de archivos de agenda
-#+begin_src emacs-lisp :tangle no :noweb-ref org-custom
-  (org-agenda-files '("~/personal/orgmode/gtd.org"))
+#+begin_src emacs-lisp :tangle no :noweb-ref org-config
+  (add-to-list 'org-agenda-files "~/personal/orgmode/gtd.org")
 #+end_src
 
 ******* Mostrar la agenda en la ventana actual
@@ -2619,7 +2619,7 @@ Los siguientes acordes funcionan en los modos =mu4e-headers-mode= y =mu4e-view-m
 
 ***** TODO =excorporate=
 (Esconder correo)
-
+|
 =excorporate= es un paquete que sirve para consultar el calendario de exchange a través de EWS.
   
 #+begin_src emacs-lisp :noweb no-export
@@ -2630,18 +2630,81 @@ Los siguientes acordes funcionan en los modos =mu4e-headers-mode= y =mu4e-view-m
     (excorporate-configuration
      '("<<secreto("puj", "user")>>" . "https://outlook.office365.com/EWS/Exchange.asmx"))
     (excorporate-calendar-show-day-function 'exco-calfw-show-day)
-    (org-agenda-include-diary t)
   
     :config
     (excorporate)
-    (excorporate-diary-enable)
-    (run-with-timer 30 (* 60 60) 'j/actualizar-diario-con-exchange)
-  
+    <<excorporate-config>>
+ 
     :init
-    (defun j/actualizar-diario-con-exchange ()
-      (interactive)
-      "Usa excorporate para actualizar el diario con las citas del día"
-      (exco-diary-diary-advice (calendar-current-date) (calendar-current-date) #'message "citas actualizadas")))
+    <<excorporate-init>>)
+#+end_src
+
+****** Funciones para descarga de agenda a archivo org
+******* Variable para ubicación del archivo de agenda
+#+begin_src emacs-lisp :tangle no :noweb-ref excorporate-init
+(defcustom j/excorporate-org-save-file
+  (concat user-emacs-directory ".exco-calendar.org")
+  "Where `j/exco-org-show-day' saves its results.
+This file's contents are overwritten on each invocation of
+`j/exco-org-show-day'.")
+#+end_src
+
+******* Funciones para descarga de agenda
+#+begin_src emacs-lisp :tangle no :noweb-ref excorporate-config
+  (require 'excorporate-org)
+  
+  (add-to-list 'org-agenda-files j/excorporate-org-save-file)
+  
+  (defun j/exco-org-insert-meetings (identifier response)
+    "Insert the connection IDENTIFIER's meetings from RESPONSE."
+    (with-current-buffer (find-file-noselect j/excorporate-org-save-file)
+      (org-insert-time-stamp (current-time) t t "  + Last checked " "\n")
+      (exco-calendar-item-iterate-general
+       response (lambda (&rest arguments)
+                  (print arguments)
+                  (with-current-buffer (find-file-noselect j/excorporate-org-save-file)
+                    (org-mode)
+                    (let ((new-arguments arguments))
+                      (setf (nth 7 new-arguments)
+                            (exco-resolve-organizer-email-address-synchronously
+                             identifier organizer-structure))
+                      (apply #'exco-org-insert-meeting new-arguments))))
+       subject start-internal end-internal
+       location main-invitees optional-invitees item-identifier
+       organizer-structure)
+      (goto-char (point-min))
+      (if (save-excursion (org-goto-first-child))
+          (org-sort-entries t ?s)
+        (forward-line 3)
+        (insert "`♘\n"))))
+  
+  (defun j/exco-org-show-day (day month year)
+    "Show meetings for the date specified by MONTH DAY YEAR."
+    (delete-file j/excorporate-org-save-file)
+    (exco-connection-iterate (lambda ()
+                               (message "Saving calendar entries from Excorporate to %s ..."
+                                        j/excorporate-org-save-file))
+                             (lambda (identifier callback)
+                               (exco-org-insert-headline identifier
+                                                         month day year)
+                               (exco-get-meetings-for-day identifier
+                                                          month day year
+                                                          callback))
+                             #'j/exco-org-insert-meetings
+                             (lambda ()
+                               (with-current-buffer (find-file-noselect j/excorporate-org-save-file)
+                                 (set-buffer-file-coding-system 'raw-text)
+                                 (save-buffer)
+                                 (kill-this-buffer))
+                               (message "Done saving calendar entries from Excorporate to %s."
+                                        j/excorporate-org-save-file))))
+  
+  (run-with-timer 30 
+                  (* 60 60) 
+                  'j/exco-org-show-day 
+                  (ts-day (ts-now))
+                  (ts-month (ts-now)) 
+                  (ts-year (ts-now)))
 #+end_src
 
 ***** =nov=
