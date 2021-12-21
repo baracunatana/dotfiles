@@ -1695,6 +1695,16 @@ Ya con esto, se tienen que definir los acrodes locales para agenda.
     "s" '(org-open-at-point :which-key "segir enlace"))
 #+end_src
 
+******* De edición y manupulación
+#+begin_src emacs-lisp :noweb-ref org-general :tangle no
+  (j/lider-local
+    :states '(normal insert emacs)
+    :keymaps 'org-mode-map
+    :infix "E"
+    "" '(:ignore t :which-key "edición")
+    "o" '(org-sort :which-key "ordenar"))
+#+end_src
+
 ****** =org-ql=
 #+begin_src emacs-lisp
   (use-package org-ql
