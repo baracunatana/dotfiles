@@ -1034,8 +1034,6 @@ Nótece que hay que tener los diccionarios instalados. De lo contrario, la inici
     <<org-general>>)
 #+end_src
 
-#+RESULTS:
-
 ****** Configuración básica
 #+begin_src emacs-lisp :tangle no :noweb-ref org-custom
   (org-startup-folded t)          ; Colapsar contenido al abrir un archivo
@@ -1366,6 +1364,29 @@ Además a los ya presentes en ~org-latex-logfiles-extensions~, se agrega la exte
 
 #+begin_src emacs-lisp :noweb-ref org-config :tangle no
   (add-to-list 'org-latex-logfiles-extensions "bbl")
+#+end_src
+
+******* Uso correcto de comillas
+Lo primero que se debe hacer es habilitar la función de /smart quotes/ para la exportación a latex:
+#+begin_src emacs-lisp :noweb-ref org-custom :tangle no
+  (org-export-with-smart-quotes t)
+#+end_src
+
+Luego se debe configurar la lista de /smart quotes/ para que se usen correctamente:
+#+begin_src emacs-lisp :noweb-ref org-custom :tangle no
+  (org-export-smart-quotes-alist 
+   '(("en" 
+      (primary-opening   :utf-8 "“" :html "&ldquo;" :latex "``" :texinfo "``")
+      (primary-closing   :utf-8 "”" :html "&rdquo;" :latex "''" :texinfo "''")
+      (secondary-opening :utf-8 "‘" :html "&lsquo;" :latex "`" :texinfo "`")
+      (secondary-closing :utf-8 "’" :html "&rsquo;" :latex "'" :texinfo "'")
+      (apostrophe        :utf-8 "’" :html "&rsquo;"))
+     ("es" 
+      (primary-opening   :utf-8 "“" :html "&ldquo;" :latex "``" :texinfo "``")
+      (primary-closing   :utf-8 "”" :html "&rdquo;" :latex "''" :texinfo "''")
+      (secondary-opening :utf-8 "‘" :html "&lsquo;" :latex "`" :texinfo "`")
+      (secondary-closing :utf-8 "’" :html "&rsquo;" :latex "'" :texinfo "'")
+      (apostrophe        :utf-8 "’" :html "&rsquo;"))))
 #+end_src
 
 ****** Configuración de agenda
