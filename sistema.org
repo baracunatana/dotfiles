@@ -1670,6 +1670,20 @@ Ya con esto, se tienen que definir los acrodes locales para agenda.
     "n" '(org-footnote-normalize :which-key "normalizar pie de página"))
 #+end_src
 
+******* De tabla
+#+begin_src emacs-lisp :noweb-ref org-general :tangle no
+  (j/lider-local
+    :states '(normal insert emacs)
+    :keymaps 'org-mode-map
+    :infix "b"
+    "" '(:ignore t :which-key "tabla")
+    "c" '(org-table-convert :which-key "convertir")
+    "TAB" '(org-table-shrink :which-key "colapsar")
+    "r" '(org-table-field-info :which-key "información de posición") 
+    "b" '(org-table-eval-formula :which-key "editar fórmula") 
+    "e" '(org-edit-special :which-key "org-edit-special"))
+#+end_src
+
 ******* De enlace
 #+begin_src emacs-lisp :noweb-ref org-general :tangle no
   (j/lider-local
