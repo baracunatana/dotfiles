@@ -1733,6 +1733,26 @@ Ya con esto, se tienen que definir los acrodes locales para agenda.
   (use-package org-noter)
 #+end_src
 
+****** Tablas
+******* Referencias remotas por ruta de archivo
+~org~ permite referenciar tablas remotas en otros archivos a través de IDs. Sin embargo, la siguiente función permite hacer lo mismo pero con la ruta del archivo:
+
+#+begin_src emacs-lisp :tangle no :noweb-ref org-config
+(defun j/remote-table-range (path name range)
+  (with-current-buffer (find-file-noselect path)
+    (org-table-get-remote-range name range)))
+#+end_src
+
+Se puede usar de la siguiente forma:
+#+name: nombreDeEstaTabla
+| H1 | H2 |
+|    |    |
+#+tblfm: @1$1='(j/remote-table-range "./ruta/absoluta/o/relativa.org" "nombreDeLaOtraTabla" (string ?@ ?1 ?$ ?1))
+
+Esto espera una tabla con el tabla con el tag ~#+name: nombreDeLaOtraTabla~ en el archivo especificado.
+
+La razón de usar la función ~string~ para la referencia de la tabla remota se encuentra en https://stackoverflow.com/questions/13673987/org-mode-spreadsheet-programmatic-remote-references. El problema es que si se usa "@1$1" directamente, lo primero que hace ~org~ al evaluar la fórmula es reemplazar estas referencias, por lo que lo reemplazará con el valor de esa referencia pero en la tabla actual.
+
 ***** =yasnippet=
 Yasnippet es un paquete que permite la definición de /snippets/ (o plantillas) y su utilización en diferentes modos. Por defecto, no trae plantillas definidas; si se quieren plantillas, se debe agregar el paquete =yasnippet-snippets= que trae una colección de plantillas predefinidas para modos populares.
 
