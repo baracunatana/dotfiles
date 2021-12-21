@@ -2684,13 +2684,16 @@ Los siguientes acordes funcionan en los modos =mu4e-headers-mode= y =mu4e-view-m
 
 ***** TODO =excorporate=
 (Esconder correo)
-|
+
 =excorporate= es un paquete que sirve para consultar el calendario de exchange a través de EWS.
   
 #+begin_src emacs-lisp :noweb no-export
   (use-package excorporate
     :defer 3
   
+    :init
+    <<excorporate-init>>
+
     :custom
     (excorporate-configuration
      '("<<secreto("puj", "user")>>" . "https://outlook.office365.com/EWS/Exchange.asmx"))
@@ -2698,10 +2701,7 @@ Los siguientes acordes funcionan en los modos =mu4e-headers-mode= y =mu4e-view-m
   
     :config
     (excorporate)
-    <<excorporate-config>>
- 
-    :init
-    <<excorporate-init>>)
+    <<excorporate-config>>)
 #+end_src
 
 ****** Funciones para descarga de agenda a archivo org
