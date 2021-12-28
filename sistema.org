@@ -1329,6 +1329,7 @@ UPDATE: Luego de actualización a tectonic 8 en NixOS, biber dejó de funcionar 
      "%latex -interaction nonstopmode -output-directory %o %f"
      "%latex -interaction nonstopmode -output-directory %o %f"))
 #+end_src
+
 ******* Preferir /labels/ de usuario
 Esto se hace para que, al exportar latex, no se generen /labels/ aleatorios para las secciones sino que se usen los que estén en propiedades de las secciones (si existen).
 #+begin_src emacs-lisp :tangle no :noweb-ref org-custom
@@ -1455,7 +1456,7 @@ También es importante deshabilitar =org-super-agenda-map= para evitar bindings 
 
 ******* Configuración básica
 #+begin_src emacs-lisp :tangle no :noweb-ref org-ref-custom
-  (org-ref-default-citation-link "citep")
+  (org-ref-default-citation-link "parencite")
   (bibtex-completion-bibliography '("~/biblioteca/main.bib"))
   (bibtex-completion-library-path "~/biblioteca/")
   (bibtex-completion-notes-path "~/biblioteca/notas/")
@@ -1489,6 +1490,15 @@ También es importante deshabilitar =org-super-agenda-map= para evitar bindings 
 (advice-add 'evil-previous-line :after 'org-ref-link-message)
 (advice-add 'previous-line :after 'org-ref-link-message)
 (advice-add 'next-line :after 'org-ref-link-message)
+#+end_src
+
+******* =org-ref-prettify=
+[[https://github.com/emacsmirror/org-ref-prettify][org-ref-prettify]] muestra la citas creadas con =org-ref= como si fueran formateadas en LaTex.
+
+#+begin_src emacs-lisp :noweb no-export
+  (use-package org-ref-prettify
+    :after org-ref
+    :hook (org-mode . org-ref-prettify-mode))
 #+end_src
 
 ****** =org-refile=
