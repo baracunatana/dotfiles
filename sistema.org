@@ -552,9 +552,10 @@ pandoc
 
 *** [[http://www.gnu.org/software/emacs/][Emacs]] 
 **** Instalación
-Emacs requiere configurar un overlay para poder instalar la última versión (28.0 con GCC a la fecha [2021-08-20 Fri]).
+Emacs requiere configurar un overlay para poder instalar la última versión (28.0 con GCC y PGTK a la fecha [2022-01-11 Tue]).
+
 #+begin_src nix :tangle no :noweb-ref nixos-overlays
-services.emacs.package = pkgs.emacsGcc;
+services.emacs.package = pkgs.emacsPgtkGcc;
 nixpkgs.overlays = [
   (import (builtins.fetchGit {
      url = "https://github.com/nix-community/emacs-overlay.git";
@@ -568,7 +569,7 @@ Luego, para instalar con paquetes que requieran compilación (como =vterm=), se 
 
 
 #+begin_src nix :tangle no :noweb-ref nixos-let
-  emacsWithPackages = (pkgs.emacsPackagesGen pkgs.emacsGcc).emacsWithPackages (epkgs: ([epkgs.vterm]));
+  emacsWithPackages = (pkgs.emacsPackagesGen pkgs.emacsPgtkGcc).emacsWithPackages (epkgs: ([epkgs.vterm]));
 #+end_src
 
 Ahora sí se puede instalar =emacs= con gcc (definido en el paso anterior).
