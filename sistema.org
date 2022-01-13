@@ -1021,6 +1021,12 @@ aspellDicts.en
 aspellDicts.es
 #+end_src
 
+Para reconocimiento de los diccionarios en NixOS (luego de actualización a 21.11), se debe configurar la carpeta de datos de ~aspell~ en el archivo ~~/.aspell.conf~
+ 
+#+begin_src conf :tangle ~/.aspell.conf
+data-dir /run/current-system/sw/lib/aspell
+#+end_src
+
 ****** Configuración de emacs
 ******* Para aspell
 #+begin_src emacs-lisp 
@@ -1042,12 +1048,12 @@ Nótece que la ruta a aspell debe ser consistente con el resultado de =which hun
 
 Para agregar diccionarios y definir español como diccionario por defecto, se agrega lo siguiente en .emacs:
 
-#+begin_src :tangle no
+#+begin_src emacs-lisp :tangle no
 (setq ispell-local-dictionary-alist
 '(("en_US" "[[:alpha:]]" "[^[:alpha:]]" "[']" nil ("-d" "en_US") nil utf-8)
 ("en_GB" "[[:alpha:]]" "[^[:alpha:]]" "[']" nil ("-d" "en_GB") nil utf-8)
-("es_CO" "[[:alpha:]]" "[^[:alpha:]]" "[']" nil ("-d" "es_CO") nil utf-8)))
-(setq ispell-dictionary "es_CO")
+("es_CO" "[[:alpha:]]" "[^[:alpha:]]" "[']" nil ("-d" "es") nil utf-8)))
+(setq ispell-dictionary "es")
 #+end_src 
 
 Nótece que hay que tener los diccionarios instalados. De lo contrario, la inicialización falla.
