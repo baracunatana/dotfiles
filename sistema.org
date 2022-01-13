@@ -2790,33 +2790,39 @@ Los siguientes acordes funcionan en los modos =mu4e-headers-mode= y =mu4e-view-m
 ****** Funciones para descarga de agenda a archivo org
 ******* Variable para ubicación del archivo de agenda
 #+begin_src emacs-lisp :tangle no :noweb-ref excorporate-init
-(defcustom j/excorporate-org-save-file
-  (concat user-emacs-directory ".exco-calendar.org")
-  "Where `j/exco-org-show-day' saves its results.
-This file's contents are overwritten on each invocation of
-`j/exco-org-show-day'.")
+  (defcustom j/exco-org-save-file
+    (concat user-emacs-directory ".exco-calendar.org")
+    "Where `j/exco-org-show-day' and `j/exco-org-download-range' save
+    thier results. This file's contents are overwritten on each invocation
+    of the aforementioned functions")
+
+  (defcustom j/exco-org-download-range
+    15
+    "The default range of days used for `j/exco-org-download-range'")
 #+end_src
 
 ******* Funciones para descarga de agenda
 #+begin_src emacs-lisp :tangle no :noweb-ref excorporate-config
   (require 'excorporate-org)
-  
-  (add-to-list 'org-agenda-files j/excorporate-org-save-file)
-  
+
+  (add-to-list 'org-agenda-files j/exco-org-save-file)
+
   (defun j/exco-org-insert-meetings (identifier response)
     "Insert the connection IDENTIFIER's meetings from RESPONSE."
-    (with-current-buffer (find-file-noselect j/excorporate-org-save-file)
+    (with-current-buffer (find-file-noselect j/exco-org-save-file)
+      (set-buffer-file-coding-system 'raw-text)
       (org-insert-time-stamp (current-time) t t "  + Last checked " "\n")
-      (exco-calendar-item-iterate-general
-       response (lambda (&rest arguments)
-                  (print arguments)
-                  (with-current-buffer (find-file-noselect j/excorporate-org-save-file)
-                    (org-mode)
-                    (let ((new-arguments arguments))
-                      (setf (nth 7 new-arguments)
-                            (exco-resolve-organizer-email-address-synchronously
-                             identifier organizer-structure))
-                      (apply #'exco-org-insert-meeting new-arguments))))
+      (exco-calendar-item-iterate-general 
+       response 
+       (lambda (&rest arguments)
+         (with-current-buffer (find-file-noselect j/exco-org-save-file)
+           (set-buffer-file-coding-system 'raw-text)
+           (org-mode)
+           (let ((new-arguments arguments))
+             (setf (nth 7 new-arguments)
+                   (exco-resolve-organizer-email-address-synchronously
+                    identifier organizer-structure))
+             (apply #'exco-org-insert-meeting new-arguments))))
        subject start-internal end-internal
        location main-invitees optional-invitees item-identifier
        organizer-structure)
@@ -2825,34 +2831,125 @@ This file's contents are overwritten on each invocation of
           (org-sort-entries t ?s)
         (forward-line 3)
         (insert "`♘\n"))))
-  
+
+  (defun exco-org-insert-meeting-headline (subject
+                                           start-time end-time
+                                           &optional item-identifier)
+    "Insert and schedule a meeting.
+        SUBJECT is the meeting's subject, START-TIME and END-TIME are the
+        meeting's start and end times in the same format as is returned
+        by `current-time'.  ITEM-IDENTIFIER is the opaque item
+        identifier."
+    (let* ((now (current-time))
+           (keyword (if (time-less-p now end-time)
+                        "TODO"
+                      "DONE"))
+           (schedule-string (if (equal (format-time-string "%Y-%m-%d" start-time)
+                                       (format-time-string "%Y-%m-%d" end-time))
+                                (concat (format-time-string "<%Y-%m-%d %a %H:%M--" start-time)
+                                        (format-time-string "%H:%M>" end-time))
+                              (format-time-string "<%Y-%m-%d %a %H:%M>" start-time))))
+      (insert (format "** %s %s\n" keyword subject))
+      (print schedule-string)
+      (org-schedule nil schedule-string)
+      (forward-line)
+      (org-set-property "Identifier" (format "%S" item-identifier))
+      (org-insert-time-stamp (current-time) t t "+ Retrieved " "\n")))
+
+  (defun j/exco-get-meetings-for-days (identifier month day year month2 day2 year2 callback)
+    "Return the meetings for the specified range of dates.
+              IDENTIFIER is the connection identifier.  MONTH, DAY and YEAR are
+              the range's start month, day and year, while MONTH2, DAY2, and YEAR2 
+              are the range's closing month, day, and yera. Call CALLBACK with two
+              arguments, IDENTIFIER and the server's response."
+    (let* ((start-of-day-time-internal
+            (apply #'encode-time `(0 0 0 ,day ,month ,year)))
+           (start-of-day-date-time
+            (exco-format-date-time start-of-day-time-internal))
+           (start-of-next-day-date-time
+            (exco-format-date-time (apply #'encode-time `(59 59 23 ,day2 ,month2 ,year2)))))
+      (print start-of-day-date-time)
+      (print start-of-next-day-date-time)
+      (exco-operate
+       identifier
+       "FindItem"
+       `(;; Main arguments.
+         (;; RequestVersion is usually overridden by a fixed value in
+          ;; the WSDL (the RequestServerVersion element); provide the
+          ;; maximally-compatible Exchange2007 if the fixed value isn't
+          ;; present.
+          (RequestVersion (Version . "Exchange2007"))
+          (Traversal . "Shallow")
+          (ItemShape
+           (BaseShape . "AllProperties"))
+          ;; To aid productivity, excorporate-calfw automatically prunes your
+          ;; meetings to a maximum of 100 per day.
+          (CalendarView (MaxEntriesReturned . "100")
+                        (StartDate . ,start-of-day-date-time)
+                        (EndDate . ,start-of-next-day-date-time))
+          (ParentFolderIds
+           (DistinguishedFolderId (Id . "calendar"))))
+         ;; Empty arguments.
+         ,@(cdr (exco-operation-arity-nils identifier "FindItem")))
+       callback)))
+
+  (defun j/exco-org-download-range ()
+    "Downloads the meetings for a range specifided by j/exco-org-download-range 
+               and saves them to an org-file specified by j/exco-org-save-file"
+    (delete-file j/exco-org-save-file)
+    (exco-connection-iterate (lambda ()
+                               (with-current-buffer (find-file-noselect j/exco-org-save-file)
+                                 (set-buffer-file-coding-system 'raw-text)
+                                 (save-buffer))
+                               (message "Saving calendar entries from Excorporate to %s ..."
+                                        j/exco-org-save-file))
+                             (lambda (identifier callback)
+                               (j/exco-get-meetings-for-days identifier
+                                                             (ts-month (ts-now))
+                                                             (ts-day (ts-now))
+                                                             (ts-year (ts-now))
+                                                             (ts-month (ts-inc 'day 15 (ts-now)))
+                                                             (ts-day (ts-inc 'day 15 (ts-now)))
+                                                             (ts-year (ts-inc 'day 15 (ts-now)))
+                                                             callback))
+                             #'j/exco-org-insert-meetings
+                             (lambda ()
+                               (with-current-buffer (find-file-noselect j/exco-org-save-file)
+                                 (set-buffer-file-coding-system 'raw-text)
+                                 (save-buffer)
+                                 (kill-this-buffer))
+                               (message "Done saving calendar entries from Excorporate to %s."
+                                        j/exco-org-save-file))))
+
   (defun j/exco-org-show-day (day month year)
     "Show meetings for the date specified by MONTH DAY YEAR."
-    (delete-file j/excorporate-org-save-file)
+    (delete-file j/exco-org-save-file)
     (exco-connection-iterate (lambda ()
+                               (with-current-buffer (find-file-noselect j/exco-org-save-file)
+                                 (set-buffer-file-coding-system 'raw-text)
+                                 (save-buffer))
                                (message "Saving calendar entries from Excorporate to %s ..."
-                                        j/excorporate-org-save-file))
+                                        j/exco-org-save-file))
                              (lambda (identifier callback)
-                               (exco-org-insert-headline identifier
-                                                         month day year)
                                (exco-get-meetings-for-day identifier
                                                           month day year
                                                           callback))
                              #'j/exco-org-insert-meetings
                              (lambda ()
-                               (with-current-buffer (find-file-noselect j/excorporate-org-save-file)
-                                 (set-buffer-file-coding-system 'raw-text)
+                               (with-current-buffer (find-file-noselect j/exco-org-save-file)
                                  (save-buffer)
                                  (kill-this-buffer))
                                (message "Done saving calendar entries from Excorporate to %s."
-                                        j/excorporate-org-save-file))))
-  
-  (run-with-timer 30 
-                  (* 60 60) 
-                  'j/exco-org-show-day 
-                  (ts-day (ts-now))
-                  (ts-month (ts-now)) 
-                  (ts-year (ts-now)))
+                                        j/exco-org-save-file))))
+  (run-with-timer 30 (* 60 60) 
+                  (lambda () (j/exco-org-download-range)))
+#+end_src
+
+******* Eliminación de alertas por ~org-element-cache~
+Debido a los problemas de /encoding/ en ~Excorporate~, se debe evitar que se muestren warnings de ~org-element-cache~ que aparecen al mostrar la agenda.
+
+#+begin_src emacs-lisp :tangle no :noweb-ref excorporate-config
+  (add-to-list 'warning-suppress-types '(org-element-cache))
 #+end_src
 
 ***** =nov=
@@ -3001,6 +3098,10 @@ Para compilar el binario de SQLite que usa org-roam, es necesario instalar [[gcc
     :config
     (org-roam-bibtex-mode 1))
 #+end_src
+
+***** Configuraciones adicionales
+****** Eliminación de alertas por ~org-element-cache~
+Debido a los problemas de /encoding/ en ~Excorporate~
 
 *** Latex (con [[https://tug.org/texlive/][Tex Live]])
 #+begin_src nix :tangle no :noweb-ref nixos-paquetes
