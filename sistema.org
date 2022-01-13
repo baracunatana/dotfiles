@@ -1445,39 +1445,75 @@ Luego se debe configurar la lista de /smart quotes/ para que se usen correctamen
   (org-agenda-skip-deadline-if-done t)
 #+end_src
 
-******* =org-super-agenda=
-#+begin_src emacs-lisp 
-  (use-package org-super-agenda    
-    :after org-agenda
-    :custom
-    (org-super-agenda-groups '((:name "En seguimiento"
-                                      :todo "ESPE")
-                               (:name "Urgentes"
-                                      :and (:not (:todo "DONE")
-                                                 :not (:todo "FUTU")
-                                                 :priority "A"))
-                               ( :name "Importantes"
-                                 :and ( :todo ("TODO" "EMPE")
-                                        :priority "B"))
-                               ( :name "Cortas (<30 min)"
-                                 :and ( :todo "TODO"
-                                        :effort< "30")))
-                             "Grupos de super-agenda")
-    :config
-    (org-super-agenda-mode))
-#+end_src
-
-También es importante deshabilitar =org-super-agenda-map= para evitar bindings por defecto en encabezados de =org-super-agenda=. En particular, si no se deshabilita esto, no se pueden usar los bindigs para movimiento de evil en encabezados de =org-super-agenda=.
-
-#+begin_src emacs-lisp :noweb-ref org-config :tangle no
-  (setq org-super-agenda-header-map (make-sparse-keymap))
-#+end_src
-
 ******* Mostrar niveles superiores (segun arbol de org) en las búsquedas generales de la agenda
 #+begin_src emacs-lisp :noweb-ref org-config :tangle no
   (with-eval-after-load 'org-agenda 
     (add-to-list 'org-agenda-prefix-format '(agenda . " %i %-12:c%?-12t% s %b"))
     (add-to-list 'org-agenda-prefix-format '(todo . " %i %-12:c %b")))
+#+end_src
+
+******* ~org-super-agenda~
+[[https://github.com/alphapapa/org-super-agenda][org-super-agenda]] permite crear agendas personalizadas muy fácilmente. La construcción de estas agendas con ~org-agenda-custom-commands~ no es complicada, pero le faltan funcionalidades para filtrar por tiempo estimado. Esto último es lo único que uso de ~org-super-agenda~, como se puede ver en [[Agendas personalizadas]].
+
+#+begin_src emacs-lisp :noweb no-export
+  (use-package org-super-agenda    
+    :after org-agenda
+    :config
+    <<org-super-agenda-config>>
+    :hook (org-agenda-mode . org-super-agenda-mode))
+#+end_src
+
+También es importante deshabilitar =org-super-agenda-map= para evitar bindings por defecto en encabezados de =org-super-agenda=. En particular, si no se deshabilita esto, no se pueden usar los bindigs para movimiento de evil en encabezados de =org-super-agenda=.
+
+#+begin_src emacs-lisp :noweb-ref org-super-agenda-config :tangle no
+  (setq org-super-agenda-header-map (make-sparse-keymap))
+#+end_src
+
+******* Agendas personalizadas
+#+begin_src emacs-lisp :noweb-ref org-custom :tangle no
+  (org-agenda-custom-commands
+   '(("n"
+      "Agenda general"
+      ((tags-todo "+PRIORITY=\"A\""
+                  ((org-agenda-overriding-header "Prioridad ‼️")
+                   (org-agenda-skip-function '(org-agenda-skip-entry-if 'todo '("FUTU")))
+                   (org-agenda-block-separator nil)))
+       (todo "ESPE"
+             ((org-agenda-overriding-header "\nTareas en seguimiento 🤌🏽")
+              (org-agenda-block-separator nil)))
+       (todo "EMPE"
+             ((org-agenda-overriding-header "\nTareas empezadas")
+              (org-agenda-block-separator nil)))
+       (agenda ""
+               ((org-agenda-overriding-header "\nPróximos 3 días")
+                (org-agenda-block-separator nil)
+                (org-deadline-warning-days 0)
+                (org-agenda-start-on-weekday nil)
+                (org-agenda-span 3)))
+       (agenda ""
+               ((org-agenda-overriding-header "\nSiguientes 14 días")
+                (org-agenda-start-day "+3d")
+                (org-agenda-start-on-weekday nil)
+                (org-agenda-block-separator nil)
+                (org-deadline-warning-days 0)
+                (org-agenda-skip-function '(org-agenda-skip-entry-if 'todo '("FUTU")))
+                (org-agenda-span 14)))
+       (todo "TODO"
+             ((org-agenda-overriding-header "\nCortas")
+              (org-agenda-skip-function '(org-agenda-skip-entry-if 'todo '("FUTU" "PROY")))
+              (org-agenda-block-separator nil)
+              (org-super-agenda-groups '(( :name none
+                                           :effort< "30")
+                                         (:discard (:anything))))
+              (org-agenda-block-separator nil)))
+       (tags-todo "-PRIORITY=\"A\""
+                  ((org-agenda-overriding-header "\nEl resto")
+                   (org-agenda-skip-function '(org-agenda-skip-entry-if 'todo '("FUTU" "PROY" "EMPE" "ESPE")))
+                   (org-agenda-block-separator nil)
+                   (org-super-agenda-groups '(( :name none
+                                                :effort> "31")
+                                              (:discard (:anything))))
+                   (org-agenda-block-separator nil)))))))
 #+end_src
 
 ****** =org-ref=
