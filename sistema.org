@@ -248,7 +248,7 @@ La configuración de Gnome no se hace con archivos de configuración sin con una
 **** Configuración
 ***** Usar =caps= como =ctrl=
 #+begin_src sh :tangle ./post-tangle.sh
-kwriteconfig5 --file $HOME/.config/kxkbrc --group "Layout" --key "Options" "terminate:ctrl_alt_bksp,ctrl:nocaps"
+  kwriteconfig5 --file $HOME/.config/kxkbrc --group "Layout" --key "Options" "terminate:ctrl_alt_bksp,ctrl:nocaps"
 #+end_src
 
 ***** Desligar M-SPC de KRunner (para que se pueda usar en emacs)
@@ -259,17 +259,17 @@ kwriteconfig5 --file $HOME/.config/kxkbrc --group "Layout" --key "Options" "term
 ***** Gestión de ventanas
 ****** Cambiador de tareas (con M-TAB)
 #+begin_src sh :tangle ./post-tangle.sh
-kwriteconfig5 --file $HOME/.config/kwinrc --group "Effect-CoverSwitch" "TabBox" "true"
-kwriteconfig5 --file $HOME/.config/kwinrc --group "Effect-CoverSwitch" "WindowTitle" "false"
-kwriteconfig5 --file $HOME/.config/kwinrc --group "TabBox" "coverswitchEnabled" "true"
-kwriteconfig5 --file $HOME/.config/kwinrc --group "TabBox" "LayoutName" "coverswitch"
+  kwriteconfig5 --file $HOME/.config/kwinrc --group "Effect-CoverSwitch" "TabBox" "true"
+  kwriteconfig5 --file $HOME/.config/kwinrc --group "Effect-CoverSwitch" "WindowTitle" "false"
+  kwriteconfig5 --file $HOME/.config/kwinrc --group "TabBox" "coverswitchEnabled" "true"
+  kwriteconfig5 --file $HOME/.config/kwinrc --group "TabBox" "LayoutName" "coverswitch"
 #+end_src
 ****** Abrir ventanas nuevas centradas en la pantalla
 [Windows]
 Placement=Centered
 
 #+begin_src sh :tangle ./post-tangle.sh
-kwriteconfig5 --file $HOME/.config/kwinrc --group "Windows" "Placement" "Centered"
+  kwriteconfig5 --file $HOME/.config/kwinrc --group "Windows" "Placement" "Centered"
 #+end_src
 
 ** Configuración de carga de sistema operativo
@@ -364,10 +364,10 @@ firefox
 #+begin_src python :tangle ~/.config/qutebrowser/config.py
   # No tomar en cuenta configuraciones hechas por gui
   config.load_autoconfig(False)
-  
+
   # Tema oscuro para páginas web
   c.colors.webpage.darkmode.enabled = False
-  
+
   # Habilitar pdf.js para visualización de pdfs
   c.content.pdfjs = True
 #+end_src
@@ -628,7 +628,7 @@ Esta configuración está basada en =straight= y =use-package=. En esta sección
 
 #+begin_src emacs-lisp
   (setq package-enable-at-startup nil)
-  
+
   (defvar bootstrap-version)
   (let ((bootstrap-file
          (expand-file-name "straight/repos/straight.el/bootstrap.el" user-emacs-directory))
@@ -640,7 +640,7 @@ Esta configuración está basada en =straight= y =use-package=. En esta sección
         (goto-char (point-max))
         (eval-print-last-sexp)))
     (load bootstrap-file nil 'nomessage))
-  
+
   (straight-use-package 'use-package)
   (setq straight-use-package-by-default t)
 #+end_src 
@@ -705,7 +705,7 @@ Para esto, la fuente debe estar instalada correctamente en el sistema. Si se usa
       :keymaps 'override
       :prefix "SPC"
       :non-normal-prefix "M-SPC")
-  
+
     ;; definición de tecla lider local (relativo al major mode) para modo normal.
     (general-create-definer j/lider-local
       :states '(normal insert emacs)
@@ -774,7 +774,7 @@ Estos dos paquetes se usan para agregar íconos a ivy. Por ejemplo, agrega ícon
     :after (ivy counsel)
     :init
     (ivy-rich-mode 1))
-  
+
   (use-package all-the-icons-ivy-rich
     :after ivy-rich
     :init (all-the-icons-ivy-rich-mode 1))
@@ -970,7 +970,7 @@ Algunas opciones de menú de archivo requieren funciones auxiliares:
     "d" '(dired :which-key "dired")
     "s" '(eshell :which-key "eshell")
     "t" '(org-todo-list :which-key "lista completa TO-DO"))
-  
+
   (defun j/gtd ()
     "Abre archivo ~/personal/orgmode/gtd.org"
     (interactive)
@@ -985,7 +985,7 @@ Mapa de movimiento general (cualquier modo)
    :states '(normal)
    "j" '(evil-next-visual-line :which-key "siguiente linea visual")
    "k" '(evil-previous-visual-line :which-key "linea visual previa"))
-  
+
   (general-define-key
    :states '(normal)
    :infix "g"
@@ -1093,7 +1093,7 @@ Nótece que hay que tener los diccionarios instalados. De lo contrario, la inici
                             ("CANC" . (:foreground "#859900" :weight bold))
                             ("FUTU" . (:foreground "#2aa198" :weight bold))
                             ("TODO" . (:foreground "#6c71c4" :weight bold))))
-  
+
   (org-priority-highest ?A)
   (org-priority-default ?D)
   (org-priority-lowest ?D)
@@ -1101,8 +1101,8 @@ Nótece que hay que tener los diccionarios instalados. De lo contrario, la inici
                         (?B . (:foreground "#b58900" :weight bold))
                         (?C . (:foreground "#2aa198"))
                         (?D . (:foreground "#859900"))))
-  
-  
+
+
   (org-tag-persistent-alist '(("@Casa" . ?c)
                               ("@Oficina" . ?o)
                               ("@PC" . ?p)
@@ -1206,18 +1206,18 @@ La siguiente función dwim (do what I mean) se toma del [[https://github.com/hli
            (if (or image-overlays latex-overlays)
                (org-clear-latex-preview beg end)
              (org--latex-preview-region beg end))))
-  
+
         (`clock (org-clock-update-time-maybe))
-  
+
         (`footnote-reference
          (org-footnote-goto-definition (org-element-property :label context)))
-  
+
         (`footnote-definition
          (org-footnote-goto-previous-reference (org-element-property :label context)))
-  
+
         ((or `planning `timestamp)
          (org-follow-timestamp-link))
-  
+
         ((or `table `table-row)
          (if (org-at-TBLFM-p)
              (org-table-calc-current-TBLFM)
@@ -1225,26 +1225,26 @@ La siguiente función dwim (do what I mean) se toma del [[https://github.com/hli
              (save-excursion
                (goto-char (org-element-property :contents-begin context))
                (org-call-with-arg 'org-table-recalculate (or arg t))))))
-  
+
         (`table-cell
          (org-table-blank-field)
          (org-table-recalculate arg)
          (when (and (string-empty-p (string-trim (org-table-get-field)))
                     (bound-and-true-p evil-local-mode))
            (evil-change-state 'insert)))
-  
+
         (`babel-call
          (org-babel-lob-execute-maybe))
-  
+
         (`statistics-cookie
          (save-excursion (org-update-statistics-cookies arg)))
-  
+
         ((or `src-block `inline-src-block)
          (org-babel-execute-src-block arg))
-  
+
         ((or `latex-fragment `latex-environment)
          (org-latex-preview arg))
-  
+
         (`link
          (let* ((lineage (org-element-lineage context '(link) t))
                 (path (org-element-property :path lineage)))
@@ -1254,11 +1254,11 @@ La siguiente función dwim (do what I mean) se toma del [[https://github.com/hli
                 (org-element-property :begin lineage)
                 (org-element-property :end lineage))
              (org-open-at-point arg))))
-  
+
         ((guard (org-element-property :checkbox (org-element-lineage context '(item) t)))
          (let ((match (and (org-at-item-checkbox-p) (match-string 1))))
            (org-toggle-checkbox (if (equal match "[ ]") '(16)))))
-  
+
         (_
          (if (or (org-in-regexp org-ts-regexp-both nil t)
                  (org-in-regexp org-tsr-regexp-both nil  t)
@@ -1267,7 +1267,7 @@ La siguiente función dwim (do what I mean) se toma del [[https://github.com/hli
            (+org--toggle-inline-images-in-subtree
             (org-element-property :begin context)
             (org-element-property :end context)))))))
-  
+
   (defun +org--toggle-inline-images-in-subtree (&optional beg end refresh)
     "Refresh inline image previews in the current heading/tree."
     (let ((beg (or beg
@@ -1286,7 +1286,7 @@ La siguiente función dwim (do what I mean) se toma del [[https://github.com/hli
       (when (or refresh (not overlays))
         (org-display-inline-images t t beg end)
         t)))
-  
+
   (defun +org-get-todo-keywords-for (&optional keyword)
     "Returns the list of todo keywords that KEYWORD belongs to."
     (when keyword
@@ -1313,21 +1313,21 @@ La función =j/org-set-futu= se usa para asignar el estado =FUTU= a una tarea, p
     (and (org-entry-get (point) "ACTIONABLE")
          (string< (org-read-date nil nil (org-entry-get (point) "ACTIONABLE"))
                   (org-read-date nil nil "+1"))))
-  
+
   (defun j/org-process-task ()
     "Vefifies if a task is actionable. If it is, set it as actionable"
     (when (j/org-evaluate-if-actionable)
       (org-todo "TODO")
       (org-delete-property "ACTIONABLE")))
-  
+
   (defun j/org-verify-actionable-tasks ()
     "Goes through al agenda files checking if FUTU tasks are actionable"
     (org-map-entries '(j/org-process-task)
                      "/+FUTU" 'agenda))
-  
+
   (defun j/org-actionable ()
     (j/org-verify-actionable-tasks))
-  
+
   (defun j/org-set-futu ()
     "Cambiar el estado de una tarea a FUTU y definir la fecha en que se convierte en accionable"
     (interactive)
@@ -2732,7 +2732,6 @@ Los siguientes acordes funcionan en los modos =mu4e-headers-mode= y =mu4e-view-m
 #+begin_src emacs-lisp :noweb no-export
   (use-package excorporate
     :defer 3
-  
     :init
     <<excorporate-init>>
 
@@ -2740,7 +2739,7 @@ Los siguientes acordes funcionan en los modos =mu4e-headers-mode= y =mu4e-view-m
     (excorporate-configuration
      '("<<secreto("puj", "user")>>" . "https://outlook.office365.com/EWS/Exchange.asmx"))
     (excorporate-calendar-show-day-function 'exco-calfw-show-day)
-  
+
     :config
     (excorporate)
     <<excorporate-config>>)
