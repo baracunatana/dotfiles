@@ -2902,6 +2902,7 @@ Los siguientes acordes funcionan en los modos =mu4e-headers-mode= y =mu4e-view-m
     (exco-connection-iterate (lambda ()
                                (with-current-buffer (find-file-noselect j/exco-org-save-file)
                                  (set-buffer-file-coding-system 'raw-text)
+                                 (delete-region (point-min) (point-max))
                                  (save-buffer))
                                (message "Saving calendar entries from Excorporate to %s ..."
                                         j/exco-org-save-file))
