@@ -1032,6 +1032,8 @@ data-dir /run/current-system/sw/lib/aspell
 #+begin_src emacs-lisp 
   (use-package ispell
     :custom 
+    (ispell-aspell-data-dir "/run/current-system/sw/lib/aspell") 
+    (ispell-aspell-dict-dir "/run/current-system/sw/lib/aspell") 
     (ispell-dictionary "es" "Diccionario en español por defecto")
     :hook
     (text-mode . flyspell-mode))
