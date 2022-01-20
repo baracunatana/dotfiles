@@ -2489,7 +2489,7 @@ Org-msg es un paquete que permite redactar correos electrónicos (desde mu4e) co
     (mail-user-agent 'mu4e-user-agent)
     (org-msg-options "html-postamble:nil H:5 num:nil ^:{} toc:nil author:nil email:nil \\n:t")
     (org-msg-startup "hidestars indent inlineimages")
-    (org-msg-greeting-fmt "\nQué tal %s,\n\n")
+    (org-msg-greeting-fmt "\nQué tal%s,\n\n")
     (org-msg-greeting-name-limit 3)
     (org-msg-text-plain-alternative t)
     (org-msg-signature "
