@@ -2612,6 +2612,9 @@ Org-msg es un paquete que permite redactar correos electrónicos (desde mu4e) co
     (org-msg-mode))
 #+end_src
 
+#+RESULTS:
+: t
+
 ******* Integración con =org-capture=
 Una de las (la única?) razón de peso para tener el correo en emacs es la capacidad de crear TODOs en orgmode de forma rápida y que incluyan un link a un correo específico.
 
@@ -2811,67 +2814,47 @@ Los siguientes acordes funcionan en los modos =mu4e-headers-mode= y =mu4e-view-m
 
   (defun j/exco-org-insert-meetings (identifier response)
     "Insert the connection IDENTIFIER's meetings from RESPONSE."
-    (with-current-buffer (find-file-noselect j/exco-org-save-file)
+    (with-current-buffer (get-buffer-create excorporate-org-buffer-name)
       (set-buffer-file-coding-system 'raw-text)
-      (org-insert-time-stamp (current-time) t t "  + Last checked " "\n")
-      (exco-calendar-item-iterate-general 
-       response 
-       (lambda (&rest arguments)
-         (with-current-buffer (find-file-noselect j/exco-org-save-file)
-           (set-buffer-file-coding-system 'raw-text)
-           (org-mode)
-           (let ((new-arguments arguments))
-             (setf (nth 7 new-arguments)
-                   (exco-resolve-organizer-email-address-synchronously
-                    identifier organizer-structure))
-             (apply #'exco-org-insert-meeting new-arguments))))
-       subject start-internal end-internal
-       location main-invitees optional-invitees item-identifier
-       organizer-structure)
-      (goto-char (point-min))
-      (if (save-excursion (org-goto-first-child))
-          (org-sort-entries t ?s)
-        (forward-line 3)
-        (insert "`♘\n"))))
-
-  (defun exco-org-insert-meeting-headline (subject
-                                           start-time end-time
-                                           &optional item-identifier)
-    "Insert and schedule a meeting.
-        SUBJECT is the meeting's subject, START-TIME and END-TIME are the
-        meeting's start and end times in the same format as is returned
-        by `current-time'.  ITEM-IDENTIFIER is the opaque item
-        identifier."
-    (let* ((now (current-time))
-           (keyword (if (time-less-p now end-time)
-                        "TODO"
-                      "DONE"))
-           (schedule-string (if (equal (format-time-string "%Y-%m-%d" start-time)
-                                       (format-time-string "%Y-%m-%d" end-time))
-                                (concat (format-time-string "<%Y-%m-%d %a %H:%M--" start-time)
-                                        (format-time-string "%H:%M>" end-time))
-                              (format-time-string "<%Y-%m-%d %a %H:%M>" start-time))))
-      (insert (format "** %s %s\n" keyword subject))
-      (print schedule-string)
-      (org-schedule nil schedule-string)
-      (forward-line)
-      (org-set-property "Identifier" (format "%S" item-identifier))
-      (org-insert-time-stamp (current-time) t t "+ Retrieved " "\n")))
+      (let ((inhibit-read-only t))
+        (goto-char (point-min))
+        (end-of-line)
+        (insert (format "%s..." identifier))))
+    (with-current-buffer (exco-org--identifier-buffer identifier)
+      (set-buffer-file-coding-system 'raw-text)
+      (let ((inhibit-read-only t))
+        (org-insert-time-stamp (current-time) t t "  + Last checked " "\n")
+        (exco-calendar-item-iterate-general
+         response (lambda (&rest arguments)
+                    (with-current-buffer (exco-org--identifier-buffer identifier)
+                      (set-buffer-file-coding-system 'raw-text)
+                      (org-mode)
+                      (let ((new-arguments arguments))
+                        (setf (nth 7 new-arguments)
+                              (exco-resolve-organizer-email-address-synchronously
+                               identifier organizer-structure))
+                        (apply #'exco-org-insert-meeting new-arguments))))
+         subject start-internal end-internal
+         location main-invitees optional-invitees item-identifier
+         organizer-structure)
+        (goto-char (point-min))
+        (if (save-excursion (org-goto-first-child))
+            (+ 1 1);;(org-sort-entries t ?s)
+          (forward-line 3)
+          (insert "`♘\n")))))
 
   (defun j/exco-get-meetings-for-days (identifier month day year month2 day2 year2 callback)
     "Return the meetings for the specified range of dates.
-              IDENTIFIER is the connection identifier.  MONTH, DAY and YEAR are
-              the range's start month, day and year, while MONTH2, DAY2, and YEAR2 
-              are the range's closing month, day, and yera. Call CALLBACK with two
-              arguments, IDENTIFIER and the server's response."
+                          IDENTIFIER is the connection identifier.  MONTH, DAY and YEAR are
+                          the range's start month, day and year, while MONTH2, DAY2, and YEAR2 
+                          are the range's closing month, day, and yera. Call CALLBACK with two
+                          arguments, IDENTIFIER and the server's response."
     (let* ((start-of-day-time-internal
             (apply #'encode-time `(0 0 0 ,day ,month ,year)))
            (start-of-day-date-time
             (exco-format-date-time start-of-day-time-internal))
            (start-of-next-day-date-time
             (exco-format-date-time (apply #'encode-time `(59 59 23 ,day2 ,month2 ,year2)))))
-      (print start-of-day-date-time)
-      (print start-of-next-day-date-time)
       (exco-operate
        identifier
        "FindItem"
@@ -2895,18 +2878,35 @@ Los siguientes acordes funcionan en los modos =mu4e-headers-mode= y =mu4e-view-m
          ,@(cdr (exco-operation-arity-nils identifier "FindItem")))
        callback)))
 
+  (defun j/exco-org-initialize-buffer ()
+    "Add initial text to the destination buffer."
+    (setq exco-org--temporary-buffers '())
+    (with-current-buffer (get-buffer-create excorporate-org-buffer-name)
+      (setq buffer-read-only t)
+      ;; Some Org mode configurations need `buffer-file-name' to be
+      ;; non-nil, or they'll make `org-mode' error out, for example
+      ;; `org-startup-with-latex-preview'.  Set `buffer-file-name' to
+      ;; something non-nil temporarily during initialization.  Don't
+      ;; leave it set or `save-some-buffers' will always prompt about
+      ;; *Excorporate*.
+      (let ((buffer-file-name excorporate-org-buffer-name))
+        (org-mode))
+      (use-local-map (copy-keymap org-mode-map))
+      (local-set-key "q" 'quit-window)
+      (let ((inhibit-read-only t))
+        (delete-region (point-min) (point-max))
+        (goto-char (point-min))
+        (insert "# Updated..."))))
+
   (defun j/exco-org-download-range ()
     "Downloads the meetings for a range specifided by j/exco-org-download-range 
-               and saves them to an org-file specified by j/exco-org-save-file"
-    (delete-file j/exco-org-save-file)
-    (exco-connection-iterate (lambda ()
-                               (with-current-buffer (find-file-noselect j/exco-org-save-file)
-                                 (set-buffer-file-coding-system 'raw-text)
-                                 (delete-region (point-min) (point-max))
-                                 (save-buffer))
-                               (message "Saving calendar entries from Excorporate to %s ..."
-                                        j/exco-org-save-file))
+                           and saves them to an org-file specified by j/exco-org-save-file"
+    (exco-connection-iterate #'j/exco-org-initialize-buffer
                              (lambda (identifier callback)
+                               (exco-org-insert-headline identifier
+                                                         (ts-month (ts-now))
+                                                         (ts-day (ts-now))
+                                                         (ts-year (ts-now)))
                                (j/exco-get-meetings-for-days identifier
                                                              (ts-month (ts-now))
                                                              (ts-day (ts-now))
@@ -2916,34 +2916,24 @@ Los siguientes acordes funcionan en los modos =mu4e-headers-mode= y =mu4e-view-m
                                                              (ts-year (ts-inc 'day 15 (ts-now)))
                                                              callback))
                              #'j/exco-org-insert-meetings
-                             (lambda ()
-                               (with-current-buffer (find-file-noselect j/exco-org-save-file)
-                                 (set-buffer-file-coding-system 'raw-text)
-                                 (save-buffer)
-                                 (kill-this-buffer))
-                               (message "Done saving calendar entries from Excorporate to %s."
-                                        j/exco-org-save-file))))
+                             #'j/exco-org-finalize-buffer))
 
-  (defun j/exco-org-show-day (day month year)
-    "Show meetings for the date specified by MONTH DAY YEAR."
-    (delete-file j/exco-org-save-file)
-    (exco-connection-iterate (lambda ()
-                               (with-current-buffer (find-file-noselect j/exco-org-save-file)
-                                 (set-buffer-file-coding-system 'raw-text)
-                                 (save-buffer))
-                               (message "Saving calendar entries from Excorporate to %s ..."
-                                        j/exco-org-save-file))
-                             (lambda (identifier callback)
-                               (exco-get-meetings-for-day identifier
-                                                          month day year
-                                                          callback))
-                             #'j/exco-org-insert-meetings
-                             (lambda ()
-                               (with-current-buffer (find-file-noselect j/exco-org-save-file)
-                                 (save-buffer)
-                                 (kill-this-buffer))
-                               (message "Done saving calendar entries from Excorporate to %s."
-                                        j/exco-org-save-file))))
+  (defun j/exco-org-finalize-buffer ()
+    "Finalize text in buffer after all connections have responded."
+    (with-current-buffer (get-buffer-create excorporate-org-buffer-name)
+      ;; Sort top-level entries alphabetically.
+      (let ((inhibit-read-only t))
+        (goto-char (point-min))
+        (end-of-line)
+        (insert "done.\n")
+        (dolist (result-buffer (nreverse exco-org--temporary-buffers))
+          (insert-buffer-substring result-buffer)
+          (save-excursion (org-up-heading-safe) (org-cycle-hide-drawers 'all))
+          (kill-buffer result-buffer))
+        (setq exco-org--temporary-buffers '())
+        (write-file j/exco-org-save-file)
+        (kill-this-buffer))))
+
   (run-with-timer 30 (* 60 60) 
                   (lambda () (j/exco-org-download-range)))
 #+end_src
