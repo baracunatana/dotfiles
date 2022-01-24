@@ -2945,6 +2945,39 @@ Debido a los problemas de /encoding/ en ~Excorporate~, se debe evitar que se mue
   (add-to-list 'warning-suppress-types '(org-element-cache))
 #+end_src
 
+******* Definición de nombres para calendarios
+Con las funciones anteriores se logra importar el calendario de un rango de días a un archivo ~org~ y mostrarlo en la agenda. Sin embargo, dado que el /headline/ por defecto para dicho archivo ~org~ es la información completa de la conexión al calendario, mostrar la agenda con [[Mostrar niveles superiores (segun arbol de org) en las búsquedas generales de la agenda][breadcrum]] es horrible. Para resolverlo, hay que crear una lista con el nombre de los calendarios y modificar todas las funciones de ~excorporate~ que dependen de este encabezado.
+
+#+begin_src emacs-lisp :tangle no :noweb-ref excorporate-init
+  (defcustom j/exco-calendar-aliases
+  '()
+  "plist with all the aliases for the calendars configured in 
+  escorporate. The format of list members is (calendar-alias . calendar-email-address)")
+#+end_src
+
+#+begin_src emacs-lisp :tangle no :noweb-ref excorporate-config
+  (push `("PUJ" . ,(list "je.gomezm@javeriana.edu.co" "https://outlook.office365.com/EWS/Exchange.asmx")) j/exco-calendar-aliases)
+
+  (defun exco-org-format-headline (identifier)
+    "Format an Org headline using IDENTIFIER and the alias found
+     in j/exco-calendar-aliases. If no alias is found in said list,
+     the full identifier is used"
+    (format "* %s\n" (car (rassoc (list (car identifier) (cdr identifier))
+                                  j/exco-calendar-aliases))))
+
+  (defun exco-org--connection-identifier-at-point ()
+     "Return the connection identifier associated with point looking for
+     a calendar alias in j/exco-calendar-aliases. If no alias is found, the
+     default identifier format is used."
+    (let* ((calendar-headline
+            (save-excursion
+              (org-up-heading-safe)
+              (org-trim (substring-no-properties (thing-at-point 'line))))))
+      (if (string-match "\\* Calendar (\\(.*\\))$" calendar-headline)
+          (car (read-from-string (match-string 1 calendar-headline)))
+        (apply #'cons (cdr (assoc (substring calendar-headline 2)
+                                  j/exco-calendar-aliases))))))
+#+end_src
 ***** =nov=
 [[https://depp.brause.cc/nov.el/][=nov=]] sirve para lectura de epubs. 
 
@@ -3091,10 +3124,6 @@ Para compilar el binario de SQLite que usa org-roam, es necesario instalar [[gcc
     :config
     (org-roam-bibtex-mode 1))
 #+end_src
-
-***** Configuraciones adicionales
-****** Eliminación de alertas por ~org-element-cache~
-Debido a los problemas de /encoding/ en ~Excorporate~
 
 *** Latex (con [[https://tug.org/texlive/][Tex Live]])
 #+begin_src nix :tangle no :noweb-ref nixos-paquetes
