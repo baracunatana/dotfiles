@@ -411,7 +411,7 @@ firefox
 
 ***** De manipulación de /buffers/ (/tabs/)
 #+begin_src python :tangle ~/.config/qutebrowser/config.py
-  config.bind('<Space>bN','tab-give' , mode='normal')
+  config.bind('<Space>bn','tab-give' , mode='normal')
   config.bind('<Space>be','tab-close' , mode='normal')
 #+end_src
 
