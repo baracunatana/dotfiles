@@ -3203,6 +3203,12 @@ keepassx2
 gnupg
 #+end_src
 
+**** Configuración de tiempos máximos de cacheo para gpg-agent
+#+begin_src conf :tangle ~/.gnupg/gpg-agent.con
+  default-cache-ttl 34560000
+  max-cache-ttl 34560000
+#+end_src
+
 ** Utilidades
 *** [[https://linux.die.net/man/1/zip][Zip]] y [[https:linux.die.net/man/1/unzip][Unzip]]
 #+begin_src nix :tangle no :noweb-ref nixos-paquetes
