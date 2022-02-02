@@ -1801,7 +1801,7 @@ Ya con esto, se tienen que definir los acrodes locales para agenda.
 ****** =org-reveal=
 [[https://github.com/yjwen/org-reveal][org-reveal]] es un paquete que permite exportar un archivo de org-mode como una presentación de [[https://revealjs.com/][reveal.js]].
 
-#+begin_src emacs-lisp 
+#+begin_src emacs-lisp :tangle no
   (use-package ox-reveal
     :config)
 #+end_src
