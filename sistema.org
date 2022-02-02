@@ -3128,6 +3128,16 @@ Para compilar el binario de SQLite que usa org-roam, es necesario instalar [[gcc
     (org-roam-bibtex-mode 1))
 #+end_src
 
+***** Asistentes
+****** Función para descargar plantilla de documentos PUJ
+#+begin_src emacs-lisp
+    (defun j/descargar-estilo-puj ()
+    (interactive)
+      (url-copy-file "https://raw.githubusercontent.com/baracunatana/docsimplepuj/main/docsimplepuj.sty" "docsimplepuj.sty" t)
+      (make-directory "img" t)
+      (url-copy-file "https://github.com/baracunatana/docsimplepuj/raw/main/img/logoBasico.jpg" "img/logoBasico.jpg" t))
+#+end_src
+
 *** Latex (con [[https://tug.org/texlive/][Tex Live]])
 #+begin_src nix :tangle no :noweb-ref nixos-paquetes
 texlive.combined.scheme-full
