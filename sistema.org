@@ -516,6 +516,11 @@ mpv
 obs-studio
 #+end_src
 
+*** [[https://inkscape.org/][Inkscape]]
+#+begin_src nix :tangle no :noweb-ref nixos-paquetes
+inkscape
+#+end_src
+
 ** Lectura de documentos
 *** [[http:wiki.gnome.org/Apps/Evince][Evince]]
 #+begin_src nix :tangle no :noweb-ref nixos-paquetes
