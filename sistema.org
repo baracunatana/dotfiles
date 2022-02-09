@@ -119,6 +119,7 @@ imports =
 *** Sonido
 #+begin_src nix :tangle no :noweb-ref nixos-base
   sound.enable = false;
+  hardware.pulseaudio.enable = false;
   services.pipewire = {
     enable = true;
     alsa.enable = true;
@@ -163,8 +164,8 @@ imports =
 #+begin_src nix :tangle no :noweb-ref nixos-base
   # Habilitar bluetooth
   # GNome 40 no requiere esto, pero Plasma 5 sí...
-  hardware.bluetooth.enable = true;
-  services.blueman.enable = true;
+  # hardware.bluetooth.enable = true;
+  # services.blueman.enable = true;
 #+end_src
 
 ** Activación de gnupg agent
@@ -216,8 +217,8 @@ imports =
 
 *** Gnome
 #+begin_src nix :tangle no :noweb-ref nixos-base
-  #services.xserver.displayManager.gdm.enable = true;
-  #services.xserver.desktopManager.gnome.enable = true;
+  services.xserver.displayManager.gdm.enable = true;
+  services.xserver.desktopManager.gnome.enable = true;
 #+end_src
 
 **** Configuración
@@ -225,51 +226,48 @@ La configuración de Gnome no se hace con archivos de configuración sin con una
 
 ***** Usar =caps= como =ctrl=
 #+begin_src sh :tangle ./post-tangle.sh
-  #gsettings set org.gnome.desktop.input-sources xkb-options "['caps:ctrl_modifier', 'lv3:ralt_switch']"
+  gsettings set org.gnome.desktop.input-sources xkb-options "['caps:ctrl_modifier', 'lv3:ralt_switch']"
 #+end_src
 
 ***** Teclado en español
 #+begin_src sh :tangle ./post-tangle.sh
-  #gsettings set org.gnome.desktop.input-sources sources "[('xkb', 'latam')]"
+  gsettings set org.gnome.desktop.input-sources sources "[('xkb', 'latam')]"
 #+end_src
 
 ***** Formato de 12 horas
 #+begin_src sh :tangle ./post-tangle.sh
-  #gsettings set org.gnome.desktop.interface clock-format '12h'
-  #gsettings set org.gtk.Settings.FileChooser clock-format '12h'
+  gsettings set org.gnome.desktop.interface clock-format '12h'
+  gsettings set org.gtk.Settings.FileChooser clock-format '12h'
 #+end_src
 
 *** Plasma
 #+begin_src nix :tangle no :noweb-ref nixos-base
-  services.xserver.displayManager.sddm.enable = true;
-  services.xserver.desktopManager.plasma5.enable = true;
+  # services.xserver.displayManager.sddm.enable = true;
+  # services.xserver.desktopManager.plasma5.enable = true;
 #+end_src
 
 **** Configuración
 ***** Usar =caps= como =ctrl=
 #+begin_src sh :tangle ./post-tangle.sh
-  kwriteconfig5 --file $HOME/.config/kxkbrc --group "Layout" --key "Options" "terminate:ctrl_alt_bksp,ctrl:nocaps"
+  # kwriteconfig5 --file $HOME/.config/kxkbrc --group "Layout" --key "Options" "terminate:ctrl_alt_bksp,ctrl:nocaps"
 #+end_src
 
 ***** Desligar M-SPC de KRunner (para que se pueda usar en emacs)
 #+begin_src sh :tangle ./post-tangle.sh
-  kwriteconfig5 --file $HOME/.config/kglobalshortcutsrc --group "krunner.desktop" "_launch" "Search\tAlt+F2\tMeta+Space,Alt+Space\tAlt+F2\tSearch,KRunner"
+  # kwriteconfig5 --file $HOME/.config/kglobalshortcutsrc --group "krunner.desktop" "_launch" "Search\tAlt+F2\tMeta+Space,Alt+Space\tAlt+F2\tSearch,KRunner"
 #+end_src
 
 ***** Gestión de ventanas
 ****** Cambiador de tareas (con M-TAB)
 #+begin_src sh :tangle ./post-tangle.sh
-  kwriteconfig5 --file $HOME/.config/kwinrc --group "Effect-CoverSwitch" "TabBox" "true"
-  kwriteconfig5 --file $HOME/.config/kwinrc --group "Effect-CoverSwitch" "WindowTitle" "false"
-  kwriteconfig5 --file $HOME/.config/kwinrc --group "TabBox" "coverswitchEnabled" "true"
-  kwriteconfig5 --file $HOME/.config/kwinrc --group "TabBox" "LayoutName" "coverswitch"
+  # kwriteconfig5 --file $HOME/.config/kwinrc --group "Effect-CoverSwitch" "TabBox" "true"
+  # kwriteconfig5 --file $HOME/.config/kwinrc --group "Effect-CoverSwitch" "WindowTitle" "false"
+  # kwriteconfig5 --file $HOME/.config/kwinrc --group "TabBox" "coverswitchEnabled" "true"
+  # kwriteconfig5 --file $HOME/.config/kwinrc --group "TabBox" "LayoutName" "coverswitch"
 #+end_src
 ****** Abrir ventanas nuevas centradas en la pantalla
-[Windows]
-Placement=Centered
-
 #+begin_src sh :tangle ./post-tangle.sh
-  kwriteconfig5 --file $HOME/.config/kwinrc --group "Windows" "Placement" "Centered"
+  # kwriteconfig5 --file $HOME/.config/kwinrc --group "Windows" "Placement" "Centered"
 #+end_src
 
 ** Configuración de carga de sistema operativo
