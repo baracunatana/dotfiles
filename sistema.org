@@ -1815,7 +1815,7 @@ Ya con esto, se tienen que definir los acrodes locales para agenda.
     :config)
 #+end_src
 
-****** =org-re-reveal=
+****** ~org-re-reveal~
 #+begin_src emacs-lisp 
   (use-package org-re-reveal
     :config)
@@ -1866,7 +1866,7 @@ Yasnippet es un paquete que permite la definición de /snippets/ (o plantillas) 
 
 La definición de plantillas se hace a partir de un archivo de texto plano que se guarda en =.emacs.d/snippets/<mode>/=. 
 
-****** Inicializar yasnippet para todos los modos
+****** Inicializar ~yasnippet~ para todos los modos
 #+begin_src emacs-lisp :tangle no :noweb-ref yasnippet-config
   (yas-global-mode)
   (yas-reload-all)
@@ -1876,6 +1876,22 @@ La definición de plantillas se hace a partir de un archivo de texto plano que s
 #+begin_src emacs-lisp :tangle no :noweb-ref yasnippet-config
   (j/lider
     "y" '(yas-insert-snippet :which-key "insertar plantilla"))
+#+end_src
+
+****** Plantillas
+******* [[~org-re-reveal~]]
+******** Pantalla de instrucciones
+#+begin_src snippet :tangle ~/.config/emacs/snippets/org-mode/re-reveal-OER-instrucciones
+  # -*- mode: snippet -*-
+  # name: re-reveal-OER-instrucciones
+  # key: re-reveal-OER-instrucciones
+  # --
+  * Instrucciones
+  + Suba el volumen de su dispositivo. Esta presentación contiene audio
+  + Fíjese en la esquina inferior derecha de su pantalla. Las flechas le indican hacia dónde puede avanzar en esta presentación
+  + Presione ~ESC~ para ver un /overview/ de la presentación
+  + Presione ~s~ si prefiere leer los comentarios de esta presentación en lugar de escuchar los audios
+  + Presione ~?~ para ver otras opciones de navegación en la presentación  
 #+end_src
 
 ***** TODO =dired=
@@ -3101,7 +3117,7 @@ Para compilar el binario de SQLite que usa org-roam, es necesario instalar [[gcc
 #+end_src
 
 ****** Acordes globales
-#+begin_src emacs-lisp :noweb-ref org-roam-general
+#+begin_src emacs-lisp :noweb-ref org-roam-general :tangle no
   (j/lider
     :infix "r"
     "" '(:ignore t :which-key "org-roam")
