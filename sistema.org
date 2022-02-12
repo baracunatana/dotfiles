@@ -1,3 +1,4 @@
+# -*- org-babel-load-languages: '((elisp . t) (org . t)) -*-
 #+title: Configuración completa de sistema operativo y aplicaciones básicas
 #+author: Juan E. Gómez-Morantes, PhD
 
@@ -716,7 +717,7 @@ Para esto, la fuente debe estar instalada correctamente en el sistema. Si se usa
       :non-normal-prefix "M-SPC m"))
 #+end_src
 
-******* Configuración de =evil-collection=
+******* =evil-collection=
 #+begin_src emacs-lisp :noweb no-export
   (use-package evil-collection
     :after evil
@@ -3139,6 +3140,58 @@ Para compilar el binario de SQLite que usa org-roam, es necesario instalar [[gcc
       (url-copy-file "https://raw.githubusercontent.com/baracunatana/docsimplepuj/main/docsimplepuj.sty" "docsimplepuj.sty" t)
       (make-directory "img" t)
       (url-copy-file "https://github.com/baracunatana/docsimplepuj/raw/main/img/logoBasico.jpg" "img/logoBasico.jpg" t))
+#+end_src
+
+***** Elfeed
+~[[https://github.com/skeeto/elfeed][Elfeed]]~ es un lector de /web feeds/ que funciona enteramente en Emacs y soporta formatos Atom y RSS. 
+
+#+begin_src emacs-lisp :noweb no-export 
+  (use-package elfeed
+    :custom
+    <<elfeed-custom>>
+    :config)
+#+end_src
+
+****** Acordes
+Se usa el mapa incluido en [[=evil-collection=]] 
+
+#+begin_src emacs-lisp :noweb-ref evil-collection-config :tangle no
+  (with-eval-after-load 'elfeed (evil-collection-elfeed-setup))
+#+end_src
+
+****** Feeds con ~elfeed-org~
+Usando el paquete ~elfeed-org~, los /feeds/ se describen en un archivo ~org~ ubicado en la ruta definida en ~rmh-elfeed-org-files~.
+
+#+begin_src emacs-lisp :noweb no-export 
+  (use-package elfeed-org
+    :after elfeed
+    :config
+     (elfeed-org))
+#+end_src
+
+#+begin_src org :tangle ~/.config/emacs/elfeed.org
+  ,* Feeds :elfeed:
+  ,** Comics :comics:
+  ,*** https://xkcd.com/atom.xml :humor:
+  ,** Publicaciones
+  ,*** [[https://www.newyorker.com/feed/everything][The New Yorker]] 
+  ,** Emacs :emacs:
+  ,*** [[https://sachachua.com/blog/feed/][Sasha Chua]]
+  ,*** [[https://protesilaos.com/codelog.xml][Protesilaos]]
+  ,** Ciencia e investigación
+  ,*** [[https://ict4dblog.wordpress.com/feed/][ICTs for development]] :ict4d:
+  ,*** [[https://www.tandfonline.com/feed/rss/titd20][ITD]] :journal:ict4d:
+  ,*** [[https://aisel.aisnet.org/misq/recent.rss][MISQ]] :journal:
+  ,** Noticias
+  ,*** [[https://losdanieles.com/feed/][Los danieles]]
+
+#+end_src
+
+****** Ubicación de base de datos
+Para que la base datos (la que indica qué ya está marcado como leído y qué no) se pueda sincronizar entre equipos, hay que ubicarla en una ruta sincronizada con pCloud.
+
+#+begin_src emacs-lisp :noweb-ref elfeed-custom :tangle no
+  (elfeed-db-directory "~/personal/.elfeed")
 #+end_src
 
 *** Latex (con [[https://tug.org/texlive/][Tex Live]])
