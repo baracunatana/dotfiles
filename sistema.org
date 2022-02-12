@@ -566,6 +566,11 @@ zotero
 libreoffice
 #+end_src
 
+*** [[https://www.onlyoffice.com/][Onlyoffice]]
+#+begin_src nix :tangle no :noweb-ref nixos-paquetes
+onlyoffice-bin
+#+end_src
+
 *** Latex (con [[https:tectonic-typesetting.github.io][Tectonic]])
 Se requiere =tectonic= 7+ para tener compatibilidad con =biber= y =biblatex=. Esta versión sólo está en el canal unstable de NixOS (a la fecha [2021-08-20 Fri]).
 
@@ -3227,6 +3232,7 @@ nixpkgs.config.retroarch = {
 #+begin_src nix :tangle no :noweb-ref nixos-paquetes
 git
 #+end_src
+
 *** [[https://zoom.us/][Zoom]]
 #+begin_src nix :tangle no :noweb-ref nixos-paquetes
 unstable.zoom-us
