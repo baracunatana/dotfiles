@@ -851,6 +851,26 @@ Uso el tema gráfico =modus-vivendi= de Protesilaos (https://gitlab.com/protesil
     :custom
     (counsel-describe-function-function #'helpful-callable)
     (counsel-describe-variable-function #'helpful-variable)
+    :init
+    ;; Esto hay que quitarlo una vez se resuleval https://github.com/Wilfred/helpful/issues/282
+    (defvar read-symbol-positions-list nil)
+    :config
+    ;; Esto hay que quitarlo una vez se resuleval https://github.com/Wilfred/helpful/issues/282
+    (defun helpful--autoloaded-p (sym buf)
+      "Return non-nil if function SYM is autoloaded."
+      (-when-let (file-name (buffer-file-name buf))
+        (setq file-name (s-chop-suffix ".gz" file-name))
+        (help-fns--autoloaded-p sym)))
+    ;; Esto hay que quitarlo una vez se resuleval https://github.com/Wilfred/helpful/issues/282
+    (defun helpful--skip-advice (docstring)
+      "Remove mentions of advice from DOCSTRING."
+      (let* ((lines (s-lines docstring))
+             (relevant-lines
+              (--take-while
+               (not (or (s-starts-with-p ":around advice:" it)
+                        (s-starts-with-p "This function has :around advice:" it)))
+               lines)))
+        (s-trim (s-join "\n" relevant-lines))))
     :general
     (general-define-key
      :states '(normal insert emacs)
