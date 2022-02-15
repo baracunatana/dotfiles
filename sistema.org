@@ -3188,6 +3188,7 @@ Para compilar el binario de SQLite que usa org-roam, es necesario instalar [[gcc
 
 #+begin_src emacs-lisp :noweb no-export 
   (use-package elfeed
+    :commands elfeed
     :custom
     <<elfeed-custom>>
     :config)
@@ -3228,11 +3229,22 @@ Usando el paquete ~elfeed-org~, los /feeds/ se describen en un archivo ~org~ ubi
 
 #+end_src
 
-****** Ubicación de base de datos
-Para que la base datos (la que indica qué ya está marcado como leído y qué no) se pueda sincronizar entre equipos, hay que ubicarla en una ruta sincronizada con pCloud.
+****** Sincronización con pCloud
+~elfeed~ tiene una base de datos (que indica qué ya está marcado como leído y qué no) local que debe ser compartida entre máquinas (usando, por ejemplo, pCloud). Sin embargo, no la carga por defecto (!). Siendo así, la carga (y persistencia) de esta base de datos se hace de forma manual. 
 
+******* Ubicación de base de datos
 #+begin_src emacs-lisp :noweb-ref elfeed-custom :tangle no
   (elfeed-db-directory "~/personal/.elfeed")
+#+end_src
+
+******* Cargar la base de datos al iniciar
+#+begin_src emacs-lisp :noweb-ref elfeed-custom :tangle no
+  (advice-add 'elfeed-db-load :before 'elfeed)
+#+end_src
+
+******* Guardar la base de datos al cerrer (con q)
+#+begin_src emacs-lisp :noweb-ref elfeed-custom :tangle no
+  (advice-add 'elfeed-db-save :before 'elfeed-search-quit-window)
 #+end_src
 
 *** Latex (con [[https://tug.org/texlive/][Tex Live]])
