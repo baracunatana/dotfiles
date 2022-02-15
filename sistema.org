@@ -380,6 +380,7 @@ firefox
 #+begin_src python :tangle ~/.config/qutebrowser/config.py
   c.url.searchengines = {'DEFAULT': 'https://duckduckgo.com/?q={}', 
                          'am': 'https://www.amazon.com/s?k={}',
+                         'cr': 'https://search.crossref.org/?from_ui=&q={}',
                          'np': 'https://search.nixos.org/packages/?query={}',
                          'no': 'https://search.nixos.org/options/?query={}',
                          'go': 'https://www.google.com/search?q={}', 
