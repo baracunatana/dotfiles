@@ -127,7 +127,7 @@ rm -rf ~/.emacs.d
 
 * Sistema operativo
 :PROPERTIES:
-:header-args:nix: :tangle (if (equal./configuration.nix
+:header-args:nix: :tangle (if (equal system-name "shion") "./configuration.nix" "no")
 :END:
 NixOS se configura, en términos de paquetes, servicios, y opciones iniciales, en el archivo =/etc/nixos/configuration.nix=. Para evitar problemas de usuarios y accesos, este archivo se crea en =./= y se genera un script para moverlo a =/etc/nixos/configuration.nix=. De esta forma nos evitamos enredos a la hora de hacer el tangling de este archivo desde emacs.
 
