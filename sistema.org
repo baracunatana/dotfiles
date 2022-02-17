@@ -127,7 +127,7 @@ rm -rf ~/.emacs.d
 
 * Sistema operativo
 :PROPERTIES:
-:header-args:nix: :tangle ./configuration.nix
+:header-args:nix: :tangle (if (equal./configuration.nix
 :END:
 NixOS se configura, en términos de paquetes, servicios, y opciones iniciales, en el archivo =/etc/nixos/configuration.nix=. Para evitar problemas de usuarios y accesos, este archivo se crea en =./= y se genera un script para moverlo a =/etc/nixos/configuration.nix=. De esta forma nos evitamos enredos a la hora de hacer el tangling de este archivo desde emacs.
 
@@ -429,72 +429,6 @@ font:
 *** [[https:www.mozilla.org/en-US/firefox/][Firefox]]
 #+begin_src nix :tangle no :noweb-ref nixos-paquetes
 firefox
-#+end_src
-
-*** [[https:qutebrowser.org][Qutebrowser]] 
-#+begin_src nix :tangle no :noweb-ref nixos-paquetes
-  qutebrowser
-#+end_src
-
-**** Configuración básica
-#+begin_src python :tangle ~/.config/qutebrowser/config.py
-  # No tomar en cuenta configuraciones hechas por gui
-  config.load_autoconfig(False)
-
-  # Tema oscuro para páginas web
-  c.colors.webpage.darkmode.enabled = False
-
-  # Habilitar pdf.js para visualización de pdfs
-  c.content.pdfjs = True
-#+end_src
-
-***** Guardar sesión
-#+begin_src python :tangle ~/.config/qutebrowser/config.py
-  c.auto_save.session = True
-#+end_src
-
-**** Buscadores
-#+begin_src python :tangle ~/.config/qutebrowser/config.py
-  c.url.searchengines = {'DEFAULT': 'https://duckduckgo.com/?q={}', 
-                         'am': 'https://www.amazon.com/s?k={}',
-                         'cr': 'https://search.crossref.org/?from_ui=&q={}',
-                         'np': 'https://search.nixos.org/packages/?query={}',
-                         'no': 'https://search.nixos.org/options/?query={}',
-                         'go': 'https://www.google.com/search?q={}', 
-                         'gs': 'https://scholar.google.com/scholar?q={}', 
-                         're': 'https://www.reddit.com/r/{}', 
-                         'yt': 'https://www.youtube.com/results?search_query={}'}
-#+end_src
-
-**** Acordes
-#+begin_src python :tangle ~/.config/qutebrowser/config.py
-  # C-j y C-k para navegar opciones de completion
-  config.bind('<Ctrl+j>', 'completion-item-focus next', mode='command')
-  config.bind('<Ctrl+k>', 'completion-item-focus prev', mode='command')
-  config.bind('<Ctrl+j>', 'tab-prev', mode='normal')
-  config.bind('<Ctrl+k>', 'tab-next', mode='normal')
-  config.bind('<Ctrl+h>', 'tab-prev', mode='normal')
-  config.bind('<Ctrl+l>', 'tab-next', mode='normal')
-#+end_src
-
-***** De apertura de aplicaciones externas
-#+begin_src python :tangle ~/.config/qutebrowser/config.py
-  config.bind('<Space>ov','hint links spawn mpv {hint-url}' , mode='normal')
-#+end_src
-
-***** De buscadores
-#+begin_src python :tangle ~/.config/qutebrowser/config.py
-#+end_src
-
-***** De manipulación de /buffers/ (/tabs/)
-#+begin_src python :tangle ~/.config/qutebrowser/config.py
-  config.bind('<Space>bn','tab-give' , mode='normal')
-  config.bind('<Space>be','tab-close' , mode='normal')
-#+end_src
-
-***** De ayuda
-#+begin_src python :tangle ~/.config/qutebrowser/config.py
-  config.bind('<Space>hc','config-source' , mode='normal')
 #+end_src
 
 *** [[https:brave.com][Brave]]
@@ -2307,21 +2241,22 @@ Lo primero es agregar mu4e al load-path de emacs. Dado que esto se hace distinto
 Ahora sí se puede cargar =mu4e=. Sin embargo, este no se puede cargar con =use-package= porque no expone metadata que =use-package= pueda usar para la carga. 
  
 #+begin_src emacs-lisp :noweb no-export
-  (use-package mu4e
-    :straight (:local-repo 
-               "/run/current-system/sw/share/emacs/site-lisp/mu4e"
-               :pre-build ())
-    :init
-    <<mu4e-init>>
-    :commands mu4e
-    :custom
-    <<mu4e-custom>> 
-    :hook
-    <<mu4e-hook>>
-    :general 
-    <<mu4e-general>>
-    :config 
-    <<mu4e-config>>)
+  (if (equal (system-name "shion"))
+      (use-package mu4e
+        :straight (:local-repo 
+                   "/run/current-system/sw/share/emacs/site-lisp/mu4e"
+                   :pre-build ())
+        :init
+        <<mu4e-init>>
+        :commands mu4e
+        :custom
+        <<mu4e-custom>> 
+        :hook
+        <<mu4e-hook>>
+        :general 
+        <<mu4e-general>>
+        :config 
+        <<mu4e-config>>))
 #+end_src
 
 ******* Configuración básica
@@ -3427,6 +3362,89 @@ ntfs3g
 gcc
 #+end_src
 
+* Elementos comunes
+** Aplicaciones y paquetes comunes
+*** Navegadores web
+**** [[https:qutebrowser.org][Qutebrowser]] 
+Qutebrowser se instala en *shion*, *shura*, y *kanon*. A continuación se definen los dos bloques de instalación
+#+begin_src nix :tangle no :noweb-ref nixos-paquetes
+  qutebrowser
+#+end_src
+
+#+bigin_src sh :tangle (if (equal (system-name) "kanon") "kanon-init.sh" "no") :tangle-mode (identity #o755) :shebang #!/bin/bash
+sudo apt install qutebrowser
+#+end_src
+
+***** Configuración básica
+#+begin_src python :tangle ~/.config/qutebrowser/config.py
+  # No tomar en cuenta configuraciones hechas por gui
+  config.load_autoconfig(False)
+
+  # Tema oscuro para páginas web
+  c.colors.webpage.darkmode.enabled = False
+
+  # Habilitar pdf.js para visualización de pdfs
+  c.content.pdfjs = True
+#+end_src
+
+****** Guardar sesión
+#+begin_src python :tangle ~/.config/qutebrowser/config.py
+  c.auto_save.session = True
+#+end_src
+
+***** Buscadores
+#+begin_src python :tangle ~/.config/qutebrowser/config.py
+  c.url.searchengines = {'DEFAULT': 'https://duckduckgo.com/?q={}', 
+                         'am': 'https://www.amazon.com/s?k={}',
+                         'cr': 'https://search.crossref.org/?from_ui=&q={}',
+                         'np': 'https://search.nixos.org/packages/?query={}',
+                         'no': 'https://search.nixos.org/options/?query={}',
+                         'go': 'https://www.google.com/search?q={}', 
+                         'gs': 'https://scholar.google.com/scholar?q={}', 
+                         're': 'https://www.reddit.com/r/{}', 
+                         'yt': 'https://www.youtube.com/results?search_query={}'}
+#+end_src
+
+***** Acordes
+#+begin_src python :tangle ~/.config/qutebrowser/config.py
+  # C-j y C-k para navegar opciones de completion
+  config.bind('<Ctrl+j>', 'completion-item-focus next', mode='command')
+  config.bind('<Ctrl+k>', 'completion-item-focus prev', mode='command')
+  config.bind('<Ctrl+j>', 'tab-prev', mode='normal')
+  config.bind('<Ctrl+k>', 'tab-next', mode='normal')
+  config.bind('<Ctrl+h>', 'tab-prev', mode='normal')
+  config.bind('<Ctrl+l>', 'tab-next', mode='normal')
+#+end_src
+
+****** De apertura de aplicaciones externas
+#+begin_src python :tangle ~/.config/qutebrowser/config.py
+  config.bind('<Space>ov','hint links spawn mpv {hint-url}' , mode='normal')
+#+end_src
+
+****** De buscadores
+#+begin_src python :tangle ~/.config/qutebrowser/config.py
+#+end_src
+
+****** De manipulación de /buffers/ (/tabs/)
+#+begin_src python :tangle ~/.config/qutebrowser/config.py
+  config.bind('<Space>bn','tab-give' , mode='normal')
+  config.bind('<Space>be','tab-close' , mode='normal')
+#+end_src
+
+****** De ayuda
+#+begin_src python :tangle ~/.config/qutebrowser/config.py
+  config.bind('<Space>hc','config-source' , mode='normal')
+#+end_src
+** Fuentes
+*** [[https://github.com/DeLaGuardo/Inconsolata-LGC][Inconsolata-lgc]]
+#+bigin_src sh :tangle (if (equal (system-name) "kanon") "kanon-init.sh" "no") :tangle-mode (identity #o755) :shebang #!/bin/bash
+  wget https://github.com/MihailJP/Inconsolata-LGC/releases/download/LGC-1.3.0/InconsolataLGC-OT-1.3.0.tar.xz
+  tar -xf InconsolataLGC-OT-1.3.0.tar.xz
+  sudo cp InconsolataLGC-OT/*.otf /usr/share/fonts
+  rm -rf InconsolataLGC*
+  sudo fc-cache -vr
+#+end_src
+
 * Footnotes
 
 [fn:1] [[https://www.gnu.org/software/emacs/manual/html_node/efaq-w32/Spell-check.html]]
@@ -3437,3 +3455,4 @@ gcc
 
 [fn:4] Publicada en octubre 2019
 
+ 
