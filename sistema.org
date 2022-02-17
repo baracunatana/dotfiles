@@ -51,43 +51,7 @@ Lo que se logra con esto es generar una serie de archivos de configuración en l
 * Surface
 El /hostname/ de Surface es Saga.
 
-** WSL2
-Uso wsl2 para tener un ambiente linux completo que permita correr incluso aplicaciones gui (con wslg). El siguiente comando en powershell instala la última versión disponible de Ubuntu.
-
-#+begin_src powershell :tangle no
-wsl --install
-#+end_src
-
-Luego se cambia el /hostname/ de Ubuntu a Kanon y se instala emacs desde repositorio.
-#+bigin_src sh :tangle no
-hostnamectl set-hostname kanon
-sudo apt update
-sudo apt full-upgrade
-sudo apt install emacs git
-#+end_src
-
-*** Script de inicialización en Ubuntu
-:PROPERTIES:
-:header-args:sh: :tangle (if (equal (system-name) "kanon") "kanon-init.sh" "no") :tangle-mode (identity #o755) :shebang #!/bin/bash
-:END:
-
-Luego de tener una instalación de emacs estable, se clona este repositorio y se hace un /tangle/ a este archivo. Luego se ejecuta ~./kanon-init.sh~
-
-**** Eliminar configuración de emacs por defecto
-#+bigin_src sh
-rm -rf ~/.emacs* 
-#+end_src
-
-** Desinstalar aplicaciones que trae Windows 11 por defecto
-#+begin_src powershell : tangle no
-  winget uninstall "Spotify Music"
-  winget uninstall "MSN El tiempo"
-  winget uninstall "Skype"
-#+end_src
-
 ** Tareas de configuración inicial manual
-*** Instalación de Ubuntu lts en wsl2
-
 *** Chocolatey
 Instalar [[https://chocolatey.org/install][Chocolatey]] siguiendo las instrucciones recientes en el sitio web. Luego, desde PowerShell (con permisos de administrador), ejecutar:
 
@@ -105,7 +69,61 @@ Se instala desde Microsoft Store
 Se instala desde Microsoft Store
 
 *** pCloud
-Se instala desde Microsoft Store
+Se descarga desde página web del proveedor. Luego de instalación e ingreso, se deben crear /syncs/ para las carpetas relevantes.
+
+** WSL2
+Uso wsl2 para tener un ambiente linux completo que permita correr incluso aplicaciones gui (con wslg). El siguiente comando en powershell instala la última versión disponible de Ubuntu.
+
+#+begin_src powershell :tangle no
+wsl --install
+#+end_src
+
+Luego se cambia el /hostname/ de Ubuntu a Kanon y se compila emacs con /pgtk/, /native compilation/, y /json/.
+#+bigin_src sh :tangle no
+hostnamectl set-hostname kanon
+sudo apt update
+sudo apt full-upgrade
+
+git clone git://git.sv.gnu.org/emacs.git
+sudo apt install build-essential libgtk-3-dev libgnutls28-dev libtiff5-dev libgif-dev libjpeg-dev libpng-dev libxpm-dev libncurses-dev texinfo libgccjit0 libgccjit-10-dev gcc-10 g++-10 libjansson4 libjansson-dev
+export CC=/usr/bin/gcc-10 CXX=/usr/bin/gcc-10
+cd emacs
+./autogen.sh
+./configure --with-pgtk --with-json --with-native-compilation
+make -j8
+sudo make install
+#+end_src
+
+*** Script de inicialización en Ubuntu
+:PROPERTIES:
+:header-args:sh: :tangle (if (equal (system-name) "kanon") "kanon-init.sh" "no") :tangle-mode (identity #o755) :shebang #!/bin/bash
+:END:
+
+Luego de tener una instalación de emacs estable, se clona este repositorio y se hace un /tangle/ a este archivo. Luego se ejecuta ~./kanon-init.sh~
+
+**** Creación de enlaces
+#+bigin_src sh
+ln -s /mnt/c/Users/juane/proyectos ~/proyectos
+ln -s /mnt/c/Users/juane/personal ~/personal
+ln -s /mnt/c/Users/juane/biblioteca ~/biblioteca
+ln -s /mnt/c/Users/juane/puj ~/puj
+ln -s /mnt/c/Users/juane/img ~/img
+ln -s /mnt/c/Users/juane/Downloads ~/Downloads
+#+end_src
+
+**** Eliminar configuración de emacs por defecto
+#+bigin_src sh
+rm -rf ~/.emacs.d
+#+end_src
+
+**** Compilar emacs desde repositorio con /pgtk/, /native compilation/, y /json/ 
+
+** Desinstalar aplicaciones que trae Windows 11 por defecto
+#+begin_src powershell : tangle no
+  winget uninstall "Spotify Music"
+  winget uninstall "MSN El tiempo"
+  winget uninstall "Skype"
+#+end_src
 
 * Sistema operativo
 :PROPERTIES:
