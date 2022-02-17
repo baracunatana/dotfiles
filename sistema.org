@@ -2264,8 +2264,9 @@ Ahora sí se puede cargar =mu4e=. Sin embargo, este no se puede cargar con =use-
 Para aceptar invitaciones de calendario ics, se necesita usar la vista de mensaje de gnus (activada por defecto en, por lo menos, versiones 1.5.11+) y la siguiente configuración
 
 #+begin_src emacs-lisp noweb-ref mu4e-config
-(require 'mu4e-icalendar)
-(mu4e-icalendar-setup)
+  (with-eval-after-load 'mu4e
+    (require 'mu4e-icalendar)
+    (mu4e-icalendar-setup))
 #+end_src
 
 ******** Comando para halar correo
