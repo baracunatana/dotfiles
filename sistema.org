@@ -48,6 +48,65 @@ Lo que se logra con esto es generar una serie de archivos de configuración en l
 + Emacs
   - =all-the-icons-install-fonts=
 
+* Surface
+El /hostname/ de Surface es Saga.
+
+** WSL2
+Uso wsl2 para tener un ambiente linux completo que permita correr incluso aplicaciones gui (con wslg). El siguiente comando en powershell instala la última versión disponible de Ubuntu.
+
+#+begin_src powershell :tangle no
+wsl --install
+#+end_src
+
+Luego se cambia el /hostname/ de Ubuntu a Kanon y se instala emacs desde repositorio.
+#+bigin_src sh :tangle no
+hostnamectl set-hostname kanon
+sudo apt update
+sudo apt full-upgrade
+sudo apt install emacs git
+#+end_src
+
+*** Script de inicialización en Ubuntu
+:PROPERTIES:
+:header-args:sh: :tangle (if (equal (system-name) "kanon") "kanon-init.sh" "no") :tangle-mode (identity #o755) :shebang #!/bin/bash
+:END:
+
+Luego de tener una instalación de emacs estable, se clona este repositorio y se hace un /tangle/ a este archivo. Luego se ejecuta ~./kanon-init.sh~
+
+**** Eliminar configuración de emacs por defecto
+#+bigin_src sh
+rm -rf ~/.emacs* 
+#+end_src
+
+** Desinstalar aplicaciones que trae Windows 11 por defecto
+#+begin_src powershell : tangle no
+  winget uninstall "Spotify Music"
+  winget uninstall "MSN El tiempo"
+  winget uninstall "Skype"
+#+end_src
+
+** Tareas de configuración inicial manual
+*** Instalación de Ubuntu lts en wsl2
+
+*** Chocolatey
+Instalar [[https://chocolatey.org/install][Chocolatey]] siguiendo las instrucciones recientes en el sitio web. Luego, desde PowerShell (con permisos de administrador), ejecutar:
+
+#+begin_src powershell :tangle no
+choco install spotify zoom microsoft-teams microsoft-windows-terminal
+#+end_src
+
+*** Instalar office
+Se descarga desde cuenta institucional de office
+
+*** Xodo pdf
+Se instala desde Microsoft Store
+
+*** Age of Empires 2
+Se instala desde Microsoft Store
+
+*** pCloud
+Se instala desde Microsoft Store
+
 * Sistema operativo
 :PROPERTIES:
 :header-args:nix: :tangle ./configuration.nix
