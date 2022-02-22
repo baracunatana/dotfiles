@@ -71,19 +71,37 @@ Se instala desde Microsoft Store
 *** pCloud
 Se descarga desde página web del proveedor. Luego de instalación e ingreso, se deben crear /syncs/ para las carpetas relevantes.
 
-** WSL2
+*** PowerToys
+Uso Power Toys en windows para mapear /Caps lock/ a /Ctrl/. Se instala desde Chocoletey con:
+
+#+begin_src powershell :tangle no
+choco install powertoys
+#+end_src
+
+Luego se configura el mapeo de teclas en opciones de teclado.
+
+** Desinstalar aplicaciones que trae Windows 11 por defecto
+#+begin_src powershell : tangle no
+  winget uninstall "Spotify Music"
+  winget uninstall "MSN El tiempo"
+  winget uninstall "Skype"
+#+end_src
+
+** Configuración de Ubuntu en WSL2
+:PROPERTIES:
+:header-args:sh: :tangle (if (equal system-name "kanon") "./kanon-init.sh" "no") :tangle-mode (identity #o755) :shebang #!/bin/bash
+:END:
 Uso wsl2 para tener un ambiente linux completo que permita correr incluso aplicaciones gui (con wslg). El siguiente comando en powershell instala la última versión disponible de Ubuntu.
 
 #+begin_src powershell :tangle no
 wsl --install
 #+end_src
 
-Luego se cambia el /hostname/ de Ubuntu a Kanon y se compila emacs con /pgtk/, /native compilation/, y /json/.
-#+bigin_src sh :tangle no
-hostnamectl set-hostname kanon
-sudo apt update
-sudo apt full-upgrade
+Este archivo de configuración funciona con la versión de 20.04 lts.
 
+*** Compilllación de emas
+Se compila emacs con /pgtk/, /native compilation/, y /json/.
+#+begin_src sh
 git clone git://git.sv.gnu.org/emacs.git
 sudo apt install build-essential libgtk-3-dev libgnutls28-dev libtiff5-dev libgif-dev libjpeg-dev libpng-dev libxpm-dev libncurses-dev texinfo libgccjit0 libgccjit-10-dev gcc-10 g++-10 libjansson4 libjansson-dev autoconf
 export CC=/usr/bin/gcc-10 CXX=/usr/bin/gcc-10
