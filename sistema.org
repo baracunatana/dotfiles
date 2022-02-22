@@ -416,10 +416,10 @@ nix = {
 #+end_src
 
 ** Fuentes
-#+begin_src nix :tangle no :noweb-ref nixos-base
+#+begin_src nix :tangle no :noweb-ref nixos-base :noweb no-export
   fonts.fonts = with pkgs; [ 
+    <<nixos-fonts>>
     eb-garamond
-    inconsolata-lgc
     vistafonts
   ];
 #+end_src
@@ -3458,12 +3458,20 @@ Dado que el archivo de configuración se encuentra en rutas diferentes en Window
 #+end_src
 ** Fuentes
 *** [[https://github.com/DeLaGuardo/Inconsolata-LGC][Inconsolata-lgc]]
+Inconsolata lgc (que tiene acentos y versión itálica) se instala para usar en ~emacs~ y ~alacrity~. Siendo así, se usa en *kanon*, *shion*, y *shura*.
+
+Para sitemas basados en Ubuntu (kanon):
 #+bigin_src sh :tangle (if (equal system-name "kanon") "./kanon-init.sh" "no") :tangle-mode (identity #o755) :shebang #!/bin/bash
   wget https://github.com/MihailJP/Inconsolata-LGC/releases/download/LGC-1.3.0/InconsolataLGC-OT-1.3.0.tar.xz
   tar -xf InconsolataLGC-OT-1.3.0.tar.xz
   sudo cp InconsolataLGC-OT/*.otf /usr/share/fonts
   rm -rf InconsolataLGC*
   sudo fc-cache -vr
+#+end_src
+
+Para sistemas basados en NixOS (shion y shura):
+#+begin_src nix :tangle no :noweb-ref nixos-fonts
+    inconsolata-lgc
 #+end_src
 
 * Footnotes
