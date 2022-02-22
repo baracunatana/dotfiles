@@ -3386,29 +3386,39 @@ Qutebrowser se instala en *shion*, *shura*, y *kanon*. A continuación se define
   qutebrowser
 #+end_src
 
-#+bigin_src sh :tangle (if (equal (system-name) "kanon") "kanon-init.sh" "no") :tangle-mode (identity #o755) :shebang #!/bin/bash
-sudo apt install qutebrowser
+#+begin_src sh :tangle (if (equal system-name "kanon") "./kanon-init.sh" "no") :tangle-mode (identity #o755) :shebang #!/bin/bash
+sudo apt install qutebrowser.
 #+end_src
 
-***** Configuración básica
-#+begin_src python :tangle ~/.config/qutebrowser/config.py
-  # No tomar en cuenta configuraciones hechas por gui
+***** Configuración 
+Dado que el archivo de configuración se encuentra en rutas diferentes en Windows y en Linux, se usa este bloque con ~noweb~ para no tener que repetir la ruta en todas partes
+#+begin_src python :tangle  (cond ((equal system-name "kanon") "/mnt/c/Users/juane/AppData/Roaming/qutebrowser/config/config.py") ((equal system-name "shion") "~/.config/qutebrowser/config.py")) :noweb no-export
+  <<qutebrowser-config>>
+  # algo
+#+end_src
+
+****** No tomar en cuenta configuraciones hechas por gui
+#+begin_src python :tangle no :noweb-ref qutebrowser-config
   config.load_autoconfig(False)
+#+end_src
 
-  # Tema oscuro para páginas web
+****** Tema oscuro para páginas web
+#+begin_src python :tangle no :noweb-ref qutebrowser-config
   c.colors.webpage.darkmode.enabled = False
+#+end_src
 
-  # Habilitar pdf.js para visualización de pdfs
+****** Habilitar pdf.js para visualización de pdfs
+#+begin_src python :tangle no :noweb-ref qutebrowser-config
   c.content.pdfjs = True
 #+end_src
 
 ****** Guardar sesión
-#+begin_src python :tangle ~/.config/qutebrowser/config.py
+#+begin_src python :tangle no :noweb-ref qutebrowser-config
   c.auto_save.session = True
 #+end_src
 
-***** Buscadores
-#+begin_src python :tangle ~/.config/qutebrowser/config.py
+****** Buscadores
+#+begin_src python :tangle no :noweb-ref qutebrowser-config
   c.url.searchengines = {'DEFAULT': 'https://duckduckgo.com/?q={}', 
                          'am': 'https://www.amazon.com/s?k={}',
                          'cr': 'https://search.crossref.org/?from_ui=&q={}',
@@ -3420,8 +3430,8 @@ sudo apt install qutebrowser
                          'yt': 'https://www.youtube.com/results?search_query={}'}
 #+end_src
 
-***** Acordes
-#+begin_src python :tangle ~/.config/qutebrowser/config.py
+****** Acordes
+#+begin_src python :tangle no :noweb-ref qutebrowser-config
   # C-j y C-k para navegar opciones de completion
   config.bind('<Ctrl+j>', 'completion-item-focus next', mode='command')
   config.bind('<Ctrl+k>', 'completion-item-focus prev', mode='command')
@@ -3431,28 +3441,24 @@ sudo apt install qutebrowser
   config.bind('<Ctrl+l>', 'tab-next', mode='normal')
 #+end_src
 
-****** De apertura de aplicaciones externas
-#+begin_src python :tangle ~/.config/qutebrowser/config.py
+******* De apertura de aplicaciones externas
+#+begin_src python :tangle no :noweb-ref <<qutebrowser-config>>
   config.bind('<Space>ov','hint links spawn mpv {hint-url}' , mode='normal')
 #+end_src
 
-****** De buscadores
-#+begin_src python :tangle ~/.config/qutebrowser/config.py
-#+end_src
-
-****** De manipulación de /buffers/ (/tabs/)
-#+begin_src python :tangle ~/.config/qutebrowser/config.py
+******* De manipulación de /buffers/ (/tabs/)
+#+begin_src python :tangle no :noweb-ref <<qutebrowser-config>>
   config.bind('<Space>bn','tab-give' , mode='normal')
   config.bind('<Space>be','tab-close' , mode='normal')
 #+end_src
 
-****** De ayuda
-#+begin_src python :tangle ~/.config/qutebrowser/config.py
+******* De ayuda
+#+begin_src python :tangle no :noweb-ref <<qutebrowser-config>>
   config.bind('<Space>hc','config-source' , mode='normal')
 #+end_src
 ** Fuentes
 *** [[https://github.com/DeLaGuardo/Inconsolata-LGC][Inconsolata-lgc]]
-#+bigin_src sh :tangle (if (equal (system-name) "kanon") "kanon-init.sh" "no") :tangle-mode (identity #o755) :shebang #!/bin/bash
+#+bigin_src sh :tangle (if (equal system-name "kanon") "./kanon-init.sh" "no") :tangle-mode (identity #o755) :shebang #!/bin/bash
   wget https://github.com/MihailJP/Inconsolata-LGC/releases/download/LGC-1.3.0/InconsolataLGC-OT-1.3.0.tar.xz
   tar -xf InconsolataLGC-OT-1.3.0.tar.xz
   sudo cp InconsolataLGC-OT/*.otf /usr/share/fonts
