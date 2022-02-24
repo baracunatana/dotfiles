@@ -1062,6 +1062,15 @@ Mapa de movimiento general (cualquier modo)
     (olivetti-mode))
 #+end_src
 
+****** Gestión de archivos temporales
+#+begin_src emacs-lisp 
+  (setq backup-directory-alist `(("." . ,(expand-file-name "tmp/backups/" user-emacs-directory))))
+  (make-directory (expand-file-name "tmp/auto-saves/" user-emacs-directory) t)
+  (setq auto-save-file-name-transforms
+        `((".*" ,(expand-file-name "tmp/auto-saves/" user-emacs-directory) t)))
+  (setq create-lockfiles nil)
+#+end_src
+
 ***** Revisión ortográfica
 Emacs permite hace revisión ortográfica desde cualquier modo. Esto resulta indispensable para escribir documentos, correos electrónicos, o archivos orgmode exportables.
 
