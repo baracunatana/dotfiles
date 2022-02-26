@@ -1832,6 +1832,9 @@ Ya con esto, se tienen que definir los acrodes locales para agenda.
     "TAB" '(org-table-shrink :which-key "colapsar")
     "r" '(org-table-field-info :which-key "información de posición") 
     "b" '(org-table-eval-formula :which-key "editar fórmula") 
+    "o" '(org-table-toggle-coordinate-overlays :which-key "mostrar coordinadas") 
+    "RET" '(org-table-recalculate :which-key "recalcular") 
+    "s" '(org-table-sort-lines :which-key "ordenar") 
     "e" '(org-edit-special :which-key "org-edit-special"))
 #+end_src
 
