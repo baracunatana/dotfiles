@@ -97,11 +97,16 @@ Uso wsl2 para tener un ambiente linux completo que permita correr incluso aplica
 wsl --install
 #+end_src
 
-Este archivo de configuración funciona con la versión de 20.04 lts.
+Este archivo de configuración funciona con la versión de 20.04 lts y se estructura usando la funcionalidad ~noweb~ de ~org-babel~.
 
-*** Compilllación de emas
+
+#+begin_src sh :noweb no-export
+<<kanon-init>>
+#+end_src
+
+*** Compilación de emas
 Se compila emacs con /pgtk/, /native compilation/, y /json/.
-#+begin_src sh
+#+begin_src sh :tangle no :noweb-ref kanon-init
 git clone git://git.sv.gnu.org/emacs.git
 sudo apt install build-essential libgtk-3-dev libgnutls28-dev libtiff5-dev libgif-dev libjpeg-dev libpng-dev libxpm-dev libncurses-dev texinfo libgccjit0 libgccjit-10-dev gcc-10 g++-10 libjansson4 libjansson-dev autoconf
 export CC=/usr/bin/gcc-10 CXX=/usr/bin/gcc-10
@@ -117,14 +122,14 @@ rm -rf emacs
 *** Configuración básica de /host/
 Cambia el /hostname/ de Ubuntu a ~kanon~ y hacer una actualización completa del sistema operativo.
 
-#+begin_src sh
+#+begin_src sh :tangle no :noweb-ref kanon-init
 hostnamectl set-hostname kanon
 sudo apt update
 sudo apt full-upgrade
 #+end_src
 
 *** Creación de enlaces directos en ~home~
-#+begin_src sh
+#+begin_src sh :tangle no :noweb-ref kanon-init
 ln -s /mnt/c/Users/juane/proyectos ~/proyectos
 ln -s /mnt/c/Users/juane/personal ~/personal
 ln -s /mnt/c/Users/juane/biblioteca ~/biblioteca
@@ -135,7 +140,7 @@ ln -s /mnt/c/Users/juane/org-roam ~/org-roam
 #+end_src
 
 *** Eliminar configuración de emacs por defecto
-#+begin_src sh
+#+begin_src sh :tangle no :noweb-ref kanon-init
 rm -rf ~/.emacs.d
 #+end_src
 
@@ -563,6 +568,9 @@ calibre
 #+begin_src nix :tangle no :noweb-ref nixos-paquetes
 libsForQt5.okular
 #+end_src
+
+*** Kindle
+La aplicación de kindle se usa en sistemas windows (kanon)
 
 ** Desarrollo e ingeniería
 *** [[https:www.archimatetool.com][Archi]]
@@ -1085,9 +1093,14 @@ aspellDicts.en
 aspellDicts.es
 #+end_src
 
+#+begin_src sh :tangle no :noweb-ref kanon-ini
+  sudo apt install aspell aspell-es
+#+end_src
+
+
 Para reconocimiento de los diccionarios en NixOS (luego de actualización a 21.11), se debe configurar la carpeta de datos de ~aspell~ en el archivo ~~/.aspell.conf~
  
-#+begin_src conf :tangle ~/.aspell.conf
+#+begin_src conf :tangle (if (equal system-name "shion") "~/.aspell.conf" "no")
 data-dir /run/current-system/sw/lib/aspell
 #+end_src
 
@@ -1095,10 +1108,13 @@ data-dir /run/current-system/sw/lib/aspell
 ******* Para aspell
 #+begin_src emacs-lisp 
   (use-package ispell
-    :custom 
-    (ispell-aspell-data-dir "/run/current-system/sw/lib/aspell") 
-    (ispell-aspell-dict-dir "/run/current-system/sw/lib/aspell") 
-    (ispell-dictionary "es" "Diccionario en español por defecto")
+    :custom
+    (ispell-dictionary "es")
+    :init
+    ;; NixOS tiene rutas diferentes para los archivos de diccionarios
+    (when (equal system-name "shion")
+      (setq ispell-aspell-data-dir "/run/current-system/sw/lib/aspell") 
+      (setq ispell-aspell-dict-dir "/run/current-system/sw/lib/aspell"))
     :hook
     (text-mode . flyspell-mode))
 #+end_src

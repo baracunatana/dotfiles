@@ -9,11 +9,9 @@ make -j8
 sudo make install
 cd ..
 rm -rf emacs
-
 hostnamectl set-hostname kanon
 sudo apt update
 sudo apt full-upgrade
-
 ln -s /mnt/c/Users/juane/proyectos ~/proyectos
 ln -s /mnt/c/Users/juane/personal ~/personal
 ln -s /mnt/c/Users/juane/biblioteca ~/biblioteca
@@ -21,7 +19,6 @@ ln -s /mnt/c/Users/juane/puj ~/puj
 ln -s /mnt/c/Users/juane/img ~/img
 ln -s /mnt/c/Users/juane/Downloads ~/Downloads
 ln -s /mnt/c/Users/juane/org-roam ~/org-roam
-
 rm -rf ~/.emacs.d
 
 sudo apt install qutebrowser.
