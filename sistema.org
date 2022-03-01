@@ -1600,7 +1600,7 @@ También es importante deshabilitar =org-super-agenda-map= para evitar bindings 
   (org-ref-default-citation-link "parencite")
   (bibtex-completion-bibliography '("~/biblioteca/main.bib"))
   (bibtex-completion-library-path "~/biblioteca/")
-  (bibtex-completion-notes-path "~/biblioteca/notas/")
+  (bibtex-completion-notes-path "~/org-roam/")
   ;(org-ref-notes-function 'orb-edit-note)
   (bibtex-dialect 'biblatex)
 #+end_src
@@ -1953,6 +1953,42 @@ La definición de plantillas se hace a partir de un archivo de texto plano que s
   + Presione ~ESC~ para ver un /overview/ de la presentación
   + Presione ~s~ si prefiere leer los comentarios de esta presentación en lugar de escuchar los audios
   + Presione ~?~ para ver otras opciones de navegación en la presentación  
+#+end_src
+******* org
+******** Reporte de calificación
+#+begin_src snippet :tangle ~/.config/emacs/snippets/org-mode/la-reCalificacion
+  # -*- mode: snippet -*-
+  # name: Reporte de calificación
+  # key: la-cal
+  # --
+  ,#+title: ${1:Trabajo - Grupo} 
+  ,#+subtitle: Reporte de calificación 
+  ,#+author: Juan E. Gómez-Morantes, PhD.
+
+  :ox-latex-config:
+  # Table para que xcolor lo tome y puede colorear filas de tablas
+  ,#+latex_class_options: [table, hidelinks]
+  ,#+latex_header: \usepackage{xcolor}
+  ,#+latex_header: \usepackage[margin=2cm]{geometry}
+  ,#+latex_header: \usepackage{multicol}
+  ,#+latex_header: \usepackage{booktabs}
+  ,#+options: toc:nil subtitle:t title:t
+  ,#+LANGUAGE: es
+  ,#+latex_header: \usepackage[spanish]{babel}
+  :END:
+
+  ,#+name: nota
+  ,#+latex: \rowcolors{2}{white}{black!15}
+  ,#+attr_latex: :environment longtable :align p{25ex}cp{50ex}c :booktabs t
+  |            |      | <30>          |              |
+  |------------+------+---------------+--------------|
+  | *Elemento* |  *%* | *Comentarios* | *Puntos/100* |
+  |------------+------+---------------+--------------|
+  | $0         | 100% |               |            0 |
+  |------------+------+---------------+--------------|
+  | *Total*    | 100% |               |            0 |
+  |------------+------+---------------+--------------|
+  ,#+tblfm: @>\$2=100*vsum(@II..@III);%.0f%%::@>\$>=inner(mul,add,@II\$2..@III\$2,@II\$4..@III\$4)
 #+end_src
 
 ***** TODO =dired=
