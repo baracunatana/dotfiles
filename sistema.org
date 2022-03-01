@@ -1093,7 +1093,7 @@ aspellDicts.en
 aspellDicts.es
 #+end_src
 
-#+begin_src sh :tangle no :noweb-ref kanon-ini
+#+begin_src sh :tangle no :noweb-ref kanon-init
   sudo apt install aspell aspell-es
 #+end_src
 
@@ -1108,8 +1108,8 @@ data-dir /run/current-system/sw/lib/aspell
 ******* Para aspell
 #+begin_src emacs-lisp 
   (use-package ispell
-    :custom
-    (ispell-dictionary "es")
+    :config
+    (setq ispell-dictionary "es")
     :init
     ;; NixOS tiene rutas diferentes para los archivos de diccionarios
     (when (equal system-name "shion")

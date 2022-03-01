@@ -20,5 +20,6 @@ ln -s /mnt/c/Users/juane/img ~/img
 ln -s /mnt/c/Users/juane/Downloads ~/Downloads
 ln -s /mnt/c/Users/juane/org-roam ~/org-roam
 rm -rf ~/.emacs.d
+sudo apt install aspell aspell-es
 
 sudo apt install qutebrowser.
