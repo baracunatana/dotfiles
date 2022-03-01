@@ -56,7 +56,7 @@ El /hostname/ de Surface es Saga.
 Instalar [[https://chocolatey.org/install][Chocolatey]] siguiendo las instrucciones recientes en el sitio web. Luego, desde PowerShell (con permisos de administrador), ejecutar:
 
 #+begin_src powershell :tangle no
-choco install spotify zoom microsoft-teams microsoft-windows-terminal
+choco install spotify zoom microsoft-teams microsoft-windows-terminal keepass
 #+end_src
 
 *** Instalar office
