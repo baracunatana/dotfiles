@@ -1990,6 +1990,35 @@ La definición de plantillas se hace a partir de un archivo de texto plano que s
   |------------+------+---------------+--------------|
   ,#+tblfm: @>\$2=100*vsum(@II..@III);%.0f%%::@>\$>=inner(mul,add,@II\$2..@III\$2,@II\$4..@III\$4)
 #+end_src
+******** Plantilla PUJ
+#+begin_src snippet :tangle ~/.config/emacs/snippets/org-mode/la-doc-puj
+  # -*- mode: snippet -*-
+  # name: latex-doc-puj
+  # key: la-puj
+  # --
+  ,#+title: $1
+  ,#+author: ${2:Juan E. Gómez-Morantes, PhD}
+
+  :confLatex:
+  # No incluir tabla de contenidos
+  ,#+options: toc:nil
+  # Usar booktabs
+  ,#+LATEX_HEADER: \usepackage{booktabs}
+  # Configuración de babel para títulos y etiquetas en español
+  ,#+LANGUAGE: es
+  ,#+LATEX_HEADER: \usepackage[spanish]{babel}
+  # No resaltar enlaces en documento final, xcolor para tablas
+  ,#+latex_class_options: [hidelinks, table]
+  # Configuración de biblatex
+  ,#+latex_header: \usepackage[citestyle=authoryear,bibstyle=authoryear,backend=biber,natbib=true] {biblatex}
+  ,#+latex_header: \addbibresource{~/biblioteca/main.bib}
+  # Paquete de documento PUJ
+  ,#+latex_header: \usepackage{docsimplepuj}
+  ,#+latex_header: \subtitle{$3}
+  ,#+latex_header: \subsubtitle{$4}
+  :END:
+  $0
+#+end_src
 
 ***** TODO =dired=
 Esta sección contiene la configuración de Dired. Al ser un paquete incluido en emacs, es necesario incluir la línea =:straight (:type built-in)= para que =use-package= lo pueda encontrar (esto es necesario por la integración de =use-package= con =straight=)
