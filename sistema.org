@@ -2992,6 +2992,30 @@ Los siguientes acordes funcionan en los modos =mu4e-headers-mode= y =mu4e-view-m
   (require 'excorporate-org)
 
   (add-to-list 'org-agenda-files j/exco-org-save-file)
+  
+  ;; La siguiente función se modifica para que el /time-stamp/ de agendamiento sea más estandar
+  (defun exco-org-insert-meeting-headline (subject
+                                           start-time end-time
+                                           &optional item-identifier)
+    "Insert and schedule a meeting.
+  SUBJECT is the meeting's subject, START-TIME and END-TIME are the
+  meeting's start and end times in the same format as is returned
+  by `current-time'.  ITEM-IDENTIFIER is the opaque item
+  identifier."
+    (let* ((now (current-time))
+           (keyword (if (time-less-p now end-time)
+                        "TODO"
+                      "DONE")))
+      (insert (format "** %s %s\n" keyword subject))
+      (org-schedule nil (format-time-string "<%Y-%m-%d %a %H:%M"
+                                            start-time))
+      (forward-line -1)
+      (end-of-line)
+      (delete-char -1)
+      (insert (format-time-string "--%H:%M>" end-time))
+      (forward-line)
+      (org-set-property "Identifier" (format "%S" item-identifier))
+      (org-insert-time-stamp (current-time) t t "+ Retrieved " "\n")))
 
   (defun j/exco-org-insert-meetings (identifier response)
     "Insert the connection IDENTIFIER's meetings from RESPONSE."
@@ -3026,10 +3050,10 @@ Los siguientes acordes funcionan en los modos =mu4e-headers-mode= y =mu4e-view-m
 
   (defun j/exco-get-meetings-for-days (identifier month day year month2 day2 year2 callback)
     "Return the meetings for the specified range of dates.
-                          IDENTIFIER is the connection identifier.  MONTH, DAY and YEAR are
-                          the range's start month, day and year, while MONTH2, DAY2, and YEAR2 
-                          are the range's closing month, day, and yera. Call CALLBACK with two
-                          arguments, IDENTIFIER and the server's response."
+                            IDENTIFIER is the connection identifier.  MONTH, DAY and YEAR are
+                            the range's start month, day and year, while MONTH2, DAY2, and YEAR2 
+                            are the range's closing month, day, and yera. Call CALLBACK with two
+                            arguments, IDENTIFIER and the server's response."
     (let* ((start-of-day-time-internal
             (apply #'encode-time `(0 0 0 ,day ,month ,year)))
            (start-of-day-date-time
@@ -3081,7 +3105,7 @@ Los siguientes acordes funcionan en los modos =mu4e-headers-mode= y =mu4e-view-m
 
   (defun j/exco-org-download-range ()
     "Downloads the meetings for a range specifided by j/exco-org-download-range 
-                           and saves them to an org-file specified by j/exco-org-save-file"
+                             and saves them to an org-file specified by j/exco-org-save-file"
     (exco-connection-iterate #'j/exco-org-initialize-buffer
                              (lambda (identifier callback)
                                (exco-org-insert-headline identifier
