@@ -2248,6 +2248,19 @@ isync
 unstable.mu
 #+end_src
 
+#+begin_src nix :tangle no :noweb-ref kanon-init
+sudo apt install isync gnupg2 gpg-agent pinentry-qt4
+sudo apt install libgmime-3.0-dev libxapian-dev build-essential guile-2.2-dev html2text xdg-utils libwebkit2gtk-4.0-dev
+wget https://github.com/djcb/mu/releases/download/1.6.10/mu-1.6.10.tar.xz
+tar -xvf mu-1.6.10.tar.xz
+cd mu-1.6.10
+./configure && make
+sudo make install
+cd ..
+rm mu-1.6.10.tar.xz
+rm -r mu-1.6.10
+#+end_src
+
 ******* Configuración de mbsync
 ******** Generación de =.mbsyncrc=
 #+begin_src dotfile :tangle ~/.mbsyncrc :noweb no-export
@@ -2265,7 +2278,7 @@ User <<secreto("gmail-jee", "user")>>
 PassCmd "gpg2 -q --for-your-eyes-only --no-tty -d ~/.config/emacs/.mbsyncpass-jee.gpg"
 AuthMechs PLAIN
 SSLType IMAPS
-SSLVersions TLsv1.3
+SSLVersions TLSv1.3
 CertificateFile /etc/ssl/certs/ca-certificates.crt
 
 # THEN WE SPECIFY THE LOCAL AND REMOTE STORAGE
@@ -3526,6 +3539,10 @@ keepassx2
 *** [[https://gnupg.org/][Gnupg]]
 #+begin_src nix :tangle no :noweb-ref nixos-paquetes
 gnupg
+#+end_src
+
+#+begin_src sh :tangle no :noweb-ref kanon-init
+sudo apt install gnupg2
 #+end_src
 
 **** Configuración de tiempos máximos de cacheo para gpg-agent
