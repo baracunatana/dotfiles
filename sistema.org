@@ -2078,6 +2078,25 @@ La definición de plantillas se hace a partir de un archivo de texto plano que s
   $0
 #+end_src
 
+******* ob-html
+******** Alineación de texto
+#+begin_src snippet :tangle ~/.config/emacs/snippets/org-mode/html-alineacion
+  # -*- mode: snippet -*-
+  # name: ob-html-alineación
+  # key: ob-html-alineación
+  # --
+  ,#+attr_html: :align ${1:$$(yas-choose-value '("left" "right" "center" "justify"))}
+#+end_src
+
+******** Tamaño de texto
+#+begin_src snippet :tangle ~/.config/emacs/snippets/org-mode/html-tamanho-texto
+  # -*- mode: snippet -*-
+  # name: ob-html-tamaño-fuente
+  # key: ob-html-tamaño-fuente
+  # --
+  ,#+attr_html: :style font-size: ${1:80}%;
+#+end_src
+
 ***** TODO =dired=
 Esta sección contiene la configuración de Dired. Al ser un paquete incluido en emacs, es necesario incluir la línea =:straight (:type built-in)= para que =use-package= lo pueda encontrar (esto es necesario por la integración de =use-package= con =straight=)
    
