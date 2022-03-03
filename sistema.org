@@ -1974,8 +1974,8 @@ La definición de plantillas se hace a partir de un archivo de texto plano que s
 ******** Presentación básica
 #+begin_src snippet :tangle ~/.config/emacs/snippets/org-mode/re-reveal-OER-instrucciones
   # -*- mode: snippet -*-
-  # name: re-reveal-presentación
-  # key: re-reveal-presentación
+  # name: re-reveal-presentación-básica
+  # key: re-reveal-presentación-básica
   # --
   ,#+title: $1
   ,#+author: Juan Erasmo Gómez-Morantes, PhD
