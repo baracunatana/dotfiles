@@ -1987,6 +1987,18 @@ La definición de plantillas se hace a partir de un archivo de texto plano que s
   ,#+language: es
   ,#+reveal_theme: solarized
   ,#+options: toc:nil num:nil reveal_width:1600 reveal_height:900 reveal_margin:0.1 reveal_minScale:0.2 reveal_maxScale:2.5 reveal_transition:'cube' reveal_history:true date:nil
+  ,#+reveal_extra_css: https://cdn.jsdelivr.net/gh/baracunatana/re-reveal-estilos/j-oer-re-reveal.css
+#+end_src
+
+******** Columnas
+#+begin_src snippet :tangle ~/.config/emacs/snippets/org-mode/re-reveal-columna
+  # -*- mode: snippet -*-
+  # name: re-reveal-columna
+  # key: re-reveal-columna
+  # --
+  ,#+begin_col${1:$$(yas-choose-value '("iz" "de" "iz30" "iz40" "iz60" "iz70" "de30" "de40" "de60" "de70"))}
+  `yas-selected-text`$0
+  ,#+end_col$1
 #+end_src
 
 ******* org
