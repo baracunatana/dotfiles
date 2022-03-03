@@ -1963,13 +1963,32 @@ La definición de plantillas se hace a partir de un archivo de texto plano que s
   # name: re-reveal-OER-instrucciones
   # key: re-reveal-OER-instrucciones
   # --
-  * Instrucciones
+  ,* Instrucciones
   + Suba el volumen de su dispositivo. Esta presentación contiene audio
   + Fíjese en la esquina inferior derecha de su pantalla. Las flechas le indican hacia dónde puede avanzar en esta presentación
   + Presione ~ESC~ para ver un /overview/ de la presentación
   + Presione ~s~ si prefiere leer los comentarios de esta presentación en lugar de escuchar los audios
   + Presione ~?~ para ver otras opciones de navegación en la presentación  
 #+end_src
+
+******** Presentación básica
+#+begin_src snippet :tangle ~/.config/emacs/snippets/org-mode/re-reveal-OER-instrucciones
+  # -*- mode: snippet -*-
+  # name: re-reveal-presentación
+  # key: re-reveal-presentación
+  # --
+  ,#+title: $1
+  ,#+author: Juan Erasmo Gómez-Morantes, PhD
+
+  # Configuración básica
+  ,#+reveal_root: https://cdn.jsdelivr.net/gh/hakimel/reveal.js@4.1.2/
+  ,#+reveal_version: 4
+  ,#+reveal_hlevel: 2
+  ,#+language: es
+  ,#+reveal_theme: solarized
+  ,#+options: toc:nil num:nil reveal_width:1600 reveal_height:900 reveal_margin:0.1 reveal_minScale:0.2 reveal_maxScale:2.5 reveal_transition:'cube' reveal_history:true date:nil
+#+end_src
+
 ******* org
 ******** Reporte de calificación
 #+begin_src snippet :tangle ~/.config/emacs/snippets/org-mode/la-reCalificacion
