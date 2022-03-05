@@ -1596,7 +1596,13 @@ También es importante deshabilitar =org-super-agenda-map= para evitar bindings 
                    (org-super-agenda-groups '(( :name none
                                                 :effort> "31")
                                               (:discard (:anything))))
-                   (org-agenda-block-separator nil)))))))
+                   (org-agenda-block-separator nil)))))
+     ("r"
+        "Mantenimiento org-roam"
+        ((todo "TODO"
+               ((org-agenda-overriding-header "\nNotas pendientes")
+                (org-agenda-block-separator nil)
+                (org-agenda-files '("~/org-roam"))))))))
 #+end_src
 
 ****** =org-ref=
