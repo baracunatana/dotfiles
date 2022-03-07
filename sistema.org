@@ -2435,7 +2435,7 @@ Lo primero es agregar mu4e al load-path de emacs. Dado que esto se hace distinto
 Ahora sí se puede cargar =mu4e=. Sin embargo, este no se puede cargar con =use-package= porque no expone metadata que =use-package= pueda usar para la carga. 
  
 #+begin_src emacs-lisp :noweb no-export
-  (if (equal system-name "shion")
+  (if (member system-name '("shion" "oficina"))
       (use-package mu4e
         :straight (:local-repo 
                    "/run/current-system/sw/share/emacs/site-lisp/mu4e"
