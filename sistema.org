@@ -3668,10 +3668,12 @@ Dado que el archivo de configuración se encuentra en rutas diferentes en Window
   # C-j y C-k para navegar opciones de completion
   config.bind('<Ctrl+j>', 'completion-item-focus next', mode='command')
   config.bind('<Ctrl+k>', 'completion-item-focus prev', mode='command')
-  config.bind('<Ctrl+j>', 'tab-prev', mode='normal')
-  config.bind('<Ctrl+k>', 'tab-next', mode='normal')
+  config.bind('<Ctrl+j>', 'back', mode='normal')
+  config.bind('<Ctrl+k>', 'forward', mode='normal')
   config.bind('<Ctrl+h>', 'tab-prev', mode='normal')
   config.bind('<Ctrl+l>', 'tab-next', mode='normal')
+  config.unbind('H')
+  config.unbind('L')
 #+end_src
 
 ******* De apertura de aplicaciones externas
