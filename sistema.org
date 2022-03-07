@@ -1815,6 +1815,10 @@ Lo primero que se tiene que hacer con la agenda es indicar que debe iniciar en m
 
 Ya con esto, se tienen que definir los acrodes locales para agenda.
 #+begin_src emacs-lisp :tangle no :noweb-ref org-config
+  (j/lider-local
+    :keymaps '(org-agenda-mode-map)
+    "f" '(org-agenda-filter :which-key "filtrar"))
+ 
   (general-define-key
    :states '(normal)
    :keymaps '(org-agenda-mode-map)
@@ -3596,6 +3600,7 @@ sudo apt install qutebrowser.
 
 ***** Configuración 
 Dado que el archivo de configuración se encuentra en rutas diferentes en Windows y en Linux, se usa este bloque con ~noweb~ para no tener que repetir la ruta en todas partes
+
 #+begin_src python :tangle (cond ((equal system-name "kanon") "/mnt/c/Users/juane/AppData/Roaming/qutebrowser/config/config.py") ((member system-name '("shion" "oficina")) "~/.config/qutebrowser/config.py")) :noweb no-export
   <<qutebrowser-config>>
 #+end_src
