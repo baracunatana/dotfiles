@@ -1623,7 +1623,7 @@ También es importante deshabilitar =org-super-agenda-map= para evitar bindings 
   (bibtex-completion-bibliography '("~/biblioteca/main.bib"))
   (bibtex-completion-library-path "~/biblioteca/")
   (bibtex-completion-notes-path "~/org-roam/")
-  ;(org-ref-notes-function 'orb-edit-note)
+  (org-ref-notes-function 'orb-edit-note)
   (bibtex-dialect 'biblatex)
 #+end_src
 
@@ -3362,10 +3362,35 @@ Para compilar el binario de SQLite que usa org-roam, es necesario instalar [[gcc
     :custom
     (org-roam-directory "~/org-roam/")
     (org-roam-completion-everywhere t)
+    <<org-roam-custom>>
     :config
     (org-roam-db-autosync-enable)
     :general
     <<org-roam-general>>)
+#+end_src
+
+****** Plantillas de captura
+#+begin_src emacs-lisp :noweb-ref org-roam-custom :tangle no
+  (org-roam-capture-templates
+   '(("d"
+      "por defecto"
+      plain
+      "%?"
+      :target (file+head "%<%Y%m%d%H%M%S>-${slug}.org" "#+title: ${title}\n")
+      :unnarrowed t)
+     ("f" "Nota de fuente")
+     ("fg"
+      "general"
+      plain
+      "*%?*\n\n<Comentatario>\n\n* Notas de literatura"
+      :target (file+head "%<%Y%m%d%H%M%S>-${slug}.org" "#+title: ${title}\n")
+      :unnarrowed t)
+     ("fa"
+      "académica"
+      plain
+      "*%?*\n\n<Comentatario>\n\n*Notas metodológicas\n\n* Notas de literatura"
+      :target (file+head "%<%Y%m%d%H%M%S>-${slug}.org" "#+title: ${title}\n")
+      :unnarrowed t)))
 #+end_src
 
 ****** Acordes globales
