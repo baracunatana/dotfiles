@@ -3378,18 +3378,24 @@ Para compilar el binario de SQLite que usa org-roam, es necesario instalar [[gcc
       "%?"
       :target (file+head "%<%Y%m%d%H%M%S>-${slug}.org" "#+title: ${title}\n")
       :unnarrowed t)
+     ("c"
+      "concepto"
+      plain
+      "\n* Definiciones\n%?\n\n* Autores principales\n\n* Temas emergentes"
+      :target (file+head "%<%Y%m%d%H%M%S>-${slug}.org" "#+title: ${title}\n#+filetags: :concepto:")
+      :unnarrowed t)
      ("f" "Nota de fuente")
      ("fg"
       "general"
       plain
-      "*%?*\n\n<Comentatario>\n\n* Notas de literatura"
-      :target (file+head "%<%Y%m%d%H%M%S>-${slug}.org" "#+title: ${title}\n")
+      "\n*%?*\n\n<Comentatario>\n\n* Notas de literatura"
+      :target (file+head "%<%Y%m%d%H%M%S>-${slug}.org" "#+title: ${title}\n#+filetags: :fuente:")
       :unnarrowed t)
      ("fa"
       "académica"
       plain
-      "*%?*\n\n<Comentatario>\n\n*Notas metodológicas\n\n* Notas de literatura"
-      :target (file+head "%<%Y%m%d%H%M%S>-${slug}.org" "#+title: ${title}\n")
+      "\n*%?*\n\n<Comentatario>\n\n*Notas metodológicas\n\n* Notas de literatura"
+      :target (file+head "%<%Y%m%d%H%M%S>-${slug}.org" "#+title: ${title}\n#+filetags: :fuente:")
       :unnarrowed t)))
 #+end_src
 
