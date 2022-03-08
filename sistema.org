@@ -2628,7 +2628,7 @@ Se necesita para que mbsync funcione correctamente
 #+end_src
 
 ******** Correcciones a libreta de direcciones
-#+begin_src emacs-lisp :noweb-ref mu4e-init :tangle no
+#+begin_src emacs-lisp :noweb-ref mu4e-init-no :tangle no
   (defun j/corregir-contactos (contact)
     (cond
      ((string-match "pomares@javeriana.edu.co" contact)
@@ -2638,7 +2638,7 @@ Se necesita para que mbsync funcione correctamente
      (t contact)))
 #+end_src
 
-#+begin_src emacs-lisp :noweb-ref mu4e-custom :tangle no
+#+begin_src emacs-lisp :noweb-ref mu4e-custom-no :tangle no
   (mu4e-contact-process-function 'j/corregir-contactos)
 #+end_src
 
