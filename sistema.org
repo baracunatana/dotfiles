@@ -2137,7 +2137,7 @@ La definición de plantillas se hace a partir de un archivo de texto plano que s
   # name: Verbos consecutivos
   # key: verbos-consecutivos
   # --
-  Evite el uso de verbos consecutivos. Verhttps://baracunatana.github.io/comunicacionEscrita/comunicacionEscrita.html#/slide-verbos-seguidos para más información.
+  Evite el uso de verbos consecutivos. Ver https://baracunatana.github.io/comunicacionEscrita/comunicacionEscrita.html#/slide-verbos-seguidos para más información.
 #+end_src
 ***** TODO =dired=
 Esta sección contiene la configuración de Dired. Al ser un paquete incluido en emacs, es necesario incluir la línea =:straight (:type built-in)= para que =use-package= lo pueda encontrar (esto es necesario por la integración de =use-package= con =straight=)
