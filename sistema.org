@@ -2121,6 +2121,15 @@ La definición de plantillas se hace a partir de un archivo de texto plano que s
   ,#+reveal_html: </details>
 #+end_src
 
+******* calificación escritar
+#+begin_src snippet :tangle ~/.config/emacs/snippets/text-mode/frase-larga
+  # -*- mode: snippet -*-
+  # name: Frase muy larga
+  # key: frase-larga
+  # --
+  Esta frase está muy larga. Ver https://baracunatana.github.io/comunicacionEscrita/comunicacionEscrita.html#/slide-fralargas para una mejor explicación del problema y cómo resolverlo
+#+end_src
+
 ***** TODO =dired=
 Esta sección contiene la configuración de Dired. Al ser un paquete incluido en emacs, es necesario incluir la línea =:straight (:type built-in)= para que =use-package= lo pueda encontrar (esto es necesario por la integración de =use-package= con =straight=)
    
