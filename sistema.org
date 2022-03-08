@@ -2060,10 +2060,12 @@ La definición de plantillas se hace a partir de un archivo de texto plano que s
   # No incluir tabla de contenidos
   ,#+options: toc:nil
   # Usar booktabs
-  ,#+LATEX_HEADER: \usepackage{booktabs}
+  ,#+latex_header: \usepackage{booktabs}
   # Configuración de babel para títulos y etiquetas en español
-  ,#+LANGUAGE: es
-  ,#+LATEX_HEADER: \usepackage[spanish]{babel}
+  # Para rotar la tabla de la rúbrica
+  ,#+latex_header:\usepackage{pdflscape}
+  ,#+language: es
+  ,#+latex_header: \usepackage[spanish]{babel}
   # No resaltar enlaces en documento final, xcolor para tablas
   ,#+latex_class_options: [hidelinks, table]
   # Configuración de biblatex
