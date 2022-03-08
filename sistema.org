@@ -1203,7 +1203,7 @@ Nótece que hay que tener los diccionarios instalados. De lo contrario, la inici
                               ("#DevP" . ?e)
                               ("#ProyPer" . ?y)
                               ("#IngresoAdicional" . ?s)
-                              ("#Puntos" . ?n)
+                              ("#Investigacion" . ?g)
                               ("PasarBalon" . ?b)))
 #+end_src
 
