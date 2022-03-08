@@ -2109,6 +2109,18 @@ La definición de plantillas se hace a partir de un archivo de texto plano que s
   ,#+attr_html: :style font-size: ${1:80}%;
 #+end_src
 
+******** Details (elemento colapsable)
+#+begin_src snippet :tangle ~/.config/emacs/snippets/org-mode/html-details
+  # -*- mode: snippet -*-
+  # name: ob-html-details
+  # key: ob-html-details
+  # --
+  ,#+reveal_html: <details>
+  ,#+reveal_html: <summary>$1</summary>
+  $0
+  ,#+reveal_html: </details>
+#+end_src
+
 ***** TODO =dired=
 Esta sección contiene la configuración de Dired. Al ser un paquete incluido en emacs, es necesario incluir la línea =:straight (:type built-in)= para que =use-package= lo pueda encontrar (esto es necesario por la integración de =use-package= con =straight=)
    
