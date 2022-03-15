@@ -2131,6 +2131,15 @@ La definición de plantillas se hace a partir de un archivo de texto plano que s
   Esta frase está muy larga. Ver https://baracunatana.github.io/comunicacionEscrita/comunicacionEscrita.html#/slide-fralargas para una mejor explicación del problema y cómo resolverlo
 #+end_src
 
+******** Fases con más de una idea
+#+begin_src snippet :tangle ~/.config/emacs/snippets/text-mode/frase-multiple
+  # -*- mode: snippet -*-
+  # name: Frase con múltiples ideas
+  # key: frase-multiple
+  # --
+  Esta frase tiene mútiples ideas que no están bien conectadas. En general, se deben tener una idea por frase. Ver https://baracunatana.github.io/comunicacionEscrita/comunicacionEscrita.html#/slide-fralargas para una mejor explicación del problema y cómo resolverlo
+#+end_src
+
 ******** Verbos consecutivos
 #+begin_src snippet :tangle ~/.config/emacs/snippets/text-mode/verbos-consecutivos
   # -*- mode: snippet -*-
