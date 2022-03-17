@@ -744,14 +744,14 @@ Para esto, la fuente debe estar instalada correctamente en el sistema. Si se usa
     :config
     ;; defniciión de tecla lider global para modo normal.
     (general-create-definer j/lider
-      :states '(normal insert emacs)
+      :states '(normal visual insert emacs)
       :keymaps 'override
       :prefix "SPC"
       :non-normal-prefix "M-SPC")
 
     ;; definición de tecla lider local (relativo al major mode) para modo normal.
     (general-create-definer j/lider-local
-      :states '(normal insert emacs)
+      :states '(normal visual insert emacs)
       :prefix "SPC m"
       :non-normal-prefix "M-SPC m"))
 #+end_src
