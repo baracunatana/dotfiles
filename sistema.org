@@ -2148,6 +2148,15 @@ La definición de plantillas se hace a partir de un archivo de texto plano que s
   # --
   Evite el uso de verbos consecutivos. Ver https://baracunatana.github.io/comunicacionEscrita/comunicacionEscrita.html#/slide-verbos-seguidos para más información.
 #+end_src
+******** Coma entre sujeto y predicado
+#+begin_src snippet :tangle ~/.config/emacs/snippets/text-mode/coma-sujeto-predicado
+  # -*- mode: snippet -*-
+  # name: Coma entre sujeto y predicado
+  # key: coma-sujeto-predicado
+  # --
+  No incluya coma entre sujeto y predicado. Ver https://baracunatana.github.io/comunicacionEscrita/comunicacionEscrita.html#/slide-sujeto-predicado para más información.
+#+end_src
+ 
 ***** TODO =dired=
 Esta sección contiene la configuración de Dired. Al ser un paquete incluido en emacs, es necesario incluir la línea =:straight (:type built-in)= para que =use-package= lo pueda encontrar (esto es necesario por la integración de =use-package= con =straight=)
    
