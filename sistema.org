@@ -1079,6 +1079,15 @@ Mapa de movimiento general (cualquier modo)
   (setq create-lockfiles nil)
 #+end_src
 
+****** [[https://github.com/dajva/rg.el][rg.el]]
+~rg.el~ es una interfaz para usar ~ripgrep~ desde emacs.
+
+#+begin_src emacs-lisp 
+(use-package rg
+  :config
+  (rg-enable-menu))
+#+end_src
+
 ***** Revisión ortográfica
 Emacs permite hace revisión ortográfica desde cualquier modo. Esto resulta indispensable para escribir documentos, correos electrónicos, o archivos orgmode exportables.
 
@@ -3415,6 +3424,7 @@ Para compilar el binario de SQLite que usa org-roam, es necesario instalar [[gcc
     <<org-roam-custom>>
     :config
     (org-roam-db-autosync-enable)
+    <<org-roam-config>>
     :general
     <<org-roam-general>>)
 #+end_src
@@ -3665,6 +3675,13 @@ ntfs3g
 #+begin_src nix :tangle no :noweb-ref nixos-paquetes
 gcc
 #+end_src
+
+*** [[https://github.com/BurntSushi/ripgrep][Ripgrep]] y [[https://github.com/phiresky/ripgrep-all][Ripgrep-all]] (para búsqueda en pdfs, ebooks, zip, etc.)
+#+begin_src nix :tangle no :noweb-ref nixos-paquetes
+  ripgrep
+  ripgrep-all
+#+end_src
+
 
 * Elementos comunes
 ** Aplicaciones y paquetes comunes
