@@ -3736,6 +3736,20 @@ Dado que el archivo de configuración se encuentra en rutas diferentes en Window
                          'yt': 'https://www.youtube.com/results?search_query={}'}
 #+end_src
 
+****** Aliases
+#+begin_src python :tangle no :noweb-ref qutebrowser-config
+  c.aliases = {
+      "q": "close",
+      "qa": "quit",
+      "w": "session-save",
+      "wq": "quit --save",
+      "wqa": "quit --save",
+      "arqEmp": "open -t https://campusvirtuallms.javeriana.edu.co/d2l/home/58914",
+      "pensaSis": "open -t https://campusvirtuallms.javeriana.edu.co/d2l/home/59669",
+      "sisInfo": "open -t https://campusvirtuallms.javeriana.edu.co/d2l/home/61828",
+  }
+#+end_src
+
 ****** Acordes
 #+begin_src python :tangle no :noweb-ref qutebrowser-config
   # C-j y C-k para navegar opciones de completion
