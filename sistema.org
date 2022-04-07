@@ -3471,6 +3471,7 @@ Para compilar el binario de SQLite que usa org-roam, es necesario instalar [[gcc
     "b" '(org-roam-buffer-toggle :which-key "mostrar buffer")
     "t" '(org-roam-tag-add :which-key "agregar etiqueta")
     "T" '(org-roam-tag-remove :which-key "eliminar etiqueta")
+    "r" '(rg :which-key "buscar con rg")
     "f" '(org-roam-node-find :which-key "buscar nodo"))
 #+end_src
 
@@ -3681,7 +3682,6 @@ gcc
   ripgrep
   ripgrep-all
 #+end_src
-
 
 * Elementos comunes
 ** Aplicaciones y paquetes comunes
