@@ -37,7 +37,7 @@ Lo que se logra con esto es generar una serie de archivos de configuración en l
 
 ** Script post-tangle
 *** Mover ./configuration.nix a /etc/nixos/configuration.nix
-#+begin_src sh :tangle ./post-tangle.sh
+#+begin_src sh :tangle ./post-tangle.sh :tangle-mode (identity #o755)
   #!/bin/sh
   sudo cp ./configuration.nix /etc/nixos/configuration.nix
 #+end_src
