@@ -3733,6 +3733,7 @@ Dado que el archivo de configuración se encuentra en rutas diferentes en Window
                          'go': 'https://www.google.com/search?q={}', 
                          'gs': 'https://scholar.google.com/scholar?q={}', 
                          're': 'https://www.reddit.com/r/{}', 
+                         'lg': 'http://libgen.is/search.php?req={}', 
                          'yt': 'https://www.youtube.com/results?search_query={}'}
 #+end_src
 
