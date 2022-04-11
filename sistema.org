@@ -3765,18 +3765,24 @@ Dado que el archivo de configuración se encuentra en rutas diferentes en Window
 #+end_src
 
 ******* De apertura de aplicaciones externas
-#+begin_src python :tangle no :noweb-ref <<qutebrowser-config>>
+******** Abrir video en mpv
+#+begin_src python :tangle no :noweb-ref qutebrowser-config
   config.bind('<Space>ov','hint links spawn mpv {hint-url}' , mode='normal')
 #+end_src
 
+******** Abrir url actual en Brave
+#+begin_src python :tangle no :noweb-ref qutebrowser-config
+  config.bind('<Space>ob','spawn brave {url}', mode='normal')
+#+end_src
+
 ******* De manipulación de /buffers/ (/tabs/)
-#+begin_src python :tangle no :noweb-ref <<qutebrowser-config>>
+#+begin_src python :tangle no :noweb-ref qutebrowser-config
   config.bind('<Space>bn','tab-give' , mode='normal')
   config.bind('<Space>be','tab-close' , mode='normal')
 #+end_src
 
 ******* De ayuda
-#+begin_src python :tangle no :noweb-ref <<qutebrowser-config>>
+#+begin_src python :tangle no :noweb-ref qutebrowser-config
   config.bind('<Space>hc','config-source' , mode='normal')
 #+end_src
 ** Fuentes
