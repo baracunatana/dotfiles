@@ -3433,26 +3433,32 @@ Para compilar el binario de SQLite que usa org-roam, es necesario instalar [[gcc
 #+begin_src emacs-lisp :noweb-ref org-roam-custom :tangle no
   (org-roam-capture-templates
    '(("d"
-      "por defecto"
+      "Por defecto"
       plain
       "%?"
       :target (file+head "%<%Y%m%d%H%M%S>-${slug}.org" "#+title: ${title}\n")
       :unnarrowed t)
      ("c"
-      "concepto"
+      "Concepto"
       plain
       "\n* Definiciones\n%?\n\n* Conceptos asociados\n\n* Autores principales\n\n* Temas emergentes"
       :target (file+head "%<%Y%m%d%H%M%S>-${slug}.org" "#+title: ${title}\n#+filetags: :concepto:")
       :unnarrowed t)
+     ("p"
+      "Persona"
+      plain
+      "%?"
+      :target (file+head "%<%Y%m%d%H%M%S>-${slug}.org" "#+title: ${title}\n#+filetags: :persona:")
+      :unnarrowed t)
      ("f" "Nota de fuente")
      ("fg"
-      "general"
+      "General"
       plain
       "\n*%?*\n\n<Comentatario>\n\n* Notas de literatura"
       :target (file+head "%<%Y%m%d%H%M%S>-${slug}.org" "#+title: ${title}\n#+filetags: :fuente:")
       :unnarrowed t)
      ("fa"
-      "académica"
+      "Académica"
       plain
       "\n*%?*\n\n<Comentatario>\n\n*Notas metodológicas\n\n* Notas de literatura"
       :target (file+head "%<%Y%m%d%H%M%S>-${slug}.org" "#+title: ${title}\n#+filetags: :fuente:")
