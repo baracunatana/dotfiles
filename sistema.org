@@ -3503,6 +3503,46 @@ Para compilar el binario de SQLite que usa org-roam, es necesario instalar [[gcc
     (org-roam-bibtex-mode 1))
 #+end_src
 
+****** Notas diarias 
+=org-roam= tiene una funcionalidad llamada =org-roam-dalies= que permite crear notas de diario o bitácora con facilidad y que funcionan como cualquier otra nota de =org-roam=. Las uso para crear notas maestras por día en donde planeo el día y hago una reflexión al cierre del día. La idea de estas notas es que todos los días empiece por leer la nota del día anterior y escribiendo la parte de planeación del día actual.
+
+******* Acordes
+#+begin_src emacs-lisp :noweb-ref org-roam-general :tangle no
+  (j/lider
+    :infix "r d"
+    "" '(:ignore t :which-key "org-roam-dailies")
+    "h" '(org-roam-dailies-capture-today :which-key "capturar hoy")
+    "m" '(org-roam-dailies-capture-tomorrow :which-key "capturar mañana")
+    "f" '(org-roam-dailies-capture-date :which-key "capturar fecha")
+    "a" '(org-roam-dailies-capture-yesterday :which-key "capturar ayer")
+    "F" '(org-roam-dailies-goto-date :which-key "ir a fecha")
+    "A" '(org-roam-dailies-goto-yesterday :which-key "ir ayer")
+    "M" '(org-roam-dailies-goto-tomorrow :which-key "ir a mañana")
+    "J" '(org-roam-dailies-goto-next-note :which-key "ir a siguiente")
+    "K" '(org-roam-dailies-goto-previous-note :which-key "ir a atnerio")
+    "H" '(org-roam-dailies-goto-today :which-key "ir a hoy"))
+#+end_src
+
+******* Plantillas de captura
+#+begin_src emacs-lisp :noweb-ref org-roam-custom :tangle no
+  (org-roam-dailies-capture-templates
+   '(("d"
+      "Por defecto"
+      entry
+      "* %<%I:%M %p>: %?"
+      :target (file+head "%<%Y-%m-%d>.org" "#+title: %<%Y-%m-%d>\n"))
+     ("p"
+      "Reflexión del día"
+      entry
+      "\n* Reflexión del día\n%?"
+      :target (file+head "%<%Y-%m-%d>.org" "#+title: %<%Y-%m-%d>\n"))
+     ("p"
+      "Planeación del día"
+      entry
+      "\n* Planeación del día\n** Decarga diária\n%?\n** Tarea principal del día\n\n** Otras tareas del día"
+      :target (file+head "%<%Y-%m-%d>.org" "#+title: %<%Y-%m-%d>\n"))))
+#+end_src
+
 ***** Asistentes
 ****** Función para descargar plantilla de documentos PUJ
 #+begin_src emacs-lisp
