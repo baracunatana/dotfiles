@@ -3539,7 +3539,7 @@ Para compilar el binario de SQLite que usa org-roam, es necesario instalar [[gcc
      ("p"
       "Planeación del día"
       entry
-      "\n* Planeación del día\n** Descarga diária\n%?\n** Tarea principal del día\n\n** Otras tareas del día"
+      "\n* Planeación del día\n** Descarga diaria\n%?\n** Tarea principal del día\n\n** Otras tareas del día"
       :target (file+head "%<%Y-%m-%d>.org" "#+title: %<%Y-%m-%d>\n"))))
 #+end_src
 
