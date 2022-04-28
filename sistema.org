@@ -553,6 +553,11 @@ obs-studio
 inkscape
 #+end_src
 
+*** Mermaid js
+#+begin_src nix :tangle no :noweb-ref nixos-paquetes
+nodePackages.mermaid-cli
+#+end_src
+
 ** Lectura de documentos
 *** [[http:wiki.gnome.org/Apps/Evince][Evince]]
 #+begin_src nix :tangle no :noweb-ref nixos-paquetes
@@ -579,8 +584,17 @@ archi
 #+end_src
 
 *** [[https://www.python.org/][Python]]
+# +begin_src nix :tangle no :noweb-ref nixos-let
+  my-python-packages = python-packages: with python-packages; [
+    pandas
+    pip
+  ]; 
+  python-with-my-packages = pkgs.python39.withPackages my-python-packages;
+# +end_src
+
 #+begin_src nix :tangle no :noweb-ref nixos-paquetes
-python3Full
+python39
+python39Packages.pip
 #+end_src
 
 ** Academia
@@ -634,7 +648,7 @@ nixpkgs.overlays = [
   (import (builtins.fetchGit {
      url = "https://github.com/nix-community/emacs-overlay.git";
      ref = "master";
-     # rev = "bfc8f6edcb7bcf3cf24e4a7199b3f6fed96aaecf";
+     # rev = "4eabca26d3d17a87ff2548dd251b597d8b2d2c55";
   }))
 ];
 #+end_src
