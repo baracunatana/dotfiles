@@ -1102,6 +1102,25 @@ Mapa de movimiento general (cualquier modo)
   (rg-enable-menu))
 #+end_src
 
+****** [[https://github.com/alphapapa/org-sidebar#org-sidebar-tree-command][org-sidebar]]
+~org-sidebar~ muestra un /buffer/ temporal con un /outline/ del documento org abierto. Puede mostrar dos tipos de /outlines/: uno básico en donde sólo se muestra el /outline/ (con ~M-x org-sidebar-tree-toggle~) y uno que muestra una agenda (con ~M-x org-sideba-toggle~).
+
+#+begin_src emacs-lisp :noweb no-export
+(use-package org-sidebar
+:general
+<<org-sidebar-general>>)
+#+end_src
+
+******* Acordes 
+#+begin_src emacs-lisp :tangle no :noweb-ref org-sidebar-config
+  (j/lider-local
+    :infix "s"
+    :keymaps '(org-mode-map)
+    "" '(:ignore t :which-key "sidebar")
+    "s" '(org-sidebar-tree-toggle :which-key "outline")
+    "a" '(org-sidebar-toggle :which-key "agenda"))
+#+end_src
+
 ***** Revisión ortográfica
 Emacs permite hace revisión ortográfica desde cualquier modo. Esto resulta indispensable para escribir documentos, correos electrónicos, o archivos orgmode exportables.
 
