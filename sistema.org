@@ -1097,7 +1097,7 @@ Mapa de movimiento general (cualquier modo)
 #+end_src
 
 ******* Acordes 
-#+begin_src emacs-lisp :tangle no :noweb-ref org-sidebar-config
+#+begin_src emacs-lisp :tangle no :noweb-ref org-sidebar-general
   (j/lider-local
     :infix "s"
     :keymaps '(org-mode-map)
