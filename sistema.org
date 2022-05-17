@@ -758,7 +758,7 @@ Para esto, la fuente debe estar instalada correctamente en el sistema. Si se usa
 
 ****** =ivy= et. al.
 Esta configuración hace uso extensivo de =ivy= y =cousel= para terminación. En esta sección se hacen todas las configuraciones relevantes al sistema de terminación.
-  
+ 
 ******* TODO Configuración inicial de =ivy=
 (ver cómo se pueden configurar =C-j= y =C-k= en =ivy-minibuffer-map= usando general)
 
@@ -819,6 +819,23 @@ Estos dos paquetes se usan para agregar íconos a ivy. Por ejemplo, agrega ícon
       (prescient-persist-mode)))
 #+end_src
 
+******* ~swiper~
+Swiper ayuda a moverse con facilidad por cualquier /buffer/. Viene incluido en ivy, así que no requiere instalación.
+
+#+begin_src emacs-lisp :noweb no-export
+  (use-package swiper
+    :after ivy
+    :config
+    <<swiper-config>>)
+#+end_src
+
+******** Acordes
+#+begin_src emacs-lisp :tangle no :noweb-ref swiper-config
+(general-define-key
+   :states '(normal)
+   "gss"   '(swiper :which-key "swiper")
+   "gsa"   '(swiper-avy :which-key "swiper-avy"))
+#+end_src
 ****** =all-the-icons=
 Este paquete instala fuentes con íconos que son usadas por muchos otros paquetes (e.g. [[Doom modeline]], Dired, [[ivy]], entre otros). Si luego de esta configuración no se logran visualizar los íconos, es porque falta ejecutar =(all-the-icons-install-fonts)=.
 
