@@ -712,10 +712,11 @@ Para esto, la fuente debe estar instalada correctamente en el sistema. Si se usa
     ;; Para evitar conflictos con evil-collection
     (setq evil-want-keybinding nil)
     :config
+    ;; Iniciar compilation mode en estado normal
+    (add-to-list 'evil-normal-state-modes 'compilation-mode)
     ;; Arracnar evil-mode por defecto
     (evil-mode))
 #+end_src
-    
 ******* Configuración de =general=
 =general= es un paquete que ayuda a definir teclas líderes para diferentes conceptos, y es integrable con =use-package= usando la opción =:general=. En esta sección se define una tecla lider general (SPC) para arcordes globales y una tecla lider local (SPC m) para acordes relativos al modo actual.
 
