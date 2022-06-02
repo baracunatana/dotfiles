@@ -228,9 +228,8 @@ imports =
 *** Bluetooth
 #+begin_src nix :tangle no :noweb-ref nixos-base
   # Habilitar bluetooth
-  # GNome 40 no requiere esto, pero Plasma 5 sí...
-  # hardware.bluetooth.enable = true;
-  # services.blueman.enable = true;
+  hardware.bluetooth.enable = true;
+  services.blueman.enable = true;
 #+end_src
 
 ** Activación de gnupg agent
