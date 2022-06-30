@@ -1122,11 +1122,11 @@ Mapa de movimiento general (cualquier modo)
 ~phscroll~ permite deshabilitar ~visual-line-mode~ en una porción específica de un /buffer/ sin tener que deshabilitarlo en el resto del /buffer/. Sirve mucho para tablar de ~org~ que se salgan de la pantalla. Para que se active automáticamente en ~orgg~ se debe cargar ~org-phscroll.el~.
 
 #+begin_src emacs-lisp :noweb no-export
-(use-package phscroll
-  :straight
-  (:host github :repo "misohena/phscroll" :branch "master")
-  :config
-  (load "org-phscroll.el"))
+;;(use-package phscroll
+;;  :straight
+;;  (:host github :repo "misohena/phscroll" :branch "master")
+;;  :config
+;;  (load "org-phscroll.el"))
 #+end_src
 
 ***** Revisión ortográfica
