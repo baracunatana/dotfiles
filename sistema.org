@@ -2089,9 +2089,9 @@ La definición de plantillas se hace a partir de un archivo de texto plano que s
   ,#+attr_latex: :environment longtable :align p{25ex}cp{50ex}c :booktabs t
   |            |      | <30>          |              |
   |------------+------+---------------+--------------|
-  | *Elemento* |  *%* | *Comentarios* | *Puntos/100* |
+  | *Elemento* |  *%* | *Comentarios* | *Puntos*     |
   |------------+------+---------------+--------------|
-  | $0         | 100% |               |            0 |
+  | $0         |      |               |              |
   |------------+------+---------------+--------------|
   | *Total*    | 100% |               |            0 |
   |------------+------+---------------+--------------|
