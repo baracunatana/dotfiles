@@ -1226,7 +1226,7 @@ Nótece que hay que tener los diccionarios instalados. De lo contrario, la inici
                                  "CANC(c)")))
   (org-todo-keyword-faces '(("PROY" . (:foreground "#d33682" :weight bold))
                             ("ESPE" . (:foreground "#b58900" :weight bold))
-                            ("EMPE" . (:foreground "#b58900" :weight bold))
+                            ("EMPE" . (:foreground "#ef4f60" :weight bold))
                             ("DONE" . (:foreground "#859900" :weight bold))
                             ("CANC" . (:foreground "#859900" :weight bold))
                             ("FUTU" . (:foreground "#2aa198" :weight bold))
