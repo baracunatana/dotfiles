@@ -3963,6 +3963,12 @@ Dado que el archivo de configuración se encuentra en rutas diferentes en Window
 #+begin_src python :tangle no :noweb-ref qutebrowser-config
   config.bind('<Space>hc','config-source' , mode='normal')
 #+end_src
+**** Nyxt
+Nyxt se instala en *shion*, *shura*, y *kanon*. A continuación se definen los dos bloques de instalación
+#+begin_src nix :tangle no :noweb-ref nixos-paquetes
+  nyxt
+#+end_src
+
 ** Fuentes
 *** [[https://github.com/DeLaGuardo/Inconsolata-LGC][Inconsolata-lgc]]
 Inconsolata lgc (que tiene acentos y versión itálica) se instala para usar en ~emacs~ y ~alacrity~. Siendo así, se usa en *kanon*, *shion*, y *shura*.
