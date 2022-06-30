@@ -571,6 +571,11 @@ python39
 python39Packages.pip
 #+end_src
 
+**** Microsoft Python LSP
+#+begin_src nix :tangle no :noweb-ref nixos-paquetes
+python-language-server
+#+end_src
+
 ** Academia
 *** [[https:www.jabref.org][Jabref]]
 #+begin_src nix :tangle no :noweb-ref nixos-paquetes
@@ -3677,6 +3682,53 @@ Usando el paquete ~elfeed-org~, los /feeds/ se describen en un archivo ~org~ ubi
 ******* Guardar la base de datos al cerrer (con q)
 #+begin_src emacs-lisp :noweb-ref elfeed-custom :tangle no
   (advice-add 'elfeed-db-save :before 'elfeed-search-quit-window)
+#+end_src
+
+***** Desarrollo y edición de código
+****** LSP
+******* Configuración básica
+#+begin_src emacs-lisp :noweb no-export 
+  (use-package lsp-mode
+    :commands (lsp lsp-deferred)
+    :custom
+    (lsp-keymap-prefix "C-c l")
+    :config
+    (lsp-enable-which-key-integration t))
+
+  (use-package lsp-ui
+    :hook (lsp-mode . lsp-ui-mode))
+
+  (use-package lsp-treemacs
+    :after lsp)
+#+end_src
+
+******* Company
+Si bien ~company~ se puede usar en muchos contextos, por ahora lo uso únicamente con ~lsp~.
+
+#+begin_src emacs-lisp :noweb no-export 
+  (use-package company
+    :after lsp-mode
+    :hook (lsp-mode . company-mode)
+    :bind
+    ( :map company-active-map
+            ("<tab>" . company-complete-selection))
+    ( :map lsp-mode-map
+          ("<tab>" . company-indent-or-complete-common))
+    :custom
+    (company-minimum-prefix-length 3)
+    (company-idle-delay 1))
+#+end_src
+
+******* Python
+El primer paso para esta configuración es [[Microsoft Python LSP][instalar el LSP de Microsoft para python]]. Luego de esto, se hacen las configuraciones necesarias en emacs:
+
+#+begin_src emacs-lisp :noweb no-export 
+(use-package lsp-python-ms
+  :hook (python-mode . (lambda ()
+                         (require 'lsp-python-ms)
+                         (lsp)))
+  :init
+  (setq lsp-python-ms-executable (executable-find "python-language-server")))
 #+end_src
 
 *** Latex (con [[https://tug.org/texlive/][Tex Live]])
