@@ -104,7 +104,7 @@ Este archivo de configuración funciona con la versión de 20.04 lts y se estruc
 <<kanon-init>>
 #+end_src
 
-*** Compilación de emas
+*** Compilación de emacs
 Se compila emacs con /pgtk/, /native compilation/, y /json/.
 #+begin_src sh :tangle no :noweb-ref kanon-init
 git clone git://git.sv.gnu.org/emacs.git
@@ -523,6 +523,13 @@ inkscape
 *** Mermaid js
 #+begin_src nix :tangle no :noweb-ref nixos-paquetes
 nodePackages.mermaid-cli
+#+end_src
+
+*** [[https://github.com/ytdl-org/youtube-dl][Youtube-dl]]
+~youtube-dl~ es una herramienta para descargar videos de youtube desde línea de comandos.
+
+#+begin_src nix :tangle no :noweb-ref nixos-paquetes
+youtube-dl
 #+end_src
 
 ** Lectura de documentos
