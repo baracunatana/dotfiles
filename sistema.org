@@ -3754,7 +3754,7 @@ texlive.combined.scheme-full
 ** Juegos
 *** [[https:mgba.io][Mgba]]
 #+begin_src nix :tangle no :noweb-ref nixos-paquetes
-mgba
+# mgba
 #+end_src
 
 *** [[https://libretro.com/][Retroarch]] 
@@ -3764,14 +3764,14 @@ retroarch
 
 **** Configuración
 #+begin_src nix :tangle no :noweb-ref nixos-configuracion-paquetes
-nixpkgs.config.retroarch = {
-    #enableDolphin = true;
-    enableMGBA = true;
-    #enableMAME = true;
-    enableSnes9x = true;  
-    enableSameBoy = true;
-    enableNestopia = true;
-  };
+# nixpkgs.config.retroarch = {
+#    #enableDolphin = true;
+#    enableMGBA = true;
+#    #enableMAME = true;
+#    enableSnes9x = true;  
+#    enableSameBoy = true;
+#    enableNestopia = true;
+#  };
 #+end_src
 
 ** Comunicación y colaboración
