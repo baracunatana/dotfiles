@@ -2371,7 +2371,7 @@ Se instala =mu= desde canal unstable por que a la fecha ([2021-08-20 Fri]) no se
 
 #+begin_src nix :tangle no :noweb-ref nixos-paquetes
 isync
-unstable.mu
+mu
 #+end_src
 
 #+begin_src nix :tangle no :noweb-ref kanon-init
@@ -2775,10 +2775,6 @@ La configuración de envió de correos está basada en [[https://www.reddit.com/
     :after mu4e)
 #+end_src
 ******** Configuraciones específicas para envío de correo
-********* Usar nuevo /frame/ para escritura de mensajes
-#+begin_src emacs-lisp :noweb-ref mu4e-custom :tangle no
-  (mu4e-compose-in-new-frame t)
-#+end_src
 ********* No mover mensajes a carpeta Sent. Dejar que el servidor se encargue de eso
 #+begin_src emacs-lisp :noweb-ref mu4e-custom :tangle no
   (mu4e-sent-messages-behavior 'sent)
@@ -2856,140 +2852,21 @@ Org-msg es un paquete que permite redactar correos electrónicos (desde mu4e) co
 
 #+begin_src emacs-lisp :noweb no-export
   (use-package org-msg
-    ;;:straight (prg-msg :type git :host github :repo "jeremy-compostella/org-msg"
-    ;;                   :fork ( :host github
-    ;;                           :repo "Chris00/org-msg"
-    ;;                           :branch "MML"))
     :after mu4e
+    ;;:hook ((mu4e-compose-pre . org-msg-mode))
     :custom
+    (org-msg-default-alternatives '((new . (html))
+                                     (reply-to-html .(html))
+                                     (reply-to-text . (html))))
     (mail-user-agent 'mu4e-user-agent)
     (org-msg-options "html-postamble:nil H:5 num:nil ^:{} toc:nil author:nil email:nil \\n:t")
     (org-msg-startup "hidestars indent inlineimages")
     (org-msg-greeting-fmt "\nQué tal%s,\n\n")
     (org-msg-greeting-name-limit 3)
-    (org-msg-text-plain-alternative t)
-    (org-msg-signature "
-            Saludos,
-            ,#+begin_signature
-            Juan E. Gómez-Morantes, PhD \\\\
-            Profesor Asistente \\\\
-            Departamento de Ingeniería de Sistemas \\\\
-            Pontificia Universidad Javeriana \\\\
-            ,#+end_signature")
-
     :config
-    <<org-msg-config>>
-    ;; Para evitar el problema de columnas angostas en outlook web, se defe redefinir la plantilla css usada por org-msg.
-    ;; Eso está definido en =org-msg-default-style= y se asigna a =org-msg-enforce-css. A continuación se crea otra plantilla y se hace la asignación.
-    (defconst j/org-msg-default-style
-      (let* ((font-family '(font-family . "\"Arial\""))
-             (font-size '(font-size . "10pt"))
-             (font `(,font-family ,font-size))
-             (line-height '(line-height . "10pt"))
-             (bold '(font-weight . "bold"))
-             (theme-color "#0071c5")
-             (color `(color . ,theme-color))
-             (table `(,@font (margin-top . "0px")))
-             (ftl-number `(,@font ,color ,bold (text-align . "left")))
-             (inline-modes '(asl c c++ conf cpp csv diff ditaa emacs-lisp
-                                 fundamental ini json makefile man org plantuml
-                                 python sh xml))
-             (inline-src `((color . ,(face-foreground 'default))
-                           (background-color . ,(face-background 'default))))
-             (code-src
-              (mapcar (lambda (mode)
-                        `(code ,(intern (concat "src src-" (symbol-name mode)))
-                               ,inline-src))
-                      inline-modes)))
-        `((del nil (,@font (color . "grey") (border-left . "none")
-                           (text-decoration . "line-through") (margin-bottom . "0px")
-                           (margin-top . "10px") (line-height . "11pt")))
-          (a nil (,color))
-          (a reply-header ((color . "black") (text-decoration . "none")))
-          (div reply-header ((padding . "3.0pt 0in 0in 0in")
-                             (border-top . "solid #e1e1e1 1.0pt")
-                             (margin-bottom . "20px")))
-          (span underline ((text-decoration . "underline")))
-          (li nil (,@font ,line-height (margin-bottom . "0px")
-                          (margin-top . "2px")))
-          (nil org-ul ((list-style-type . "square")))
-          (nil org-ol (,@font ,line-height (margin-bottom . "0px")
-                              (margin-top . "0px") (margin-left . "30px")
-                              (padding-top . "0px") (padding-left . "5px")))
-          (nil signature (,@font (margin-bottom . "20px")))
-          (blockquote nil ((padding-left . "5px") (margin-left . "10px")
-                           (margin-top . "20px") (margin-bottom . "0")
-                           (border-left . "3px solid #ccc") (font-style . "italic")
-                           (background . "#f9f9f9")))
-          (code nil (,font-size (font-family . "monospace") (background . "#f9f9f9")))
-          ,@code-src
-          (nil linenr ((padding-right . "1em")
-                       (color . "black")
-                       (background-color . "#aaaaaa")))
-          (pre nil ((line-height . "12pt")
-                    ,@inline-src
-                    (margin . "0px")
-                    (font-size . "9pt")
-                    (font-family . "monospace")))
-          (div org-src-container ((margin-top . "10px")))
-          (nil figure-number ,ftl-number)
-          (nil table-number)
-          (caption nil ((text-align . "left")
-                        (background . ,theme-color)
-                        (color . "white")
-                        ,bold))
-          (nil t-above ((caption-side . "top")))
-          (nil t-bottom ((caption-side . "bottom")))
-          (nil listing-number ,ftl-number)
-          (nil figure ,ftl-number)
-          (nil org-src-name ,ftl-number)
-
-          (table nil (,@table ,line-height (border-collapse . "collapse")))
-          (th nil ((border . "1px solid black")
-                   (background-color . ,theme-color)
-                   (color . "white")
-                   (padding-left . "10px") (padding-right . "10px")))
-          (td nil (,@table (padding-left . "10px") (padding-right . "10px")
-                           (background-color . "#f9f9f9") (border . "1px solid black")))
-          (td org-left ((text-align . "left")))
-          (td org-right ((text-align . "right")))
-          (td org-center ((text-align . "center")))
-
-          (div outline-text-4 ((margin-left . "15px")))
-          (div outline-4 ((margin-left . "10px")))
-          (h4 nil ((margin-bottom . "0px") (font-size . "11pt")
-                   ,font-family))
-          (h3 nil ((margin-bottom . "0px") (text-decoration . "underline")
-                   ,color (font-size . "12pt")
-                   ,font-family))
-          (h2 nil ((margin-top . "20px") (margin-bottom . "20px")
-                   (font-style . "italic") ,color (font-size . "13pt")
-                   ,font-family))
-          (h1 nil ((margin-top . "20px")
-                   (margin-bottom . "0px") ,color (font-size . "12pt")
-                   ,font-family))
-          (p nil ((text-decoration . "none") (margin-bottom . "0px")
-                  (margin-top . "10px") (line-height . "11pt") ,font-size
-                  ,font-family
-                  ;;(max-width . "100ch")
-                  ))
-          (div nil (,@font (line-height . "11pt"))))))
-    (setq org-msg-enforce-css j/org-msg-default-style)
-    ;; Evitar que org-msg interfiera con la aceptación de invitaciones de calendario 
-    (defun j/deshabilitar-org-msg (orig-fun &rest args)
-      (let ((activo org-msg-mode))
-        (org-msg-mode -1)
-        (apply orig-fun args)
-        (if activo
-            (org-msg-mode))))
-
-    ;; (advice-add 'gnus-article-press-button :around #'j/deshabilitar-org-msg)
-    ;; activar el modo
+    (setq org-msg-convert-citation t)
     (org-msg-mode))
 #+end_src
-
-#+RESULTS:
-: t
 
 ******* Integración con =org-capture=
 Una de las (la única?) razón de peso para tener el correo en emacs es la capacidad de crear TODOs en orgmode de forma rápida y que incluyan un link a un correo específico.
@@ -3850,6 +3727,11 @@ ntfs3g
 *** gcc
 #+begin_src nix :tangle no :noweb-ref nixos-paquetes
 gcc
+#+end_src
+
+*** Ninja
+#+begin_src nix :tangle no :noweb-ref nixos-paquetes
+ninja
 #+end_src
 
 *** [[https://github.com/BurntSushi/ripgrep][Ripgrep]] y [[https://github.com/phiresky/ripgrep-all][Ripgrep-all]] (para búsqueda en pdfs, ebooks, zip, etc.)
