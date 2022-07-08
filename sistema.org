@@ -1248,6 +1248,7 @@ Nótece que hay que tener los diccionarios instalados. De lo contrario, la inici
                               ("#ProyPer" . ?y)
                               ("#IngresoAdicional" . ?s)
                               ("#Investigacion" . ?g)
+                              ("BajaEnergia" . ?j)
                               ("PasarBalon" . ?b)))
 #+end_src
 
@@ -1915,7 +1916,8 @@ Ya con esto, se tienen que definir los acrodes locales para agenda.
     :keymaps 'org-mode-map
     :infix "l"
     "" '(:ignore t :which-key "enlaces")
-    "l" '(org-insert-link :which-key "crear enlace")
+    "l" '(org-insert-link :which-key "insertar enlace")
+    "g" '(org-store-link :which-key "guardar enlace")
     "s" '(org-open-at-point :which-key "segir enlace"))
 #+end_src
 
@@ -3123,6 +3125,7 @@ Los siguientes acordes funcionan en los modos =mu4e-headers-mode= y =mu4e-view-m
     "C" '(mu4e~view-compose-contact :which-key "copiar dirección en punto")
     "b" '(mu4e-view-open-attachment :which-key "abrir adjunto")
     "a" '(mu4e-view-action :which-key "acciones")
+    "lg" '(org-store-link :which-key "guardar enlace desde org")
     "A" '(mu4e-view-mime-part-action :which-key "acciones de partes"))
 #+end_src
 
