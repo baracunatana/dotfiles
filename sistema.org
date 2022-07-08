@@ -622,16 +622,15 @@ nixpkgs.overlays = [
   (import (builtins.fetchGit {
      url = "https://github.com/nix-community/emacs-overlay.git";
      ref = "master";
-     # rev = "4eabca26d3d17a87ff2548dd251b597d8b2d2c55";
+     rev = "7783abca6324f2dfdf8ca7d3632c376df416bf88";
   }))
 ];
 #+end_src
 
 Luego, para instalar con paquetes que requieran compilación (como =vterm=), se define un emacs específico en la sección let de nixos.
 
-
 #+begin_src nix :tangle no :noweb-ref nixos-let
-  emacsWithPackages = (pkgs.emacsPackagesFor pkgs.emacsPgtkNativeComp).emacsWithPackages (epkgs: ([epkgs.vterm]));
+  emacsWithPackages = (pkgs.emacsPackagesFor pkgs.emacsPgtkNativeComp).emacsWithPackages (epkgs: ([epkgs.vterm epkgs.pdf-tools]));
 #+end_src
 
 Ahora sí se puede instalar =emacs= con gcc (definido en el paso anterior).
