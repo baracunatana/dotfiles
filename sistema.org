@@ -156,6 +156,12 @@ NixOS se configura, en términos de paquetes, servicios, y opciones iniciales, e
     <<nixos-let>>
   in
   {
+
+   imports =
+   [ 
+     <<nixos-imports>>
+   ];
+
     <<nixos-base>>
 
     <<nixos-overlays>>  
@@ -199,11 +205,8 @@ Usar OS Prober para detectar otros sitemas operativos en el disco y configurar e
 #+end_src
 
 ** Incluir resultados del escaneo de /hardware/
-#+begin_src nix :tangle no :noweb-ref nixos-base
-imports =
-  [ 
-    ./hardware-configuration.nix
-  ];
+#+begin_src nix :tangle no :noweb-ref nixos-imports
+./hardware-configuration.nix
 #+end_src
 
 ** Periféricos 
@@ -394,6 +397,41 @@ nix = {
     eb-garamond
     vistafonts
   ];
+#+end_src
+
+** Optimización de generaciones 
+#+begin_src nix :tangle no :noweb-ref nixos-base :noweb no-export
+nix = {
+  settings.auto-optimise-store = true;
+  gc = {
+    automatic = true;
+    dates = "weekly";
+    options = "--delete-older-than 30d";
+  };
+};
+#+end_src
+
+** home-manager
+Para configurar y usar =home-manager=, lo primero que se debe hacer es importar el canal. Esto se puede hacer con =# $ nix-channel --add https://github.com/nix-community/home-manager/archive/release-22.05.tar.gz home-manager=, pero es mejor tenerlo todo en =configuration.nix=.
+
+#+begin_src nix :tangle no :noweb-ref nixos-let
+  home-manager = builtins.fetchTarball "https://github.com/nix-community/home-manager/archive/release-22.05.tar.gz";
+#+end_src
+
+#+begin_src nix :tangle no :noweb-ref nixos-imports
+  (import "${home-manager}/nixos")
+  # <home-manager/nixos>
+#+end_src
+
+*** Paquetes
+#+begin_src nix :tangle no :noweb-ref nixos-base :noweb no-export
+  home-manager.users.juan = { pkgs, ... }: {
+  #  home.packages = [ pkgs.atool pkgs.httpie ];
+  programs.bash.enable = true;
+  #services.gpg-agent.enable = true;
+  #services.gpg.enable = true;
+  <<home-manager-juan>>
+  };
 #+end_src
 
 * Aplicaciones y paquetes
