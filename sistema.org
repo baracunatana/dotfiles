@@ -3845,8 +3845,8 @@ Dado que el archivo de configuración se encuentra en rutas diferentes en Window
       "wq": "quit --save",
       "wqa": "quit --save",
       "arqEmp": "open -t https://campusvirtuallms.javeriana.edu.co/d2l/home/104079",
-      "pensaSis": "open -t https://campusvirtuallms.javeriana.edu.co/d2l/home/59669",
-      "sisInfo": "open -t https://campusvirtuallms.javeriana.edu.co/d2l/home/61828",
+      "pensaSis": "open -t https://campusvirtuallms.javeriana.edu.co/d2l/home/104740",
+      "sisInfo": "open -t https://campusvirtuallms.javeriana.edu.co/d2l/home/103789",
   }
 #+end_src
 
