@@ -526,6 +526,11 @@ nodePackages.mermaid-cli
 youtube-dl
 #+end_src
 
+*** Imagemagick
+#+begin_src nix :tangle no :noweb-ref nixos-paquetes
+  imagemagick
+#+end_src
+
 ** Lectura de documentos
 *** [[http:wiki.gnome.org/Apps/Evince][Evince]]
 #+begin_src nix :tangle no :noweb-ref nixos-paquetes
@@ -3737,6 +3742,11 @@ ninja
 #+begin_src nix :tangle no :noweb-ref nixos-paquetes
   ripgrep
   ripgrep-all
+#+end_src
+
+*** Tree
+#+begin_src nix :tangle no :noweb-ref nixos-paquetes
+tree
 #+end_src
 
 * Elementos comunes
