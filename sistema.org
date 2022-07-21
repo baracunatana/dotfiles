@@ -283,7 +283,7 @@ Usar OS Prober para detectar otros sitemas operativos en el disco y configurar e
 
 *** Gnome
 #+begin_src nix :tangle no :noweb-ref nixos-base
-  services.xserver.displayManager.gdm.enable = true;
+  # services.xserver.displayManager.gdm.enable = true;
   services.xserver.desktopManager.gnome.enable = true;
 #+end_src
 
@@ -336,6 +336,11 @@ La configuración de Gnome no se hace con archivos de configuración sin con una
   # kwriteconfig5 --file $HOME/.config/kwinrc --group "Windows" "Placement" "Centered"
 #+end_src
 
+*** EXWM
+#+begin_src nix :tangle no :noweb-ref nixos-base
+  services.xserver.displayManager.lightdm.enable = true;
+  services.xserver.windowManager.exwm.enable = true;
+#+end_src
 ** Configuración de carga de sistema operativo
 #+begin_src nix :tangle no :noweb-ref nixos-base
   # Use the systemd-boot EFI boot loader.
