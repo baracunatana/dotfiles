@@ -1,4 +1,3 @@
-# -*- org-babel-load-languages: '((elisp . t) (org . t)) -*-
 #+title: Configuración completa de sistema operativo y aplicaciones básicas
 #+author: Juan E. Gómez-Morantes, PhD
 
@@ -764,7 +763,7 @@ Para esto, la fuente debe estar instalada correctamente en el sistema. Si se usa
 
 ****** =ivy= et. al.
 Esta configuración hace uso extensivo de =ivy= y =cousel= para terminación. En esta sección se hacen todas las configuraciones relevantes al sistema de terminación.
- 
+
 ******* TODO Configuración inicial de =ivy=
 (ver cómo se pueden configurar =C-j= y =C-k= en =ivy-minibuffer-map= usando general)
 
