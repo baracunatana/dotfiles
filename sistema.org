@@ -1991,6 +1991,25 @@ Esto espera una tabla con el tabla con el tag ~#+name: nombreDeLaOtraTabla~ en e
 
 La razón de usar la función ~string~ para la referencia de la tabla remota se encuentra en https://stackoverflow.com/questions/13673987/org-mode-spreadsheet-programmatic-remote-references. El problema es que si se usa "@1$1" directamente, lo primero que hace ~org~ al evaluar la fórmula es reemplazar estas referencias, por lo que lo reemplazará con el valor de esa referencia pero en la tabla actual.
 
+****** babel
+******* Activación de shell
+#+begin_src emacs-lisp 
+  (use-package ob-shell
+    :straight nil
+    :after org
+    :config
+    (org-babel-do-load-languages 'org-babel-load-languages
+                                 (append org-babel-load-languages
+                                         '((shell . t)))))
+#+end_src
+
+******* Activación de latex 
+#+begin_src emacs-lisp :tangle no :noweb-ref org-config
+  (org-babel-do-load-languages 'org-babel-load-languages
+                               (append org-babel-load-languages
+                                       '((latex . t))))
+#+end_src
+
 ***** =yasnippet=
 Yasnippet es un paquete que permite la definición de /snippets/ (o plantillas) y su utilización en diferentes modos. Por defecto, no trae plantillas definidas; si se quieren plantillas, se debe agregar el paquete =yasnippet-snippets= que trae una colección de plantillas predefinidas para modos populares.
 
