@@ -3512,8 +3512,8 @@ Para compilar el binario de SQLite que usa org-roam, es necesario instalar [[gcc
       :target (file+head "%<%Y-%m-%d>.org" "#+title: %<%Y-%m-%d>\n"))))
 #+end_src
 
-****** Agregar archivos con tag =proyecto= e =identidad= a la vista de agenda
-Se crea una función para agregar todos los archivos de =org-roam= que tengan tag =proyecto= o =identidad=, y luego se aconseja a =org-agenda= para que corra esa función antes de generar la agenda. Con esto se logra que la agenda se calcula incluyendo todas las tareas de archivos =org-roam= con tag =proyecto=. 
+****** Agregar archivos con tag =proyecto=, =area=, e =identidad= a la vista de agenda
+Se crea una función para agregar todos los archivos de =org-roam= que tengan tag =proyecto=, =area=, o =identidad=, y luego se aconseja a =org-agenda= para que corra esa función antes de generar la agenda. Con esto se logra que la agenda se calcula incluyendo todas las tareas de archivos =org-roam= con tag =proyecto=. 
 
 #+begin_src emacs-lisp :noweb-ref org-roam-config :tangle no
   (defun j/poblar-archivos-agenda ()
@@ -3524,6 +3524,12 @@ Se crea una función para agregar todos los archivos de =org-roam= que tengan ta
                                    :inner :join nodes
                                    :on (= tags:node-id nodes:id)
                                    :where (= tags:tag "proyecto")] ","))
+      (mapcar (lambda (arch) (add-to-list 'org-agenda-files (car arch)))
+              (org-roam-db-query [ :select nodes:file
+                                   :from tags
+                                   :inner :join nodes
+                                   :on (= tags:node-id nodes:id)
+                                   :where (= tags:tag "area")] ","))
       (mapcar (lambda (arch) (add-to-list 'org-agenda-files (car arch)))
               (org-roam-db-query [ :select nodes:file
                                    :from tags
