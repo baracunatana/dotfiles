@@ -3808,6 +3808,15 @@ ninja
 tree
 #+end_src
 
+*** [[https://syncthing.net/][Syncthing]]
+=syncthing= permite sincronizar carpetas entre dispositivos. Funciona de forma similar a =dropbox=, pero con la limitación de que la sincronización sólo ocurre cuando los dispositivos están prendidos de forma simultanea.
+
+La instación de syncthing se hace como si fuera un servicio de [[home-manager]].
+
+#+begin_src nix :tangle no :noweb-ref home-manager-juan :noweb no-export
+services.syncthing.enable = true;
+#+end_src
+
 * Elementos comunes
 ** Aplicaciones y paquetes comunes
 *** Navegadores web
