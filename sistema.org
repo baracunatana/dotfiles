@@ -3676,6 +3676,16 @@ El primer paso para esta configuración es [[Microsoft Python LSP][instalar el L
   (setq lsp-python-ms-executable (executable-find "python-language-server")))
 #+end_src
 
+***** =find-lisp=
+=find-lisp= es una librería incluida en emacs (pero no activada por defecto) que permite buscar archivos y carpetas de forma sencilla desde lisp. Se usa para resolver un problema con la exportación de archivos de [[*=org-roam=][=org-roam=]] (ver https://github.com/kaushalmodi/ox-hugo/issues/483).
+
+#+begin_src emacs-lisp :noweb no-export 
+  (use-package find-lisp
+    :after org-roam
+    :config
+    (setq org-id-extra-files (find-lisp-find-files org-roam-directory "\.org$")))
+#+end_src
+
 *** Latex (con [[https://tug.org/texlive/][Tex Live]])
 #+begin_src nix :tangle no :noweb-ref nixos-paquetes
 texlive.combined.scheme-full
