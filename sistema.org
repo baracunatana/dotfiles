@@ -306,6 +306,16 @@ La configuración de Gnome no se hace con archivos de configuración sin con una
   gsettings set org.gtk.Settings.FileChooser clock-format '12h'
 #+end_src
 
+***** Extensiones
+Para activar las extensiones de =gnome=, se debe activar el =gnome-settings-deamon= con
+#+begin_src nix :tangle no :noweb-ref nixos-base
+services.udev.packages = with pkgs; [ gnome.gnome-settings-daemon ];
+#+end_src
+
+Ahora, se pueden instalar los paquetes de las extensiones que se quieren tener activadas:
+#+begin_src nix :tangle no :noweb-ref nixos-paquetes
+gnomeExtensions.appindicator
+#+end_src
 *** Plasma
 #+begin_src nix :tangle no :noweb-ref nixos-base
   # services.xserver.displayManager.sddm.enable = true;
